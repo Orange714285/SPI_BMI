@@ -1,0 +1,1 @@
+/usr/bin/c++ -Wl,--dependency-file=CMakeFiles/gpio_demo.dir/link.d CMakeFiles/gpio_demo.dir/src/bmi055_driver.cpp.o CMakeFiles/gpio_demo.dir/src/main.cpp.o CMakeFiles/gpio_demo.dir/src/spi_bmi055_protocol.cpp.o -o gpio_demo  -lpigpio -lgpiod
