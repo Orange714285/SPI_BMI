@@ -364,3 +364,27 @@ bool SPI_BMI055_Protocol::spi_swap_byte(uint8_t byte_send) // SPI Mode 0
 
     return true;
 }
+
+SPI_BMI055_Protocol::~SPI_BMI055_Protocol()
+{
+    if (m_line_request_BMI055)
+        gpiod_line_request_release(m_line_request_BMI055);
+    if (m_line_request_acc_interrupt_BMI055)
+        gpiod_line_request_release(m_line_request_acc_interrupt_BMI055);
+
+    if (m_line_config_BMI055)
+        gpiod_line_config_free(m_line_config_BMI055);
+    if (m_line_config_acc_interrupt_BMI055)
+        gpiod_line_config_free(m_line_config_acc_interrupt_BMI055);
+
+    if (m_line_settings_GPIO_MODE_IPU)
+        gpiod_line_settings_free(m_line_settings_GPIO_MODE_IPU);
+    if (m_line_settings_GPIO_MODE_OUT_PP)
+        gpiod_line_settings_free(m_line_settings_GPIO_MODE_OUT_PP);
+    if (m_line_settings_GPIO_ACCEL_INTERRUPT)
+        gpiod_line_settings_free(m_line_settings_GPIO_ACCEL_INTERRUPT);
+
+    if (m_chip)
+        gpiod_chip_close(m_chip);
+    std::cerr << "[INFO] 释放libgpiod资源" << std::endl;
+}

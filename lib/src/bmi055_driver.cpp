@@ -1,4 +1,7 @@
 #include <iostream>
+#include <chrono>
+#include <thread>
+#include <cmath>
 
 #include "bmi055_driver.hpp"
 #include "bmi055_driver_def.hpp"
@@ -10,6 +13,16 @@ bool BMI055::BMI055_init()
         std::cerr << "[ERROR] SPI init failed!" << std::endl;
         return false;
     }
+    if (!acc_set_data_output_unfiltered())
+    {
+        std::cerr << "[ERROR] Set acc data output unfiltered failed!" << std::endl;
+        return false;
+    }
+    if (!acc_self_test())
+	{
+		std::cerr << "[ERROR] BMI055 acc self test failed!" <<std::endl;
+		return 0;
+	}
     if (!acc_config_drdy())
     {
         std::cerr << "[ERROR] Config acc drdy failed!" << std::endl;
@@ -260,6 +273,73 @@ bool BMI055::acc_get_accd_z_mg()
     return true;
 }
 
+bool BMI055::acc_get_accd_all_mg()
+{
+    uint8_t acc_accd_x_lsb, acc_accd_x_msb;
+    uint8_t acc_accd_y_lsb, acc_accd_y_msb;
+    uint8_t acc_accd_z_lsb, acc_accd_z_msb;
+
+    if (!m_spi.spi_accel_start())
+    {
+        std::cerr << "[ERROR] Read accd_all failed! spi start failed!" << std::endl;
+        return false;
+    }
+
+    uint8_t dummy = ACC_DUMMY_BYTE;
+
+    // Step 1: send starting register address ACC_ACCD_X_LSB with read bit (0x80) set
+    if (!m_spi.spi_swap_byte(ACC_ACCD_X_LSB | 0x80, dummy))
+    {
+        std::cerr << "[ERROR] Read accd_all failed! spi swap byte failed! (ACC_ACCD_X_LSB|0x80)" << std::endl;
+        return false;
+    }
+
+    // Step 2: burst read 6 bytes consecutively (auto-increment from 0x02 to 0x07)
+    if (!m_spi.spi_swap_byte(ACC_DUMMY_BYTE, acc_accd_x_lsb))
+    {
+        std::cerr << "[ERROR] Read accd_all failed! spi swap byte failed! (read accd_x_lsb)" << std::endl;
+        return false;
+    }
+    if (!m_spi.spi_swap_byte(ACC_DUMMY_BYTE, acc_accd_x_msb))
+    {
+        std::cerr << "[ERROR] Read accd_all failed! spi swap byte failed! (read accd_x_msb)" << std::endl;
+        return false;
+    }
+    if (!m_spi.spi_swap_byte(ACC_DUMMY_BYTE, acc_accd_y_lsb))
+    {
+        std::cerr << "[ERROR] Read accd_all failed! spi swap byte failed! (read accd_y_lsb)" << std::endl;
+        return false;
+    }
+    if (!m_spi.spi_swap_byte(ACC_DUMMY_BYTE, acc_accd_y_msb))
+    {
+        std::cerr << "[ERROR] Read accd_all failed! spi swap byte failed! (read accd_y_msb)" << std::endl;
+        return false;
+    }
+    if (!m_spi.spi_swap_byte(ACC_DUMMY_BYTE, acc_accd_z_lsb))
+    {
+        std::cerr << "[ERROR] Read accd_all failed! spi swap byte failed! (read accd_z_lsb)" << std::endl;
+        return false;
+    }
+    if (!m_spi.spi_swap_byte(ACC_DUMMY_BYTE, acc_accd_z_msb))
+    {
+        std::cerr << "[ERROR] Read accd_all failed! spi swap byte failed! (read accd_z_msb)" << std::endl;
+        return false;
+    }
+
+    if (!m_spi.spi_stop())
+    {
+        std::cerr << "[ERROR] Read accd_all failed! spi stop failed!" << std::endl;
+        return false;
+    }
+
+    // Step 3: convert raw data to mg
+    m_acc_accd_x_mg = acc_get_mg(acc_accd_x_lsb, acc_accd_x_msb);
+    m_acc_accd_y_mg = acc_get_mg(acc_accd_y_lsb, acc_accd_y_msb);
+    m_acc_accd_z_mg = acc_get_mg(acc_accd_z_lsb, acc_accd_z_msb);
+
+    return true;
+}
+
 float BMI055::acc_get_mg(uint8_t lsb, uint8_t msb)
 {
     uint16_t raw_12bit = ((uint16_t)msb << 4) | (lsb >> 4);
@@ -270,4 +350,150 @@ float BMI055::acc_get_mg(uint8_t lsb, uint8_t msb)
         acc_raw = (int16_t)raw_12bit;
     float acc_mg = acc_raw * 0.98f;
     return acc_mg;
+}
+
+bool BMI055::acc_self_test()
+{
+    /* ===== Step 1: set range to ±8g (required by datasheet) ===== */
+    if (!m_spi.spi_accel_start())
+    {
+        std::cerr << "[ERROR] acc_self_test: spi_accel_start failed when setting range to 8g!" << std::endl;
+        return false;
+    }
+    if (!m_spi.spi_swap_byte(0x0F))  // ACC_PMU_RANGE
+    {
+        std::cerr << "[ERROR] acc_self_test: spi_swap_byte failed when setting range to 8g!" << std::endl;
+        return false;
+    }
+    if (!m_spi.spi_swap_byte(0x01))  // ±8g (0x01 for 8g on register 0x0F)
+    {
+        std::cerr << "[ERROR] acc_self_test: spi_swap_byte failed when writing 8g value!" << std::endl;
+        return false;
+    }
+    if (!m_spi.spi_stop())
+    {
+        std::cerr << "[ERROR] acc_self_test: spi_stop failed after setting range to 8g!" << std::endl;
+        return false;
+    }
+
+    /* ===== Step 2: per-axis positive/negative self-test =====
+     * Register 0x32 bit layout: [7:5]=000 [4]=amp [3]=0 [2]=sign [1:0]=axis
+     * amp=1 (high amplitude required), axis: 01=X, 10=Y, 11=Z
+     */
+    const uint8_t cmd[3][2] = {
+        {0x11, 0x15},  // X-axis: neg=0x11, pos=0x15
+        {0x12, 0x16},  // Y-axis: neg=0x12, pos=0x16
+        {0x13, 0x17},  // Z-axis: neg=0x13, pos=0x17
+    };
+    const float   threshold_mg[3] = {800.0f, 800.0f, 400.0f};
+    const char*   axis_name[3]     = {"X", "Y", "Z"};
+    const char*   sign_name[2]     = {"neg", "pos"};
+    float         val[3][2];  // [axis][sign]
+
+    for (int axis = 0; axis < 3; axis++)
+    {
+        for (int sign = 0; sign < 2; sign++)
+        {
+            // enable self-test for this axis & sign
+            if (!m_spi.spi_accel_start())
+            {
+                std::cerr << "[ERROR] acc_self_test: spi_accel_start failed enabling "
+                          << axis_name[axis] << " " << sign_name[sign] << "!" << std::endl;
+                return false;
+            }
+            if (!m_spi.spi_swap_byte(0x32))  // ACC_PMU_SELF_TEST
+            {
+                std::cerr << "[ERROR] acc_self_test: spi_swap_byte failed sending 0x32 for "
+                          << axis_name[axis] << " " << sign_name[sign] << "!" << std::endl;
+                return false;
+            }
+            if (!m_spi.spi_swap_byte(cmd[axis][sign]))
+            {
+                std::cerr << "[ERROR] acc_self_test: spi_swap_byte failed writing 0x"
+                          << std::hex << (int)cmd[axis][sign] << std::dec << " for "
+                          << axis_name[axis] << " " << sign_name[sign] << "!" << std::endl;
+                return false;
+            }
+            if (!m_spi.spi_stop())
+            {
+                std::cerr << "[ERROR] acc_self_test: spi_stop failed after enabling "
+                          << axis_name[axis] << " " << sign_name[sign] << "!" << std::endl;
+                return false;
+            }
+
+            // wait >= 50ms for deflection to settle (datasheet requirement)
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+            // read acceleration data
+            if (!acc_get_accd_x_mg() || !acc_get_accd_y_mg() || !acc_get_accd_z_mg())
+            {
+                std::cerr << "[ERROR] acc_self_test: read acc failed for "
+                          << axis_name[axis] << " " << sign_name[sign] << "!" << std::endl;
+                return false;
+            }
+            val[axis][sign] = (axis == 0) ? m_acc_accd_x_mg :
+                              (axis == 1) ? m_acc_accd_y_mg :
+                                            m_acc_accd_z_mg;
+
+            // disable self-test (write 0x00 to 0x32)
+            if (!m_spi.spi_accel_start())
+            {
+                std::cerr << "[ERROR] acc_self_test: spi_accel_start failed disabling "
+                          << axis_name[axis] << " " << sign_name[sign] << "!" << std::endl;
+                return false;
+            }
+            if (!m_spi.spi_swap_byte(0x32))
+            {
+                std::cerr << "[ERROR] acc_self_test: spi_swap_byte failed sending 0x32 to disable!" << std::endl;
+                return false;
+            }
+            if (!m_spi.spi_swap_byte(0x00))  // disable
+            {
+                std::cerr << "[ERROR] acc_self_test: spi_swap_byte failed writing 0x00 to disable!" << std::endl;
+                return false;
+            }
+            if (!m_spi.spi_stop())
+            {
+                std::cerr << "[ERROR] acc_self_test: spi_stop failed after disabling self-test!" << std::endl;
+                return false;
+            }
+        }
+
+        // check pos-neg difference against threshold
+        float diff = std::fabs(val[axis][1] - val[axis][0]);
+        if (diff < threshold_mg[axis])
+        {
+            std::cerr << "[ERROR] acc_self_test: " << axis_name[axis]
+                      << "-axis FAILED! diff=" << diff
+                      << " mg < " << threshold_mg[axis] << " mg" << std::endl;
+            return false;
+        }
+        std::cout << "[INFO] acc_self_test: " << axis_name[axis]
+                  << "-axis PASSED, diff=" << diff << " mg" << std::endl;
+    }
+
+    /* ===== Step 3: soft reset to restore normal operation ===== */
+    if (!m_spi.spi_accel_start())
+    {
+        std::cerr << "[ERROR] acc_self_test: spi_accel_start failed doing soft reset!" << std::endl;
+        return false;
+    }
+    if (!m_spi.spi_swap_byte(0x14))  // ACC_BGW_SOFTRESET
+    {
+        std::cerr << "[ERROR] acc_self_test: spi_swap_byte failed sending soft reset!" << std::endl;
+        return false;
+    }
+    if (!m_spi.spi_swap_byte(0xB6))  // soft reset key
+    {
+        std::cerr << "[ERROR] acc_self_test: spi_swap_byte failed writing soft reset key!" << std::endl;
+        return false;
+    }
+    if (!m_spi.spi_stop())
+    {
+        std::cerr << "[ERROR] acc_self_test: spi_stop failed after soft reset!" << std::endl;
+        return false;
+    }
+
+    std::cout << "[INFO] acc_self_test: ALL AXES PASSED!" << std::endl;
+    return true;
 }

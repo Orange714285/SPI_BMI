@@ -25,7 +25,7 @@ class SPI_BMI055_Protocol {
 
   public:
     SPI_BMI055_Protocol() = default;
-    ~SPI_BMI055_Protocol() = default;
+    ~SPI_BMI055_Protocol();
     bool spi_init();
     bool spi_write_cs_gyro(int line_value);
     bool spi_write_cs_accel(int line_value);
