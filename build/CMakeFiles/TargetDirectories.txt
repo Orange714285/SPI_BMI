@@ -1,3 +1,0 @@
-/home/rp/PWM_test/PWM_BMI055_SPI/build/CMakeFiles/gpio_demo.dir
-/home/rp/PWM_test/PWM_BMI055_SPI/build/CMakeFiles/edit_cache.dir
-/home/rp/PWM_test/PWM_BMI055_SPI/build/CMakeFiles/rebuild_cache.dir
