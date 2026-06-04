@@ -1,1 +1,0 @@
-/usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/orange/rpi-sysroot -g CMakeFiles/Dart.dir/src/main.cpp.o -o ../Dart  ../lib/libdart.a -lpigpio -lgpiod 

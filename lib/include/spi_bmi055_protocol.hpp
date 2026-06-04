@@ -37,4 +37,5 @@ class SPI_BMI055_Protocol {
     bool spi_stop(void);
     bool spi_swap_byte(uint8_t byte_send, uint8_t &byte_receive);
     bool spi_swap_byte(uint8_t byte_send);
+  
 };

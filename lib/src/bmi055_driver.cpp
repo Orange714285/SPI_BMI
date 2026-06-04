@@ -25,7 +25,6 @@ bool BMI055::acc_config_drdy()
         std::cerr << "[ERROR] Config acc drdy failed! Spi start failed!" << std::endl;
         return false;
     }
-    uint8_t dummy_byte = ACC_DUMMY_BYTE;
     if (!m_spi.spi_swap_byte(ACC_INT_OUT_CTRL))
     {
         std::cerr << "[ERROR] Config acc drdy failed! spi swap byte failed! (ACC_INT_OUT_CTRL)" << std::endl;
@@ -36,6 +35,17 @@ bool BMI055::acc_config_drdy()
         std::cerr << "[ERROR] Config acc drdy failed! spi swap byte failed! (0x05)" << std::endl;
         return false;
     }
+    if (!m_spi.spi_stop())
+    {
+        std::cerr << "[ERROR] Config acc drdy failed! Spi stop failed!" << std::endl;
+        return false;
+    }
+
+    if (!m_spi.spi_accel_start())
+    {
+        std::cerr << "[ERROR] Config acc drdy failed! Spi start failed!" << std::endl;
+        return false;
+    }   
     if (!m_spi.spi_swap_byte(ACC_INT_MAP_1))
     {
         std::cerr << "[ERROR] Config acc drdy failed! spi swap byte failed! (ACC_INT_MAP_1)" << std::endl;
@@ -44,6 +54,17 @@ bool BMI055::acc_config_drdy()
     if (!m_spi.spi_swap_byte(0x01))
     {   
         std::cerr << "[ERROR] Config acc drdy failed! spi swap byte failed! (0x01)" << std::endl;
+        return false;
+    }
+    if (!m_spi.spi_stop())
+    {
+        std::cerr << "[ERROR] Config acc drdy failed! Spi stop failed!" << std::endl;
+        return false;
+    }
+
+    if (!m_spi.spi_accel_start())
+    {
+        std::cerr << "[ERROR] Config acc drdy failed! Spi start failed!" << std::endl;
         return false;
     }
     if (!m_spi.spi_swap_byte(ACC_INT_EN_1))
@@ -66,7 +87,7 @@ bool BMI055::acc_config_drdy()
 
 bool BMI055::acc_wait_for_new_info()
 {
-    int nRet = gpiod_line_request_wait_edge_events(m_spi.m_line_request_acc_interrupt_BMI055,10000000);
+    int nRet = gpiod_line_request_wait_edge_events(m_spi.m_line_request_acc_interrupt_BMI055,1000000000);
     if(nRet == 0)
     {
         std::cerr << "[WARNING] Time out! Failed to get new acc_info " << std::endl; 

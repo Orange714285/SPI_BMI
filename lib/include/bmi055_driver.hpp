@@ -20,6 +20,6 @@ class BMI055
 
 
 
-    int m_acc_accd_x_mg,m_acc_accd_y_mg,m_acc_accd_z_mg;
+    float m_acc_accd_x_mg,m_acc_accd_y_mg,m_acc_accd_z_mg;
 
 };

@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 
+find_package(Eigen3 REQUIRED)
+
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/src SRC_LIST)
 add_library(dart STATIC
 	${SRC_LIST}
@@ -12,6 +14,7 @@ target_include_directories(dart PUBLIC
 target_link_libraries(dart PUBLIC
 	pigpio 
 	gpiod
+	Eigen3::Eigen
 )
 
 

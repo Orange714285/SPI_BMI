@@ -58,7 +58,7 @@ bool SPI_BMI055_Protocol::spi_init()
         std::cerr << "[ERROR] Failed to set line settings GPIO_ACCEL_INTERRUPT direction!" << std::endl;
         goto error;
     }
-    if (gpiod_line_settings_set_bias(m_line_settings_GPIO_ACCEL_INTERRUPT, GPIOD_LINE_BIAS_PULL_UP) < 0) 
+    if (gpiod_line_settings_set_bias(m_line_settings_GPIO_ACCEL_INTERRUPT, GPIOD_LINE_BIAS_PULL_DOWN) < 0) 
     {
         std::cerr << "[ERROR] Failed to set line settings GPIO_ACCEL_INTERRUPT bias!" << std::endl;
         goto error;
