@@ -1,0 +1,17 @@
+[
+{
+  "directory": "/home/orange/pi-workspace/spi_test/build/lib",
+  "command": "/usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/orange/rpi-sysroot  -I/home/orange/pi-workspace/spi_test/lib/include -g -o CMakeFiles/dart.dir/src/bmi055_driver.cpp.o -c /home/orange/pi-workspace/spi_test/lib/src/bmi055_driver.cpp",
+  "file": "/home/orange/pi-workspace/spi_test/lib/src/bmi055_driver.cpp"
+},
+{
+  "directory": "/home/orange/pi-workspace/spi_test/build/lib",
+  "command": "/usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/orange/rpi-sysroot  -I/home/orange/pi-workspace/spi_test/lib/include -g -o CMakeFiles/dart.dir/src/spi_bmi055_protocol.cpp.o -c /home/orange/pi-workspace/spi_test/lib/src/spi_bmi055_protocol.cpp",
+  "file": "/home/orange/pi-workspace/spi_test/lib/src/spi_bmi055_protocol.cpp"
+},
+{
+  "directory": "/home/orange/pi-workspace/spi_test/build/app",
+  "command": "/usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/orange/rpi-sysroot  -I/home/orange/pi-workspace/spi_test/lib/include -g -o CMakeFiles/Dart.dir/src/main.cpp.o -c /home/orange/pi-workspace/spi_test/app/src/main.cpp",
+  "file": "/home/orange/pi-workspace/spi_test/app/src/main.cpp"
+}
+]

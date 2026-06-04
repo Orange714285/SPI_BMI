@@ -1,0 +1,8 @@
+/home/orange/pi-workspace/spi_test/build/CMakeFiles/edit_cache.dir
+/home/orange/pi-workspace/spi_test/build/CMakeFiles/rebuild_cache.dir
+/home/orange/pi-workspace/spi_test/build/lib/CMakeFiles/dart.dir
+/home/orange/pi-workspace/spi_test/build/lib/CMakeFiles/edit_cache.dir
+/home/orange/pi-workspace/spi_test/build/lib/CMakeFiles/rebuild_cache.dir
+/home/orange/pi-workspace/spi_test/build/app/CMakeFiles/Dart.dir
+/home/orange/pi-workspace/spi_test/build/app/CMakeFiles/edit_cache.dir
+/home/orange/pi-workspace/spi_test/build/app/CMakeFiles/rebuild_cache.dir

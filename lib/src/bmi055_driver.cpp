@@ -5,37 +5,113 @@
 
 bool BMI055::BMI055_init()
 {
-    if(!m_spi.spi_init())
+    if (!m_spi.spi_init())
     {
-        std::cerr << "[ERROR] SPI init Failed!" << std::endl;
+        std::cerr << "[ERROR] SPI init failed!" << std::endl;
+        return false;
+    }
+    if (!acc_config_drdy())
+    {
+        std::cerr << "[ERROR] Config acc drdy failed!" << std::endl;
         return false;
     }
     return true;
+}
+
+bool BMI055::acc_config_drdy()
+{
+    if (!m_spi.spi_accel_start())
+    {
+        std::cerr << "[ERROR] Config acc drdy failed! Spi start failed!" << std::endl;
+        return false;
+    }
+    uint8_t dummy_byte = ACC_DUMMY_BYTE;
+    if (!m_spi.spi_swap_byte(ACC_INT_OUT_CTRL))
+    {
+        std::cerr << "[ERROR] Config acc drdy failed! spi swap byte failed! (ACC_INT_OUT_CTRL)" << std::endl;
+        return false;
+    }
+    if (!m_spi.spi_swap_byte(0x05))
+    {
+        std::cerr << "[ERROR] Config acc drdy failed! spi swap byte failed! (0x05)" << std::endl;
+        return false;
+    }
+    if (!m_spi.spi_swap_byte(ACC_INT_MAP_1))
+    {
+        std::cerr << "[ERROR] Config acc drdy failed! spi swap byte failed! (ACC_INT_MAP_1)" << std::endl;
+        return false;
+    }
+    if (!m_spi.spi_swap_byte(0x01))
+    {   
+        std::cerr << "[ERROR] Config acc drdy failed! spi swap byte failed! (0x01)" << std::endl;
+        return false;
+    }
+    if (!m_spi.spi_swap_byte(ACC_INT_EN_1))
+    {
+        std::cerr << "[ERROR] Config acc drdy failed! spi swap byte failed! (ACC_INT_EN_1)" << std::endl;
+        return false;
+    }
+    if (!m_spi.spi_swap_byte(0x10))
+    {
+        std::cerr << "[ERROR] Config acc drdy failed! spi swap byte failed! (0x10)" << std::endl;
+        return false;
+    }
+    if (!m_spi.spi_stop())
+    {
+        std::cerr << "[ERROR] Config acc drdy failed! Spi stop failed!" << std::endl;
+        return false;
+    }
+    return true;
+}
+
+bool BMI055::acc_wait_for_new_info()
+{
+    int nRet = gpiod_line_request_wait_edge_events(m_spi.m_line_request_acc_interrupt_BMI055,10000000);
+    if(nRet == 0)
+    {
+        std::cerr << "[WARNING] Time out! Failed to get new acc_info " << std::endl; 
+        return false;
+    }
+    else if (nRet==-1)
+    {
+        std::cerr << "[ERROR] Error occurred! Failed to get new acc_info " << std::endl;
+        return false;
+    }
+    else if (nRet == 1)
+    {
+        return true;
+    }
+    else 
+    {
+        std::cerr << "[ERROR] Unknown error! Failed to get new acc_info " << std::endl;
+        return false;
+    }
 }
 bool BMI055::acc_set_data_output_unfiltered()
 {
     if (!m_spi.spi_accel_start())
     {
-        std::cerr << "[ERROR] Read acc chip id failed! spi start failed!" <<std::endl;
+        std::cerr << "[ERROR] Set acc unfiltered data failed! spi start failed!" << std::endl;
         return false;
     }
 
     uint8_t dummy = ACC_DUMMY_BYTE;
     if (!m_spi.spi_swap_byte(ACC_ACCD_HBW,dummy))
     {
-        std::cerr << "[ERROR] Set acc unfiltered data failed! spi swap byte failed! (1)" <<std::endl;
+        std::cerr << "[ERROR] Set acc unfiltered data failed! spi swap byte failed! (ACC_ACCD_HBW)" <<std::endl;
         return false;
     }
     if (!m_spi.spi_swap_byte(0x80,dummy))
     {
-        std::cerr << "[ERROR] Set acc unfiltered data failed! spi swap byte failed! (2)" <<std::endl;
+        std::cerr << "[ERROR] Set acc unfiltered data failed! spi swap byte failed! (0x80)" <<std::endl;
         return false;
     }
     if (!m_spi.spi_stop())
     {
-        std::cerr << "[ERROR] Set acc unfiltered data failed!  spi stop failed! " <<std::endl;
+        std::cerr << "[ERROR] Set acc unfiltered data failed! spi stop failed!" <<std::endl;
         return false;
     }
+    return true;
 }
 
 bool BMI055::acc_read_chip_id(uint8_t &acc_chip_id)
@@ -48,24 +124,25 @@ bool BMI055::acc_read_chip_id(uint8_t &acc_chip_id)
     uint8_t dummy = ACC_DUMMY_BYTE;
     if (!m_spi.spi_swap_byte(ACC_BGW_CHIPID|0x80,dummy))
     {
-        std::cerr << "[ERROR] Read acc chip id failed! spi swap byte failed! (1)" <<std::endl;
+        std::cerr << "[ERROR] Read acc chip id failed! spi swap byte failed! (ACC_BGW_CHIPID|0x80)" <<std::endl;
         return false;
     }
     if (!m_spi.spi_swap_byte(ACC_DUMMY_BYTE,acc_chip_id))
     {
-        std::cerr << "[ERROR] Read acc chip id failed! spi swap byte  failed! (2)" <<std::endl;
+        std::cerr << "[ERROR] Read acc chip id failed! spi swap byte failed! (read chip_id)" <<std::endl;
         return false;
     }
     if (!m_spi.spi_stop())
     {
-        std::cerr << "[ERROR] Read acc chip id failed! spi stop failed! " <<std::endl;
+        std::cerr << "[ERROR] Read acc chip id failed! spi stop failed!" <<std::endl;
         return false;
     }
     return true;
 }
 
-bool BMI055::acc_get_accd_x_mg(uint8_t &acc_accd_x_lsb,uint8_t &acc_accd_x_msb)
+bool BMI055::acc_get_accd_x_mg()
 {
+    uint8_t acc_accd_x_lsb,acc_accd_x_msb;
     if (!m_spi.spi_accel_start())
     {
         std::cerr << "[ERROR] Read accd_x failed! spi start failed!" <<std::endl;
@@ -74,30 +151,31 @@ bool BMI055::acc_get_accd_x_mg(uint8_t &acc_accd_x_lsb,uint8_t &acc_accd_x_msb)
     uint8_t dummy = ACC_DUMMY_BYTE;
     if (!m_spi.spi_swap_byte(ACC_ACCD_X_LSB|0x80,dummy))
     {
-        std::cerr << "[ERROR] Read accd_x failed! spi swap byte failed! (1)" <<std::endl;
+        std::cerr << "[ERROR] Read accd_x failed! spi swap byte failed! (ACC_ACCD_X_LSB|0x80)" <<std::endl;
         return false;
     }
     if (!m_spi.spi_swap_byte(ACC_DUMMY_BYTE,acc_accd_x_lsb))
     {
-        std::cerr << "[ERROR] Read accd_x failed! spi swap byte  failed! (2)" <<std::endl;
+        std::cerr << "[ERROR] Read accd_x failed! spi swap byte failed! (read accd_x_lsb)" <<std::endl;
         return false;
     }
     if (!m_spi.spi_swap_byte(ACC_DUMMY_BYTE,acc_accd_x_msb))
     {
-        std::cerr << "[ERROR] Read accd_x failed! spi swap byte  failed! (3)" <<std::endl;
+        std::cerr << "[ERROR] Read accd_x failed! spi swap byte failed! (read accd_x_msb)" <<std::endl;
         return false;
     }
     if (!m_spi.spi_stop())
     {
-        std::cerr << "[ERROR] Read accd_x failed! spi stop failed! " <<std::endl;
+        std::cerr << "[ERROR] Read accd_x failed! spi stop failed!" <<std::endl;
         return false;
     }
     m_acc_accd_x_mg = acc_get_mg(acc_accd_x_lsb,acc_accd_x_msb);
     return true;
 }
 
-bool BMI055::acc_get_accd_y_mg(uint8_t &acc_accd_y_lsb,uint8_t &acc_accd_y_msb)
+bool BMI055::acc_get_accd_y_mg()
 {
+    uint8_t acc_accd_y_lsb,acc_accd_y_msb;
     if (!m_spi.spi_accel_start())
     {
         std::cerr << "[ERROR] Read accd_y failed! spi start failed!" <<std::endl;
@@ -106,30 +184,31 @@ bool BMI055::acc_get_accd_y_mg(uint8_t &acc_accd_y_lsb,uint8_t &acc_accd_y_msb)
     uint8_t dummy = ACC_DUMMY_BYTE;
     if (!m_spi.spi_swap_byte(ACC_ACCD_Y_LSB|0x80,dummy))
     {
-        std::cerr << "[ERROR] Read accd_y failed! spi swap byte failed! (1)" <<std::endl;
+        std::cerr << "[ERROR] Read accd_y failed! spi swap byte failed! (ACC_ACCD_Y_LSB|0x80)" <<std::endl;
         return false;
     }
     if (!m_spi.spi_swap_byte(ACC_DUMMY_BYTE,acc_accd_y_lsb))
     {
-        std::cerr << "[ERROR] Read accd_y failed! spi swap byte  failed! (2)" <<std::endl;
+        std::cerr << "[ERROR] Read accd_y failed! spi swap byte failed! (read accd_y_lsb)" <<std::endl;
         return false;
     }
     if (!m_spi.spi_swap_byte(ACC_DUMMY_BYTE,acc_accd_y_msb))
     {
-        std::cerr << "[ERROR] Read accd_y failed! spi swap byte  failed! (3)" <<std::endl;
+        std::cerr << "[ERROR] Read accd_y failed! spi swap byte failed! (read accd_y_msb)" <<std::endl;
         return false;
     }
     if (!m_spi.spi_stop())
     {
-        std::cerr << "[ERROR] Read accd_y failed! spi stop failed! " <<std::endl;
+        std::cerr << "[ERROR] Read accd_y failed! spi stop failed!" <<std::endl;
         return false;
     }
     m_acc_accd_y_mg = acc_get_mg(acc_accd_y_lsb,acc_accd_y_msb);
     return true;
 }
 
-bool BMI055::acc_get_accd_z_mg(uint8_t &acc_accd_z_lsb,uint8_t &acc_accd_z_msb)
+bool BMI055::acc_get_accd_z_mg()
 {
+    uint8_t acc_accd_z_lsb,acc_accd_z_msb;
     if (!m_spi.spi_accel_start())
     {
         std::cerr << "[ERROR] Read accd_z failed! spi start failed!" <<std::endl;
@@ -138,22 +217,22 @@ bool BMI055::acc_get_accd_z_mg(uint8_t &acc_accd_z_lsb,uint8_t &acc_accd_z_msb)
     uint8_t dummy = ACC_DUMMY_BYTE;
     if (!m_spi.spi_swap_byte(ACC_ACCD_Z_LSB|0x80,dummy))
     {
-        std::cerr << "[ERROR] Read accd_z failed! spi swap byte failed! (1)" <<std::endl;
+        std::cerr << "[ERROR] Read accd_z failed! spi swap byte failed! (ACC_ACCD_Z_LSB|0x80)" <<std::endl;
         return false;
     }
     if (!m_spi.spi_swap_byte(ACC_DUMMY_BYTE,acc_accd_z_lsb))
     {
-        std::cerr << "[ERROR] Read accd_z failed! spi swap byte  failed! (2)" <<std::endl;
+        std::cerr << "[ERROR] Read accd_z failed! spi swap byte failed! (read accd_z_lsb)" <<std::endl;
         return false;
     }
     if (!m_spi.spi_swap_byte(ACC_DUMMY_BYTE,acc_accd_z_msb))
     {
-        std::cerr << "[ERROR] Read accd_z failed! spi swap byte  failed! (3)" <<std::endl;
+        std::cerr << "[ERROR] Read accd_z failed! spi swap byte failed! (read accd_z_msb)" <<std::endl;
         return false;
     }
     if (!m_spi.spi_stop())
     {
-        std::cerr << "[ERROR] Read accd_z failed! spi stop failed! " <<std::endl;
+        std::cerr << "[ERROR] Read accd_z failed! spi stop failed!" <<std::endl;
         return false;
     }
     m_acc_accd_z_mg = acc_get_mg(acc_accd_z_lsb,acc_accd_z_msb);
@@ -171,4 +250,3 @@ float BMI055::acc_get_mg(uint8_t lsb, uint8_t msb)
     float acc_mg = acc_raw * 0.98f;
     return acc_mg;
 }
-
