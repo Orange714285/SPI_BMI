@@ -13,16 +13,21 @@ bool BMI055::BMI055_init()
         std::cerr << "[ERROR] SPI init failed!" << std::endl;
         return false;
     }
+    if (!acc_self_test())
+	{
+		std::cerr << "[ERROR] BMI055 acc self test failed!" << std::endl;
+		return false;
+	}
+    if (!gyr_self_test())
+    {
+        std::cerr << "[ERROR] BMI055 gyro self test failed!" << std::endl;
+        return false;
+    }
     if (!acc_set_data_output_unfiltered())
     {
         std::cerr << "[ERROR] Set acc data output unfiltered failed!" << std::endl;
         return false;
     }
-    if (!acc_self_test())
-	{
-		std::cerr << "[ERROR] BMI055 acc self test failed!" <<std::endl;
-		return 0;
-	}
     if (!acc_config_drdy())
     {
         std::cerr << "[ERROR] Config acc drdy failed!" << std::endl;
@@ -503,10 +508,7 @@ bool BMI055::acc_self_test()
         return false;
     }
 
-    /* ===== Step 2: per-axis positive/negative self-test =====
-     * Register 0x32 bit layout: [7:5]=000 [4]=amp [3]=0 [2]=sign [1:0]=axis
-     * amp=1 (high amplitude required), axis: 01=X, 10=Y, 11=Z
-     */
+    /* ===== Step 2: per-axis positive/negative self-test =====*/
     const uint8_t cmd[3][2] = {
         {0x11, 0x15},  // X-axis: neg=0x11, pos=0x15
         {0x12, 0x16},  // Y-axis: neg=0x12, pos=0x16
@@ -625,23 +627,58 @@ bool BMI055::acc_self_test()
     return true;
 }
 
-bool BMI055::gyr_set_data_output_unfiltered()
+bool BMI055::gyr_self_test()
 {
-
     if (!m_spi.spi_gyro_start())
     {
+        std::cerr << "[ERROR] gyr_self_test: spi gyro start failed!" << std::endl;
         return false;
     }
-    if (!m_spi.spi_swap_byte(GYR_RATE_HBW))
+    if (!m_spi.spi_swap_byte(GYR_BIST|0x80))
     {
+        std::cerr << "[ERROR] gyr_self_test: spi swap byte failed! (GYR_BIST)" << std::endl;
         return false;
     }
-    if (!m_spi.spi_swap_byte(0x80))
+    uint8_t receive = 0x00;
+    if (!m_spi.spi_swap_byte(GYR_DUMMY_BYTE,receive))
     {
+        std::cerr << "[ERROR] gyr_self_test: spi swap byte failed! (read GYR_BIST)" << std::endl;
         return false;
     }
     if (!m_spi.spi_stop())
     {
+        std::cerr << "[ERROR] gyr_self_test: spi stop failed!" << std::endl;
+        return false;
+    }
+    if (!(receive >>4 ) == 0x01)
+    {
+        std::cout << std::hex << static_cast<int>(receive) << std::dec << std::endl;      
+        std::cerr << "[ERROR] gyr_self_test: sensor function has something wrong!" << std::endl;
+        return false;
+    }
+    std::cout << "[INFO] gyr_self_test: PASSED!" << std::endl;
+    return true;
+}
+bool BMI055::gyr_set_data_output_unfiltered()
+{
+    if (!m_spi.spi_gyro_start())
+    {
+        std::cerr << "[ERROR] Set gyr unfiltered data failed! spi start failed!" << std::endl;
+        return false;
+    }
+    if (!m_spi.spi_swap_byte(GYR_RATE_HBW))
+    {
+        std::cerr << "[ERROR] Set gyr unfiltered data failed! spi swap byte failed! (GYR_RATE_HBW)" << std::endl;
+        return false;
+    }
+    if (!m_spi.spi_swap_byte(0x80))
+    {
+        std::cerr << "[ERROR] Set gyr unfiltered data failed! spi swap byte failed! (0x80)" << std::endl;
+        return false;
+    }
+    if (!m_spi.spi_stop())
+    {
+        std::cerr << "[ERROR] Set gyr unfiltered data failed! spi stop failed!" << std::endl;
         return false;
     }
     return true;    

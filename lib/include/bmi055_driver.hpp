@@ -24,7 +24,8 @@ class BMI055
     bool acc_get_accd_all_mg(); // 将读数转化单位为mg后直接写入accd_x_mg
     float m_acc_imu_accd_x_mg,m_acc_imu_accd_y_mg,m_acc_imu_accd_z_mg;
     float m_gyr_rate_x_dps,m_gyr_rate_y_dps,m_gyr_rate_z_dps;
-  
+
+    bool gyr_self_test();
     bool gyr_set_data_output_unfiltered();
     bool gyr_get_rate_x_deg_per_s(); //
     bool gyr_get_rate_y_deg_per_s(); // 

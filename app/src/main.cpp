@@ -17,6 +17,9 @@ void signal_handler(int signum)
 int main() 
 {
 	BMI055 bmi055;
+	AccAttitudeAlgorithmer acc_attitude_algorithmer;
+	GyroAttitudeAlgorithmer gyro_attitude_algorithmer;
+
 	if (!bmi055.BMI055_init())
 	{
 		std::cerr << "[ERROR] BMI055 init failed!" << std::endl;
@@ -40,8 +43,7 @@ int main()
 			std::cerr << "[ERROR] acc_get_accd_mg failed! Exiting loop." << std::endl;
 			return 0;		
 		}
-
-		AccAttitudeAlgorithmer acc_attitude_algorithmer(bmi055.m_acc_imu_accd_x_mg,bmi055.m_acc_imu_accd_y_mg,bmi055.m_acc_imu_accd_z_mg);
+		acc_attitude_algorithmer.algorithmer(bmi055.m_acc_imu_accd_x_mg,bmi055.m_acc_imu_accd_y_mg,bmi055.m_acc_imu_accd_z_mg);
 		std::cout << "\033[H\033[J";
 		std::cout << "============================" << std::endl;
 		std::cout << "[INFO] imu_accd_x_mg:" << bmi055.m_acc_imu_accd_x_mg << std::endl;
@@ -64,7 +66,6 @@ int main()
 	}
 	
 	std::cout << "[INFO] I have been Shooted! I am flying!" << std::endl;
-
 	while (g_running)
 	{	
 		bmi055.index ++;
@@ -77,13 +78,20 @@ int main()
 		{
 			std::cerr << "[ERROR] gyr_get_rate_all_deg_per_s failed! Exiting loop." << std::endl;
 			return 0;		
-		}
-
+		}	
+		gyro_attitude_algorithmer.algorithmer(bmi055.m_gyr_rate_x_dps,
+											  bmi055.m_gyr_rate_y_dps,
+											  bmi055.m_gyr_rate_z_dps,
+											  acc_attitude_algorithmer.m_roll,
+											  acc_attitude_algorithmer.m_pitch);
 		std::cout << "\033[H\033[J";
 		std::cout << "============================" << std::endl;
-		std::cout << "[INFO] gyr_rate_x_dps:" << bmi055.m_gyr_rate_x_dps << std::endl;
-		std::cout << "[INFO] gyr_rate_y_dps:" << bmi055.m_gyr_rate_y_dps << std::endl;
-		std::cout << "[INFO] gyr_rate_z_dps:" << bmi055.m_gyr_rate_z_dps << std::endl;
+		std::cout << "[INFO] gyr_imu_rate_x_dps:" << gyro_attitude_algorithmer.m_imu_gyro_x << std::endl;
+		std::cout << "[INFO] gyr_imu_rate_y_dps:" << gyro_attitude_algorithmer.m_imu_gyro_y << std::endl;
+		std::cout << "[INFO] gyr_imu_rate_z_dps:" << gyro_attitude_algorithmer.m_imu_gyro_z << std::endl;
+		std::cout << "[INFO] gyr_frd_rate_x_dps:" << gyro_attitude_algorithmer.m_frd_gyro_x << std::endl;
+		std::cout << "[INFO] gyr_frd_rate_y_dps:" << gyro_attitude_algorithmer.m_frd_gyro_y << std::endl;
+		std::cout << "[INFO] gyr_frd_rate_z_dps:" << gyro_attitude_algorithmer.m_frd_gyro_z << std::endl;
 		std::cout << "[INFO] index:"  << bmi055.index <<std::endl;
 		std::cout << "============================" << std::endl;
 		std::cout << "============================" << std::endl;
