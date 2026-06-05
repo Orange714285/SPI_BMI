@@ -7,13 +7,16 @@ class SPI_BMI055_Protocol {
     struct gpiod_line_settings *m_line_settings_GPIO_MODE_IPU = nullptr;
     struct gpiod_line_settings *m_line_settings_GPIO_MODE_OUT_PP = nullptr;
     struct gpiod_line_settings *m_line_settings_GPIO_ACCEL_INTERRUPT = nullptr;
+    struct gpiod_line_settings *m_line_settings_GPIO_GYRO_INTERRUPT  = nullptr;
 
     struct gpiod_line_config *m_line_config_BMI055 = nullptr;
     struct gpiod_line_config *m_line_config_acc_interrupt_BMI055 = nullptr;
+    struct gpiod_line_config *m_line_config_gyr_interrupt_BMI055 = nullptr;
 
     struct gpiod_line_request *m_line_request_BMI055 = nullptr;
   public:
     struct gpiod_line_request *m_line_request_acc_interrupt_BMI055 = nullptr;
+    struct gpiod_line_request *m_line_request_gyr_interrupt_BMI055 = nullptr;
   private:
     const unsigned int m_GPIO_CS_GYRO   = 7;
     const unsigned int m_GPIO_CS_ACCEL  = 8;
@@ -33,8 +36,9 @@ class SPI_BMI055_Protocol {
     bool spi_write_spi_mosi(int line_value);
     bool spi_write_spi_clk(int line_value);
 
-    bool spi_accel_start(void);
-    bool spi_stop(void);
+    bool spi_accel_start();
+    bool spi_gyro_start();
+    bool spi_stop();
     bool spi_swap_byte(uint8_t byte_send, uint8_t &byte_receive);
     bool spi_swap_byte(uint8_t byte_send);
   

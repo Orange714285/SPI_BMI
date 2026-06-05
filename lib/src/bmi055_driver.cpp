@@ -28,6 +28,16 @@ bool BMI055::BMI055_init()
         std::cerr << "[ERROR] Config acc drdy failed!" << std::endl;
         return false;
     }
+    if (!gyr_set_data_output_unfiltered())
+    {
+        std::cerr << "[ERROR] Set gyr data output unfiltered failed!" << std::endl;
+        return false;
+    }
+    if (!gyr_config_drdy())
+    {
+        std::cerr << "[ERROR] Config gyr drdy failed!" << std::endl;
+        return false;
+    }
     return true;
 }
 
@@ -98,6 +108,98 @@ bool BMI055::acc_config_drdy()
     return true;
 }
 
+bool BMI055::gyr_config_drdy()
+{
+    // Step 1: INT3 push-pull, non-latched (GYR_INT_RST_LATCH = 0x00)
+    if (!m_spi.spi_gyro_start())
+    {
+        std::cerr << "[ERROR] Config gyr drdy failed! Spi start failed!" << std::endl;
+        return false;
+    }
+    if (!m_spi.spi_swap_byte(GYR_INT_RST_LATCH))
+    {
+        std::cerr << "[ERROR] Config gyr drdy failed! spi swap byte failed! (GYR_INT_RST_LATCH)" << std::endl;
+        return false;
+    }
+    if (!m_spi.spi_swap_byte(0x00))
+    {
+        std::cerr << "[ERROR] Config gyr drdy failed! spi swap byte failed! (0x00)" << std::endl;
+        return false;
+    }
+    if (!m_spi.spi_stop())
+    {
+        std::cerr << "[ERROR] Config gyr drdy failed! Spi stop failed!" << std::endl;
+        return false;
+    }
+
+    // Step 2: map data interrupt to INT3 (GYR_INT_MAP_2[7] = 1)
+    if (!m_spi.spi_gyro_start())
+    {
+        std::cerr << "[ERROR] Config gyr drdy failed! Spi start failed!" << std::endl;
+        return false;
+    }
+    if (!m_spi.spi_swap_byte(GYR_INT_MAP_1))
+    {
+        std::cerr << "[ERROR] Config gyr drdy failed! spi swap byte failed! (GYR_INT_MAP_2)" << std::endl;
+        return false;
+    }
+    if (!m_spi.spi_swap_byte(0x01))
+    {
+        std::cerr << "[ERROR] Config gyr drdy failed! spi swap byte failed! (0x80)" << std::endl;
+        return false;
+    }
+    if (!m_spi.spi_stop())
+    {
+        std::cerr << "[ERROR] Config gyr drdy failed! Spi stop failed!" << std::endl;
+        return false;
+    }
+
+
+    if (!m_spi.spi_gyro_start())
+    {
+        std::cerr << "[ERROR] Config gyr drdy failed! Spi start failed!" << std::endl;
+        return false;
+    }
+    if (!m_spi.spi_swap_byte(GYR_INT_EN_1))
+    {
+        std::cerr << "[ERROR] Config gyr drdy failed! spi swap byte failed! (GYR_INT_EN_1)" << std::endl;
+        return false;
+    }
+    if (!m_spi.spi_swap_byte(0x01))
+    {
+        std::cerr << "[ERROR] Config gyr drdy failed! spi swap byte failed! (0x01)" << std::endl;
+        return false;
+    }
+    if (!m_spi.spi_stop())
+    {
+        std::cerr << "[ERROR] Config gyr drdy failed! Spi stop failed!" << std::endl;
+        return false;
+    }
+    // Step 3: enable new data interrupt (GYR_INT_EN_0[7] = 1)
+    if (!m_spi.spi_gyro_start())
+    {
+        std::cerr << "[ERROR] Config gyr drdy failed! Spi start failed!" << std::endl;
+        return false;
+    }
+    if (!m_spi.spi_swap_byte(GYR_INT_EN_0))
+    {
+        std::cerr << "[ERROR] Config gyr drdy failed! spi swap byte failed! (GYR_INT_EN_0)" << std::endl;
+        return false;
+    }
+    if (!m_spi.spi_swap_byte(0x80))
+    {
+        std::cerr << "[ERROR] Config gyr drdy failed! spi swap byte failed! (0x80)" << std::endl;
+        return false;
+    }
+    if (!m_spi.spi_stop())
+    {
+        std::cerr << "[ERROR] Config gyr drdy failed! Spi stop failed!" << std::endl;
+        return false;
+    }
+
+    return true;
+}
+
 bool BMI055::acc_wait_for_new_info()
 {
     int nRet = gpiod_line_request_wait_edge_events(m_spi.m_line_request_acc_interrupt_BMI055,1000000000);
@@ -121,6 +223,31 @@ bool BMI055::acc_wait_for_new_info()
         return false;
     }
 }
+
+bool BMI055::gyr_wait_for_new_info()
+{
+    int nRet = gpiod_line_request_wait_edge_events(m_spi.m_line_request_gyr_interrupt_BMI055, 1000000000);
+    if (nRet == 0)
+    {
+        std::cerr << "[WARNING] Time out! Failed to get new gyr_info " << std::endl;
+        return false;
+    }
+    else if (nRet == -1)
+    {
+        std::cerr << "[ERROR] Error occurred! Failed to get new gyr_info " << std::endl;
+        return false;
+    }
+    else if (nRet == 1)
+    {
+        return true;
+    }
+    else
+    {
+        std::cerr << "[ERROR] Unknown error! Failed to get new gyr_info " << std::endl;
+        return false;
+    }
+}
+
 bool BMI055::acc_set_data_output_unfiltered()
 {
     if (!m_spi.spi_accel_start())
@@ -203,7 +330,7 @@ bool BMI055::acc_get_accd_x_mg()
         std::cerr << "[ERROR] Read accd_x failed! spi stop failed!" <<std::endl;
         return false;
     }
-    m_acc_accd_x_mg = acc_get_mg(acc_accd_x_lsb,acc_accd_x_msb);
+    m_acc_imu_accd_x_mg = acc_get_mg(acc_accd_x_lsb,acc_accd_x_msb);
     return true;
 }
 
@@ -236,7 +363,7 @@ bool BMI055::acc_get_accd_y_mg()
         std::cerr << "[ERROR] Read accd_y failed! spi stop failed!" <<std::endl;
         return false;
     }
-    m_acc_accd_y_mg = acc_get_mg(acc_accd_y_lsb,acc_accd_y_msb);
+    m_acc_imu_accd_y_mg = acc_get_mg(acc_accd_y_lsb,acc_accd_y_msb);
     return true;
 }
 
@@ -269,7 +396,7 @@ bool BMI055::acc_get_accd_z_mg()
         std::cerr << "[ERROR] Read accd_z failed! spi stop failed!" <<std::endl;
         return false;
     }
-    m_acc_accd_z_mg = acc_get_mg(acc_accd_z_lsb,acc_accd_z_msb);
+    m_acc_imu_accd_z_mg = acc_get_mg(acc_accd_z_lsb,acc_accd_z_msb);
     return true;
 }
 
@@ -333,9 +460,9 @@ bool BMI055::acc_get_accd_all_mg()
     }
 
     // Step 3: convert raw data to mg
-    m_acc_accd_x_mg = acc_get_mg(acc_accd_x_lsb, acc_accd_x_msb);
-    m_acc_accd_y_mg = acc_get_mg(acc_accd_y_lsb, acc_accd_y_msb);
-    m_acc_accd_z_mg = acc_get_mg(acc_accd_z_lsb, acc_accd_z_msb);
+    m_acc_imu_accd_x_mg = acc_get_mg(acc_accd_x_lsb, acc_accd_x_msb);
+    m_acc_imu_accd_y_mg = acc_get_mg(acc_accd_y_lsb, acc_accd_y_msb);
+    m_acc_imu_accd_z_mg = acc_get_mg(acc_accd_z_lsb, acc_accd_z_msb);
 
     return true;
 }
@@ -431,9 +558,9 @@ bool BMI055::acc_self_test()
                           << axis_name[axis] << " " << sign_name[sign] << "!" << std::endl;
                 return false;
             }
-            val[axis][sign] = (axis == 0) ? m_acc_accd_x_mg :
-                              (axis == 1) ? m_acc_accd_y_mg :
-                                            m_acc_accd_z_mg;
+            val[axis][sign] = (axis == 0) ? m_acc_imu_accd_x_mg :
+                              (axis == 1) ? m_acc_imu_accd_y_mg :
+                                            m_acc_imu_accd_z_mg;
 
             // disable self-test (write 0x00 to 0x32)
             if (!m_spi.spi_accel_start())
@@ -495,5 +622,197 @@ bool BMI055::acc_self_test()
     }
 
     std::cout << "[INFO] acc_self_test: ALL AXES PASSED!" << std::endl;
+    return true;
+}
+
+bool BMI055::gyr_set_data_output_unfiltered()
+{
+
+    if (!m_spi.spi_gyro_start())
+    {
+        return false;
+    }
+    if (!m_spi.spi_swap_byte(GYR_RATE_HBW))
+    {
+        return false;
+    }
+    if (!m_spi.spi_swap_byte(0x80))
+    {
+        return false;
+    }
+    if (!m_spi.spi_stop())
+    {
+        return false;
+    }
+    return true;    
+}
+
+float BMI055::gyr_get_deg_per_s(uint8_t lsb, uint8_t msb)
+{
+    int16_t raw = ((int16_t)msb << 8) | lsb;
+    float rate_dps = raw / 16.4f;
+    return rate_dps;
+}
+
+bool BMI055::gyr_get_rate_x_deg_per_s()
+{
+    uint8_t gyr_rate_x_lsb, gyr_rate_x_msb;
+    if (!m_spi.spi_gyro_start())
+    {
+        std::cerr << "[ERROR] Read gyr_rate_x failed! spi start failed!" << std::endl;
+        return false;
+    }
+    uint8_t dummy = GYR_DUMMY_BYTE;
+    if (!m_spi.spi_swap_byte(GYR_RATE_X_LSB | 0x80, dummy))
+    {
+        std::cerr << "[ERROR] Read gyr_rate_x failed! spi swap byte failed! (GYR_RATE_X_LSB|0x80)" << std::endl;
+        return false;
+    }
+    if (!m_spi.spi_swap_byte(GYR_DUMMY_BYTE, gyr_rate_x_lsb))
+    {
+        std::cerr << "[ERROR] Read gyr_rate_x failed! spi swap byte failed! (read gyr_rate_x_lsb)" << std::endl;
+        return false;
+    }
+    if (!m_spi.spi_swap_byte(GYR_DUMMY_BYTE, gyr_rate_x_msb))
+    {
+        std::cerr << "[ERROR] Read gyr_rate_x failed! spi swap byte failed! (read gyr_rate_x_msb)" << std::endl;
+        return false;
+    }
+    if (!m_spi.spi_stop())
+    {
+        std::cerr << "[ERROR] Read gyr_rate_x failed! spi stop failed!" << std::endl;
+        return false;
+    }
+    m_gyr_rate_x_dps = gyr_get_deg_per_s(gyr_rate_x_lsb, gyr_rate_x_msb);
+    return true;
+}
+
+bool BMI055::gyr_get_rate_y_deg_per_s()
+{
+    uint8_t gyr_rate_y_lsb, gyr_rate_y_msb;
+    if (!m_spi.spi_gyro_start())
+    {
+        std::cerr << "[ERROR] Read gyr_rate_y failed! spi start failed!" << std::endl;
+        return false;
+    }
+    uint8_t dummy = GYR_DUMMY_BYTE;
+    if (!m_spi.spi_swap_byte(GYR_RATE_Y_LSB | 0x80, dummy))
+    {
+        std::cerr << "[ERROR] Read gyr_rate_y failed! spi swap byte failed! (GYR_RATE_Y_LSB|0x80)" << std::endl;
+        return false;
+    }
+    if (!m_spi.spi_swap_byte(GYR_DUMMY_BYTE, gyr_rate_y_lsb))
+    {
+        std::cerr << "[ERROR] Read gyr_rate_y failed! spi swap byte failed! (read gyr_rate_y_lsb)" << std::endl;
+        return false;
+    }
+    if (!m_spi.spi_swap_byte(GYR_DUMMY_BYTE, gyr_rate_y_msb))
+    {
+        std::cerr << "[ERROR] Read gyr_rate_y failed! spi swap byte failed! (read gyr_rate_y_msb)" << std::endl;
+        return false;
+    }
+    if (!m_spi.spi_stop())
+    {
+        std::cerr << "[ERROR] Read gyr_rate_y failed! spi stop failed!" << std::endl;
+        return false;
+    }
+    m_gyr_rate_y_dps = gyr_get_deg_per_s(gyr_rate_y_lsb, gyr_rate_y_msb);
+    return true;
+}
+
+bool BMI055::gyr_get_rate_z_deg_per_s()
+{
+    uint8_t gyr_rate_z_lsb, gyr_rate_z_msb;
+    if (!m_spi.spi_gyro_start())
+    {
+        std::cerr << "[ERROR] Read gyr_rate_z failed! spi start failed!" << std::endl;
+        return false;
+    }
+    uint8_t dummy = GYR_DUMMY_BYTE;
+    if (!m_spi.spi_swap_byte(GYR_RATE_Z_LSB | 0x80, dummy))
+    {
+        std::cerr << "[ERROR] Read gyr_rate_z failed! spi swap byte failed! (GYR_RATE_Z_LSB|0x80)" << std::endl;
+        return false;
+    }
+    if (!m_spi.spi_swap_byte(GYR_DUMMY_BYTE, gyr_rate_z_lsb))
+    {
+        std::cerr << "[ERROR] Read gyr_rate_z failed! spi swap byte failed! (read gyr_rate_z_lsb)" << std::endl;
+        return false;
+    }
+    if (!m_spi.spi_swap_byte(GYR_DUMMY_BYTE, gyr_rate_z_msb))
+    {
+        std::cerr << "[ERROR] Read gyr_rate_z failed! spi swap byte failed! (read gyr_rate_z_msb)" << std::endl;
+        return false;
+    }
+    if (!m_spi.spi_stop())
+    {
+        std::cerr << "[ERROR] Read gyr_rate_z failed! spi stop failed!" << std::endl;
+        return false;
+    }
+    m_gyr_rate_z_dps = gyr_get_deg_per_s(gyr_rate_z_lsb, gyr_rate_z_msb);
+    return true;
+}
+
+bool BMI055::gyr_get_rate_all_deg_per_s()
+{
+    uint8_t gyr_rate_x_lsb, gyr_rate_x_msb;
+    uint8_t gyr_rate_y_lsb, gyr_rate_y_msb;
+    uint8_t gyr_rate_z_lsb, gyr_rate_z_msb;
+
+    if (!m_spi.spi_gyro_start())
+    {
+        std::cerr << "[ERROR] Read gyr_rate_all failed! spi start failed!" << std::endl;
+        return false;
+    }
+
+    uint8_t dummy = GYR_DUMMY_BYTE;
+
+    if (!m_spi.spi_swap_byte(GYR_RATE_X_LSB | 0x80, dummy))
+    {
+        std::cerr << "[ERROR] Read gyr_rate_all failed! spi swap byte failed! (GYR_RATE_X_LSB|0x80)" << std::endl;
+        return false;
+    }
+
+    if (!m_spi.spi_swap_byte(GYR_DUMMY_BYTE, gyr_rate_x_lsb))
+    {
+        std::cerr << "[ERROR] Read gyr_rate_all failed! spi swap byte failed! (read gyr_rate_x_lsb)" << std::endl;
+        return false;
+    }
+    if (!m_spi.spi_swap_byte(GYR_DUMMY_BYTE, gyr_rate_x_msb))
+    {
+        std::cerr << "[ERROR] Read gyr_rate_all failed! spi swap byte failed! (read gyr_rate_x_msb)" << std::endl;
+        return false;
+    }
+    if (!m_spi.spi_swap_byte(GYR_DUMMY_BYTE, gyr_rate_y_lsb))
+    {
+        std::cerr << "[ERROR] Read gyr_rate_all failed! spi swap byte failed! (read gyr_rate_y_lsb)" << std::endl;
+        return false;
+    }
+    if (!m_spi.spi_swap_byte(GYR_DUMMY_BYTE, gyr_rate_y_msb))
+    {
+        std::cerr << "[ERROR] Read gyr_rate_all failed! spi swap byte failed! (read gyr_rate_y_msb)" << std::endl;
+        return false;
+    }
+    if (!m_spi.spi_swap_byte(GYR_DUMMY_BYTE, gyr_rate_z_lsb))
+    {
+        std::cerr << "[ERROR] Read gyr_rate_all failed! spi swap byte failed! (read gyr_rate_z_lsb)" << std::endl;
+        return false;
+    }
+    if (!m_spi.spi_swap_byte(GYR_DUMMY_BYTE, gyr_rate_z_msb))
+    {
+        std::cerr << "[ERROR] Read gyr_rate_all failed! spi swap byte failed! (read gyr_rate_z_msb)" << std::endl;
+        return false;
+    }
+
+    if (!m_spi.spi_stop())
+    {
+        std::cerr << "[ERROR] Read gyr_rate_all failed! spi stop failed!" << std::endl;
+        return false;
+    }
+
+    m_gyr_rate_x_dps = gyr_get_deg_per_s(gyr_rate_x_lsb, gyr_rate_x_msb);
+    m_gyr_rate_y_dps = gyr_get_deg_per_s(gyr_rate_y_lsb, gyr_rate_y_msb);
+    m_gyr_rate_z_dps = gyr_get_deg_per_s(gyr_rate_z_lsb, gyr_rate_z_msb);
+
     return true;
 }

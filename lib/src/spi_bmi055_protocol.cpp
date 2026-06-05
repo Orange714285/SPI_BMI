@@ -8,6 +8,7 @@ bool SPI_BMI055_Protocol::spi_init()
     const unsigned int output_pins[] = {m_GPIO_CS_GYRO, m_GPIO_CS_ACCEL, m_GPIO_SPI_MOSI, m_GPIO_SPI_CLK};
     const unsigned int input_pins[] = {m_GPIO_SPI_MISO};
     const unsigned int acc_interrupt_pins[] = {m_GPIO_INT_ACCEL};
+    const unsigned int gyr_interrupt_pins[] = {m_GPIO_INT_GYRO};
 
     // ============================== libgpiod 引脚初始化 ===============================//
     // 打开芯片
@@ -69,6 +70,29 @@ bool SPI_BMI055_Protocol::spi_init()
         goto error;
     }
 
+    // 线路设置 GYRO中断
+    m_line_settings_GPIO_GYRO_INTERRUPT = gpiod_line_settings_new();
+    if (!m_line_settings_GPIO_GYRO_INTERRUPT)
+    {
+        std::cerr << "[ERROR] Failed to get line settings GPIO_GYRO_INTERRUPT!" << std::endl;
+        goto error;
+    }
+    if (gpiod_line_settings_set_direction(m_line_settings_GPIO_GYRO_INTERRUPT, GPIOD_LINE_DIRECTION_INPUT) < 0)
+    {
+        std::cerr << "[ERROR] Failed to set line settings GPIO_GYRO_INTERRUPT direction!" << std::endl;
+        goto error;
+    }
+    if (gpiod_line_settings_set_bias(m_line_settings_GPIO_GYRO_INTERRUPT, GPIOD_LINE_BIAS_PULL_DOWN) < 0)
+    {
+        std::cerr << "[ERROR] Failed to set line settings GPIO_GYRO_INTERRUPT bias!" << std::endl;
+        goto error;
+    }
+    if (gpiod_line_settings_set_edge_detection(m_line_settings_GPIO_GYRO_INTERRUPT, GPIOD_LINE_EDGE_RISING) < 0)
+    {
+        std::cerr << "[ERROR] Failed to set line settings GPIO_GYRO_INTERRUPT edge detection!" << std::endl;
+        goto error;
+    }
+
     // 线路配置
     m_line_config_BMI055 = gpiod_line_config_new();
     if (gpiod_line_config_add_line_settings(m_line_config_BMI055, output_pins, 4, m_line_settings_GPIO_MODE_OUT_PP) <
@@ -86,6 +110,12 @@ bool SPI_BMI055_Protocol::spi_init()
         std::cerr << "[ERROR] Failed to add acc_interrupt line settings!" << std::endl;
         goto error;
     }
+    m_line_config_gyr_interrupt_BMI055 = gpiod_line_config_new();
+    if (gpiod_line_config_add_line_settings(m_line_config_gyr_interrupt_BMI055,gyr_interrupt_pins,1,m_line_settings_GPIO_GYRO_INTERRUPT)<0)
+    {
+        std::cerr << "[ERROR] Failed to add gyr_interrupt line settings!" << std::endl;
+        goto error;
+    }
 
     // 线路请求
     m_line_request_BMI055 = gpiod_chip_request_lines(m_chip, nullptr, m_line_config_BMI055);
@@ -96,6 +126,11 @@ bool SPI_BMI055_Protocol::spi_init()
     m_line_request_acc_interrupt_BMI055 = gpiod_chip_request_lines(m_chip,nullptr,m_line_config_acc_interrupt_BMI055);
     if (!m_line_request_acc_interrupt_BMI055) {
         std::cerr << "[ERROR] Failed to get line request acc_interrupt!" << std::endl;
+        goto error;
+    }
+    m_line_request_gyr_interrupt_BMI055 = gpiod_chip_request_lines(m_chip,nullptr,m_line_config_gyr_interrupt_BMI055);
+    if (!m_line_request_gyr_interrupt_BMI055) {
+        std::cerr << "[ERROR] Failed to get line request gyr_interrupt!" << std::endl;
         goto error;
     }
 
@@ -126,11 +161,15 @@ error:
         gpiod_line_request_release(m_line_request_BMI055);
     if (m_line_request_acc_interrupt_BMI055)
         gpiod_line_request_release(m_line_request_acc_interrupt_BMI055);
+    if (m_line_request_gyr_interrupt_BMI055)
+        gpiod_line_request_release(m_line_request_gyr_interrupt_BMI055);
 
     if (m_line_config_BMI055)
         gpiod_line_config_free(m_line_config_BMI055);
     if (m_line_config_acc_interrupt_BMI055)
         gpiod_line_config_free(m_line_config_acc_interrupt_BMI055);
+    if (m_line_config_gyr_interrupt_BMI055)
+        gpiod_line_config_free(m_line_config_gyr_interrupt_BMI055);
 
 
     if (m_line_settings_GPIO_MODE_IPU)
@@ -139,6 +178,8 @@ error:
         gpiod_line_settings_free(m_line_settings_GPIO_MODE_OUT_PP);
     if  (m_line_settings_GPIO_ACCEL_INTERRUPT)
         gpiod_line_settings_free(m_line_settings_GPIO_ACCEL_INTERRUPT);
+    if  (m_line_settings_GPIO_GYRO_INTERRUPT)
+        gpiod_line_settings_free(m_line_settings_GPIO_GYRO_INTERRUPT);
 
     if (m_chip)
         gpiod_chip_close(m_chip);
@@ -270,6 +311,28 @@ bool SPI_BMI055_Protocol::spi_accel_start(void) {
 
     return true;
 }
+bool SPI_BMI055_Protocol::spi_gyro_start(void) {
+    if (!spi_write_spi_clk(0))
+    {
+        std::cerr << "[ERROR] Failed to spi gyro start! Failed to write spi clk!" << std::endl;
+        return false;
+    }
+
+    if (!spi_write_cs_gyro(0)) 
+    {
+        std::cerr << "[ERROR] Failed to spi gyro start! Failed to write cs gyro!" << std::endl;
+        return false;
+    }
+
+    if (!spi_write_cs_accel(1)) 
+    {
+        std::cerr << "[ERROR] Failed to spi gyro start! Failed to write cs accel!" << std::endl;
+        return false;
+    }
+
+
+    return true;
+}
 
 bool SPI_BMI055_Protocol::spi_stop(void) {
     if (!spi_write_cs_accel(1)) {
@@ -371,11 +434,15 @@ SPI_BMI055_Protocol::~SPI_BMI055_Protocol()
         gpiod_line_request_release(m_line_request_BMI055);
     if (m_line_request_acc_interrupt_BMI055)
         gpiod_line_request_release(m_line_request_acc_interrupt_BMI055);
+    if (m_line_request_gyr_interrupt_BMI055)
+        gpiod_line_request_release(m_line_request_gyr_interrupt_BMI055);
 
     if (m_line_config_BMI055)
         gpiod_line_config_free(m_line_config_BMI055);
     if (m_line_config_acc_interrupt_BMI055)
         gpiod_line_config_free(m_line_config_acc_interrupt_BMI055);
+    if (m_line_config_gyr_interrupt_BMI055)
+        gpiod_line_config_free(m_line_config_gyr_interrupt_BMI055);
 
     if (m_line_settings_GPIO_MODE_IPU)
         gpiod_line_settings_free(m_line_settings_GPIO_MODE_IPU);
@@ -383,6 +450,8 @@ SPI_BMI055_Protocol::~SPI_BMI055_Protocol()
         gpiod_line_settings_free(m_line_settings_GPIO_MODE_OUT_PP);
     if (m_line_settings_GPIO_ACCEL_INTERRUPT)
         gpiod_line_settings_free(m_line_settings_GPIO_ACCEL_INTERRUPT);
+    if (m_line_settings_GPIO_GYRO_INTERRUPT)
+        gpiod_line_settings_free(m_line_settings_GPIO_GYRO_INTERRUPT);
 
     if (m_chip)
         gpiod_chip_close(m_chip);
