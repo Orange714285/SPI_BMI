@@ -1,0 +1,1 @@
+/usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/orange/rpi-sysroot -O3 -DNDEBUG CMakeFiles/DartElectricControl.dir/src/main.cpp.o -o ../DartElectricControl  ../lib/libdart.a -lpigpio -lgpiod /home/orange/rpi-sysroot/usr/local/lib/libflatbuffers.a -lzstd -llz4 

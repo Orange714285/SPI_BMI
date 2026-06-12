@@ -1,0 +1,16 @@
+namespace foxglove;
+
+table CarData
+{
+    acc_frd_x_mg : float;
+    acc_frd_y_mg : float;
+    acc_frd_z_mg : float;
+    gyro_frd_x_dps : float;
+    gyro_frd_y_dps : float;
+    gyro_frd_z_dps : float;
+    roll : float;
+    yaw : float;
+    pitch : float;
+    index : float; 
+}
+root_type CarData;

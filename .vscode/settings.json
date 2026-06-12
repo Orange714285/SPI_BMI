@@ -1,0 +1,14 @@
+{
+    // 自动使用你的交叉编译工具链
+    "cmake.configureSettings": {
+        "CMAKE_TOOLCHAIN_FILE": "${workspaceFolder}/toolchain.cmake"
+    },
+    // Build 目录
+    "cmake.buildDirectory": "${workspaceFolder}/build",
+    // 你的编译器（ARM64）
+    "cmake.generator": "Unix Makefiles",
+    // C++ 版本
+    "cppStandard": "17",
+    // 自动关联 C/C++ 插件（智能感知自动同步）
+    "cmake.configureOnOpen": true
+}
