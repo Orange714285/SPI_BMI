@@ -43,6 +43,12 @@ bool BMI055::BMI055_init()
         std::cerr << "[ERROR] Config gyr drdy failed!" << std::endl;
         return false;
     }
+    if (!gyr_measure_zero_bias())
+    {
+        std::cerr << "[ERROR] BMI055 gyr measure zero bias failed!" << std::endl;
+        return false;
+    }
+
     return true;
 }
 
@@ -659,6 +665,49 @@ bool BMI055::gyr_self_test()
     std::cout << "[INFO] gyr_self_test: PASSED!" << std::endl;
     return true;
 }
+
+bool BMI055::gyr_measure_zero_bias()
+{
+    const int sample_count = 100;
+    float sum_x = 0.0f, sum_y = 0.0f, sum_z = 0.0f;
+
+    m_gyr_bias_x_dps = 0.0f;
+    m_gyr_bias_y_dps = 0.0f;
+    m_gyr_bias_z_dps = 0.0f;
+
+    std::cout << "[INFO] gyr_measure_zero_bias: collecting " << sample_count
+              << " samples, please keep device stationary..." << std::endl;
+
+    for (int i = 0; i < sample_count; i++)
+    {
+        if (!gyr_wait_for_new_info())
+        {
+            std::cerr << "[ERROR] gyr_measure_zero_bias: wait for new info failed at sample "
+                      << i << "!" << std::endl;
+            return false;
+        }
+        if (!gyr_get_rate_all_dps())
+        {
+            std::cerr << "[ERROR] gyr_measure_zero_bias: read rates failed at sample "
+                      << i << "!" << std::endl;
+            return false;
+        }
+        sum_x += m_gyr_rate_x_dps;
+        sum_y += m_gyr_rate_y_dps;
+        sum_z += m_gyr_rate_z_dps;
+    }
+
+    m_gyr_bias_x_dps = sum_x / sample_count;
+    m_gyr_bias_y_dps = sum_y / sample_count;
+    m_gyr_bias_z_dps = sum_z / sample_count;
+
+    std::cout << "[INFO] gyr zero bias measured (dps): "
+              << "X=" << m_gyr_bias_x_dps
+              << " Y=" << m_gyr_bias_y_dps
+              << " Z=" << m_gyr_bias_z_dps << std::endl;
+    return true;
+}
+
 bool BMI055::gyr_set_data_output_unfiltered()
 {
     if (!m_spi.spi_gyro_start())
@@ -720,7 +769,9 @@ bool BMI055::gyr_get_rate_x_deg_per_s()
         std::cerr << "[ERROR] Read gyr_rate_x failed! spi stop failed!" << std::endl;
         return false;
     }
-    m_gyr_rate_x_dps = gyr_get_deg_per_s(gyr_rate_x_lsb, gyr_rate_x_msb);
+    float raw_x = gyr_get_deg_per_s(gyr_rate_x_lsb, gyr_rate_x_msb);
+    m_gyr_rate_x_raw_dps = raw_x;
+    m_gyr_rate_x_dps = raw_x - m_gyr_bias_x_dps;
     return true;
 }
 
@@ -753,7 +804,9 @@ bool BMI055::gyr_get_rate_y_deg_per_s()
         std::cerr << "[ERROR] Read gyr_rate_y failed! spi stop failed!" << std::endl;
         return false;
     }
-    m_gyr_rate_y_dps = gyr_get_deg_per_s(gyr_rate_y_lsb, gyr_rate_y_msb);
+    float raw_y = gyr_get_deg_per_s(gyr_rate_y_lsb, gyr_rate_y_msb);
+    m_gyr_rate_y_raw_dps = raw_y;
+    m_gyr_rate_y_dps = raw_y - m_gyr_bias_y_dps;
     return true;
 }
 
@@ -786,11 +839,13 @@ bool BMI055::gyr_get_rate_z_deg_per_s()
         std::cerr << "[ERROR] Read gyr_rate_z failed! spi stop failed!" << std::endl;
         return false;
     }
-    m_gyr_rate_z_dps = gyr_get_deg_per_s(gyr_rate_z_lsb, gyr_rate_z_msb);
+    float raw_z = gyr_get_deg_per_s(gyr_rate_z_lsb, gyr_rate_z_msb);
+    m_gyr_rate_z_raw_dps = raw_z;
+    m_gyr_rate_z_dps = raw_z - m_gyr_bias_z_dps;
     return true;
 }
 
-bool BMI055::gyr_get_rate_all_deg_per_s()
+bool BMI055::gyr_get_rate_all_dps()
 {
     uint8_t gyr_rate_x_lsb, gyr_rate_x_msb;
     uint8_t gyr_rate_y_lsb, gyr_rate_y_msb;
@@ -847,9 +902,15 @@ bool BMI055::gyr_get_rate_all_deg_per_s()
         return false;
     }
 
-    m_gyr_rate_x_dps = gyr_get_deg_per_s(gyr_rate_x_lsb, gyr_rate_x_msb);
-    m_gyr_rate_y_dps = gyr_get_deg_per_s(gyr_rate_y_lsb, gyr_rate_y_msb);
-    m_gyr_rate_z_dps = gyr_get_deg_per_s(gyr_rate_z_lsb, gyr_rate_z_msb);
+    float raw_x = gyr_get_deg_per_s(gyr_rate_x_lsb, gyr_rate_x_msb);
+    float raw_y = gyr_get_deg_per_s(gyr_rate_y_lsb, gyr_rate_y_msb);
+    float raw_z = gyr_get_deg_per_s(gyr_rate_z_lsb, gyr_rate_z_msb);
+    m_gyr_rate_x_raw_dps = raw_x;
+    m_gyr_rate_y_raw_dps = raw_y;
+    m_gyr_rate_z_raw_dps = raw_z;
+    m_gyr_rate_x_dps = raw_x - m_gyr_bias_x_dps;
+    m_gyr_rate_y_dps = raw_y - m_gyr_bias_y_dps;
+    m_gyr_rate_z_dps = raw_z - m_gyr_bias_z_dps;
 
     return true;
 }

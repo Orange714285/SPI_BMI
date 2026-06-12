@@ -23,15 +23,18 @@ class BMI055
     bool acc_get_accd_z_mg(); // 将读数转化单位为mg后直接写入accd_x_mg
     bool acc_get_accd_all_mg(); // 将读数转化单位为mg后直接写入accd_x_mg
     float m_acc_imu_accd_x_mg,m_acc_imu_accd_y_mg,m_acc_imu_accd_z_mg;
+    float m_gyr_rate_x_raw_dps,m_gyr_rate_y_raw_dps,m_gyr_rate_z_raw_dps;
     float m_gyr_rate_x_dps,m_gyr_rate_y_dps,m_gyr_rate_z_dps;
+    float m_gyr_bias_x_dps,m_gyr_bias_y_dps,m_gyr_bias_z_dps;
 
+    bool gyr_measure_zero_bias();
     bool gyr_self_test();
     bool gyr_set_data_output_unfiltered();
     bool gyr_get_rate_x_deg_per_s(); //
     bool gyr_get_rate_y_deg_per_s(); // 
     bool gyr_get_rate_z_deg_per_s(); // 将读数转化单位为mg后直接写入accd_x_mg
     float gyr_get_deg_per_s(uint8_t lsb, uint8_t msb);
-    bool gyr_get_rate_all_deg_per_s(); // 将读数转化单位为mg后直接写入accd_x_mg
+    bool gyr_get_rate_all_dps(); // 将读数转化单位为mg后直接写入accd_x_mg
 
 
 };
