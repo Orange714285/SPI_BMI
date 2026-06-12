@@ -512,9 +512,6 @@ app/CMakeFiles/DartElectricControl.dir/src/main.cpp.o: \
  /usr/aarch64-linux-gnu/include/c++/11/unordered_set \
  /usr/aarch64-linux-gnu/include/c++/11/bits/unordered_set.h \
  /home/orange/pi-workspace/DartControl/lib/include/data_type.hpp \
- /usr/aarch64-linux-gnu/include/c++/11/thread \
- /usr/aarch64-linux-gnu/include/c++/11/bits/std_thread.h \
- /usr/aarch64-linux-gnu/include/c++/11/bits/this_thread_sleep.h \
  /usr/aarch64-linux-gnu/include/c++/11/csignal \
  /usr/aarch64-linux-gnu/include/signal.h \
  /usr/aarch64-linux-gnu/include/bits/signum-generic.h \
@@ -557,14 +554,6 @@ app/CMakeFiles/DartElectricControl.dir/src/main.cpp.o: \
  /usr/aarch64-linux-gnu/include/bits/types/struct_sigstack.h \
  /usr/aarch64-linux-gnu/include/bits/sigthread.h \
  /usr/aarch64-linux-gnu/include/bits/signal_ext.h \
- /usr/aarch64-linux-gnu/include/c++/11/mutex \
- /usr/aarch64-linux-gnu/include/c++/11/bits/std_mutex.h \
- /usr/aarch64-linux-gnu/include/c++/11/bits/unique_lock.h \
- /usr/aarch64-linux-gnu/include/c++/11/stack \
- /usr/aarch64-linux-gnu/include/c++/11/deque \
- /usr/aarch64-linux-gnu/include/c++/11/bits/stl_deque.h \
- /usr/aarch64-linux-gnu/include/c++/11/bits/deque.tcc \
- /usr/aarch64-linux-gnu/include/c++/11/bits/stl_stack.h \
  /home/orange/pi-workspace/DartControl/lib/include/tools/timer.hpp \
  /home/orange/pi-workspace/DartControl/lib/include/tools/cpu_monitor.hpp \
  /usr/aarch64-linux-gnu/include/c++/11/fstream \
