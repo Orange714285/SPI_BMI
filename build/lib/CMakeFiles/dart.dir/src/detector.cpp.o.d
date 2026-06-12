@@ -270,6 +270,7 @@ lib/CMakeFiles/dart.dir/src/detector.cpp.o: \
  /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core/bufferpool.hpp \
  /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core/mat.inl.hpp \
  /home/orange/pi-workspace/DartControl/config/config.hpp \
+ /home/orange/pi-workspace/DartControl/lib/include/data_type.hpp \
  /usr/aarch64-linux-gnu/include/c++/11/iostream \
  /usr/aarch64-linux-gnu/include/c++/11/ostream \
  /usr/aarch64-linux-gnu/include/c++/11/ios \
@@ -294,6 +295,46 @@ lib/CMakeFiles/dart.dir/src/detector.cpp.o: \
  /usr/aarch64-linux-gnu/include/c++/11/bits/ostream.tcc \
  /usr/aarch64-linux-gnu/include/c++/11/istream \
  /usr/aarch64-linux-gnu/include/c++/11/bits/istream.tcc \
+ /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/libcamera.h \
+ /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/camera.h \
+ /usr/aarch64-linux-gnu/include/c++/11/optional \
+ /usr/aarch64-linux-gnu/include/c++/11/set \
+ /usr/aarch64-linux-gnu/include/c++/11/bits/stl_tree.h \
+ /usr/aarch64-linux-gnu/include/c++/11/bits/stl_set.h \
+ /usr/aarch64-linux-gnu/include/c++/11/bits/stl_multiset.h \
+ /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/base/class.h \
+ /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/base/flags.h \
+ /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/base/object.h \
+ /usr/aarch64-linux-gnu/include/c++/11/list \
+ /usr/aarch64-linux-gnu/include/c++/11/bits/stl_list.h \
+ /usr/aarch64-linux-gnu/include/c++/11/bits/list.tcc \
+ /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/base/bound_method.h \
+ /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/base/signal.h \
+ /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/controls.h \
+ /usr/aarch64-linux-gnu/include/c++/11/map \
+ /usr/aarch64-linux-gnu/include/c++/11/bits/stl_map.h \
+ /usr/aarch64-linux-gnu/include/c++/11/bits/stl_multimap.h \
+ /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/base/span.h \
+ /usr/aarch64-linux-gnu/include/c++/11/iterator \
+ /usr/aarch64-linux-gnu/include/c++/11/bits/stream_iterator.h \
+ /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/geometry.h \
+ /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/orientation.h \
+ /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/request.h \
+ /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/fence.h \
+ /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/base/unique_fd.h \
+ /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/stream.h \
+ /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/color_space.h \
+ /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/framebuffer.h \
+ /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/base/shared_fd.h \
+ /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/pixel_format.h \
+ /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/camera_manager.h \
+ /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/control_ids.h \
+ /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/formats.h \
+ /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/framebuffer_allocator.h \
+ /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/logging.h \
+ /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/property_ids.h \
+ /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/transform.h \
+ /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/version.h \
  /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/opencv.hpp \
  /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core.hpp \
  /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core/persistence.hpp \
@@ -323,10 +364,6 @@ lib/CMakeFiles/dart.dir/src/detector.cpp.o: \
  /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core/async.hpp \
  /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/dnn/../dnn/version.hpp \
  /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/dnn/dict.hpp \
- /usr/aarch64-linux-gnu/include/c++/11/map \
- /usr/aarch64-linux-gnu/include/c++/11/bits/stl_tree.h \
- /usr/aarch64-linux-gnu/include/c++/11/bits/stl_map.h \
- /usr/aarch64-linux-gnu/include/c++/11/bits/stl_multimap.h \
  /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/dnn/layer.hpp \
  /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/dnn/dnn.inl.hpp \
  /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/dnn/utils/inference_engine.hpp \
@@ -341,9 +378,6 @@ lib/CMakeFiles/dart.dir/src/detector.cpp.o: \
  /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/flann/saving.h \
  /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/flann/nn_index.h \
  /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/flann/result_set.h \
- /usr/aarch64-linux-gnu/include/c++/11/set \
- /usr/aarch64-linux-gnu/include/c++/11/bits/stl_set.h \
- /usr/aarch64-linux-gnu/include/c++/11/bits/stl_multiset.h \
  /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/flann/all_indices.h \
  /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/flann/kdtree_index.h \
  /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/flann/dynamic_bitset.h \
@@ -405,9 +439,6 @@ lib/CMakeFiles/dart.dir/src/detector.cpp.o: \
  /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/stitching/detail/motion_estimators.hpp \
  /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/stitching/detail/matchers.hpp \
  /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/stitching/detail/util.hpp \
- /usr/aarch64-linux-gnu/include/c++/11/list \
- /usr/aarch64-linux-gnu/include/c++/11/bits/stl_list.h \
- /usr/aarch64-linux-gnu/include/c++/11/bits/list.tcc \
  /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/stitching/detail/util_inl.hpp \
  /usr/aarch64-linux-gnu/include/c++/11/queue \
  /usr/aarch64-linux-gnu/include/c++/11/deque \

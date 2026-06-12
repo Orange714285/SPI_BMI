@@ -292,10 +292,8 @@ lib/CMakeFiles/dart.dir/src/camera.cpp.o: \
  /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/property_ids.h \
  /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/transform.h \
  /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/version.h \
- /home/orange/pi-workspace/DartControl/config/config.hpp \
- /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/opencv.hpp \
- /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/opencv_modules.hpp \
- /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core/mat.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core/matx.hpp \
  /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core/cvdef.h \
  /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core/version.hpp \
  /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core/hal/interface.h \
@@ -305,6 +303,7 @@ lib/CMakeFiles/dart.dir/src/camera.cpp.o: \
  /usr/lib/gcc-cross/aarch64-linux-gnu/11/include/arm_fp16.h \
  /usr/lib/gcc-cross/aarch64-linux-gnu/11/include/arm_bf16.h \
  /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core/base.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/opencv_modules.hpp \
  /usr/aarch64-linux-gnu/include/c++/11/climits \
  /usr/lib/gcc-cross/aarch64-linux-gnu/11/include/limits.h \
  /usr/lib/gcc-cross/aarch64-linux-gnu/11/include/syslimits.h \
@@ -348,16 +347,17 @@ lib/CMakeFiles/dart.dir/src/camera.cpp.o: \
  /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core/vsx_utils.hpp \
  /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core/check.hpp \
  /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core/traits.hpp \
- /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core/matx.hpp \
  /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core/saturate.hpp \
  /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core/fast_math.hpp \
  /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core/matx.inl.hpp \
  /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core/types.hpp \
  /usr/aarch64-linux-gnu/include/c++/11/cfloat \
  /usr/lib/gcc-cross/aarch64-linux-gnu/11/include/float.h \
- /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core/mat.hpp \
  /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core/bufferpool.hpp \
  /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core/mat.inl.hpp \
+ /home/orange/pi-workspace/DartControl/config/config.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/opencv.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core.hpp \
  /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core/persistence.hpp \
  /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core/operations.hpp \
  /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core/cvstd.inl.hpp \

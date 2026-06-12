@@ -545,6 +545,153 @@ app/CMakeFiles/DartElectricControl.dir/src/main.cpp.o: \
  /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/property_ids.h \
  /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/transform.h \
  /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/version.h \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core/mat.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core/matx.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core/cvdef.h \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core/version.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core/hal/interface.h \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core/cv_cpu_dispatch.h \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core/base.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/opencv_modules.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core/cvstd.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core/cvstd_wrapper.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core/neon_utils.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core/vsx_utils.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core/check.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core/traits.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core/saturate.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core/fast_math.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core/matx.inl.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core/types.hpp \
+ /usr/aarch64-linux-gnu/include/c++/11/cfloat \
+ /usr/lib/gcc-cross/aarch64-linux-gnu/11/include/float.h \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core/bufferpool.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core/mat.inl.hpp \
+ /home/orange/pi-workspace/DartControl/lib/include/detector.hpp \
+ /home/orange/pi-workspace/DartControl/config/config.hpp \
+ /home/orange/pi-workspace/DartControl/lib/include/camera.hpp \
+ /usr/aarch64-linux-gnu/include/c++/11/condition_variable \
+ /usr/aarch64-linux-gnu/include/c++/11/bits/std_mutex.h \
+ /usr/aarch64-linux-gnu/include/c++/11/bits/unique_lock.h \
+ /usr/aarch64-linux-gnu/include/c++/11/iomanip \
+ /usr/aarch64-linux-gnu/include/c++/11/locale \
+ /usr/aarch64-linux-gnu/include/c++/11/bits/locale_facets_nonio.h \
+ /usr/aarch64-linux-gnu/include/c++/11/aarch64-linux-gnu/bits/time_members.h \
+ /usr/aarch64-linux-gnu/include/c++/11/aarch64-linux-gnu/bits/messages_members.h \
+ /usr/aarch64-linux-gnu/include/libintl.h \
+ /usr/aarch64-linux-gnu/include/c++/11/bits/codecvt.h \
+ /usr/aarch64-linux-gnu/include/c++/11/bits/locale_facets_nonio.tcc \
+ /usr/aarch64-linux-gnu/include/c++/11/bits/locale_conv.h \
+ /usr/aarch64-linux-gnu/include/c++/11/bits/quoted_string.h \
+ /usr/aarch64-linux-gnu/include/c++/11/mutex \
+ /usr/aarch64-linux-gnu/include/sys/mman.h \
+ /usr/aarch64-linux-gnu/include/bits/mman.h \
+ /usr/aarch64-linux-gnu/include/bits/mman-map-flags-generic.h \
+ /usr/aarch64-linux-gnu/include/bits/mman-linux.h \
+ /usr/aarch64-linux-gnu/include/bits/mman-shared.h \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/opencv.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core/persistence.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core/operations.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core/cvstd.inl.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core/utility.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core/optim.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core/ovx.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core/cvdef.h \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/calib3d.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/features2d.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/flann/miniflann.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/flann/defines.h \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/flann/config.h \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core/affine.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core/utils/logger.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core/utils/logger.defines.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core/utils/logtag.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/dnn.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/dnn/dnn.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core/async.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/dnn/../dnn/version.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/dnn/dict.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/dnn/layer.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/dnn/dnn.inl.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/dnn/utils/inference_engine.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/dnn/utils/../dnn.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/flann.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/flann/flann_base.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/flann/general.h \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/flann/matrix.h \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/flann/params.h \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/flann/any.h \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/flann/defines.h \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/flann/saving.h \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/flann/nn_index.h \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/flann/result_set.h \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/flann/all_indices.h \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/flann/kdtree_index.h \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/flann/dynamic_bitset.h \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/flann/dist.h \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/flann/heap.h \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/flann/allocator.h \
+ /usr/aarch64-linux-gnu/include/c++/11/stdlib.h \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/flann/random.h \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/flann/kdtree_single_index.h \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/flann/kmeans_index.h \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/flann/logger.h \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/flann/composite_index.h \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/flann/linear_index.h \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/flann/hierarchical_clustering_index.h \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/flann/lsh_index.h \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/flann/lsh_table.h \
+ /usr/aarch64-linux-gnu/include/c++/11/math.h \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/flann/autotuned_index.h \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/flann/ground_truth.h \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/flann/index_testing.h \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/flann/timer.h \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/flann/sampling.h \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/highgui.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/imgcodecs.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/videoio.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/imgproc.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/./imgproc/segmentation.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/ml.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/ml/ml.inl.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/objdetect.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/objdetect/aruco_detector.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/objdetect/aruco_dictionary.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/objdetect/aruco_board.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/objdetect/graphical_code_detector.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/objdetect/detection_based_tracker.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/objdetect/face.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/objdetect/charuco_detector.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/objdetect/barcode.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/photo.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/stitching.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/stitching/warpers.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/stitching/detail/warpers.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core/cuda.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core/cuda_types.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/core/cuda.inl.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/stitching/detail/warpers_inl.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/stitching/detail/warpers.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/stitching/detail/matchers.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/stitching/detail/motion_estimators.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/stitching/detail/matchers.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/stitching/detail/util.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/stitching/detail/util_inl.hpp \
+ /usr/aarch64-linux-gnu/include/c++/11/queue \
+ /usr/aarch64-linux-gnu/include/c++/11/deque \
+ /usr/aarch64-linux-gnu/include/c++/11/bits/stl_deque.h \
+ /usr/aarch64-linux-gnu/include/c++/11/bits/deque.tcc \
+ /usr/aarch64-linux-gnu/include/c++/11/bits/stl_queue.h \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/stitching/detail/camera.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/stitching/detail/exposure_compensate.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/stitching/detail/seam_finders.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/stitching/detail/blenders.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/stitching/detail/camera.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/video.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/video/tracking.hpp \
+ /home/orange/rpi-sysroot/usr/include/opencv4/opencv2/video/background_segm.hpp \
+ /home/orange/pi-workspace/DartControl/app/include/vision_slot.hpp \
  /usr/aarch64-linux-gnu/include/c++/11/csignal \
  /usr/aarch64-linux-gnu/include/signal.h \
  /usr/aarch64-linux-gnu/include/bits/signum-generic.h \
@@ -587,20 +734,13 @@ app/CMakeFiles/DartElectricControl.dir/src/main.cpp.o: \
  /usr/aarch64-linux-gnu/include/bits/types/struct_sigstack.h \
  /usr/aarch64-linux-gnu/include/bits/sigthread.h \
  /usr/aarch64-linux-gnu/include/bits/signal_ext.h \
+ /usr/aarch64-linux-gnu/include/c++/11/thread \
+ /usr/aarch64-linux-gnu/include/c++/11/bits/std_thread.h \
+ /usr/aarch64-linux-gnu/include/c++/11/bits/this_thread_sleep.h \
  /home/orange/pi-workspace/DartControl/lib/include/tools/timer.hpp \
  /home/orange/pi-workspace/DartControl/lib/include/tools/cpu_monitor.hpp \
  /usr/aarch64-linux-gnu/include/c++/11/fstream \
- /usr/aarch64-linux-gnu/include/c++/11/bits/codecvt.h \
  /usr/aarch64-linux-gnu/include/c++/11/aarch64-linux-gnu/bits/basic_file.h \
  /usr/aarch64-linux-gnu/include/c++/11/aarch64-linux-gnu/bits/c++io.h \
  /usr/aarch64-linux-gnu/include/c++/11/bits/fstream.tcc \
- /usr/aarch64-linux-gnu/include/c++/11/iomanip \
- /usr/aarch64-linux-gnu/include/c++/11/locale \
- /usr/aarch64-linux-gnu/include/c++/11/bits/locale_facets_nonio.h \
- /usr/aarch64-linux-gnu/include/c++/11/aarch64-linux-gnu/bits/time_members.h \
- /usr/aarch64-linux-gnu/include/c++/11/aarch64-linux-gnu/bits/messages_members.h \
- /usr/aarch64-linux-gnu/include/libintl.h \
- /usr/aarch64-linux-gnu/include/c++/11/bits/locale_facets_nonio.tcc \
- /usr/aarch64-linux-gnu/include/c++/11/bits/locale_conv.h \
- /usr/aarch64-linux-gnu/include/c++/11/bits/quoted_string.h \
  /home/orange/pi-workspace/DartControl/lib/include/tools/frame_counter.hpp
