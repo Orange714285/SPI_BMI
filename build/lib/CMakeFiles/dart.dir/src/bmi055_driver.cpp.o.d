@@ -35,7 +35,6 @@ lib/CMakeFiles/dart.dir/src/bmi055_driver.cpp.o: \
  /usr/aarch64-linux-gnu/include/bits/types/FILE.h \
  /usr/aarch64-linux-gnu/include/bits/types/locale_t.h \
  /usr/aarch64-linux-gnu/include/bits/types/__locale_t.h \
- /usr/aarch64-linux-gnu/include/bits/wchar2.h \
  /usr/aarch64-linux-gnu/include/c++/11/exception \
  /usr/aarch64-linux-gnu/include/c++/11/bits/exception.h \
  /usr/aarch64-linux-gnu/include/c++/11/bits/exception_ptr.h \
@@ -141,11 +140,8 @@ lib/CMakeFiles/dart.dir/src/bmi055_driver.cpp.o: \
  /usr/aarch64-linux-gnu/include/sys/select.h \
  /usr/aarch64-linux-gnu/include/bits/select.h \
  /usr/aarch64-linux-gnu/include/bits/types/sigset_t.h \
- /usr/aarch64-linux-gnu/include/bits/select2.h \
  /usr/aarch64-linux-gnu/include/alloca.h \
- /usr/aarch64-linux-gnu/include/bits/stdlib-bsearch.h \
  /usr/aarch64-linux-gnu/include/bits/stdlib-float.h \
- /usr/aarch64-linux-gnu/include/bits/stdlib.h \
  /usr/aarch64-linux-gnu/include/c++/11/bits/std_abs.h \
  /usr/aarch64-linux-gnu/include/c++/11/cstdio \
  /usr/aarch64-linux-gnu/include/stdio.h \
@@ -154,8 +150,6 @@ lib/CMakeFiles/dart.dir/src/bmi055_driver.cpp.o: \
  /usr/aarch64-linux-gnu/include/bits/types/struct_FILE.h \
  /usr/aarch64-linux-gnu/include/bits/types/cookie_io_functions_t.h \
  /usr/aarch64-linux-gnu/include/bits/stdio_lim.h \
- /usr/aarch64-linux-gnu/include/bits/stdio.h \
- /usr/aarch64-linux-gnu/include/bits/stdio2.h \
  /usr/aarch64-linux-gnu/include/c++/11/cerrno \
  /usr/aarch64-linux-gnu/include/errno.h \
  /usr/aarch64-linux-gnu/include/bits/errno.h \

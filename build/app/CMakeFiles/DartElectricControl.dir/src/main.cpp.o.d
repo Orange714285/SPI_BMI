@@ -35,7 +35,6 @@ app/CMakeFiles/DartElectricControl.dir/src/main.cpp.o: \
  /usr/aarch64-linux-gnu/include/bits/types/FILE.h \
  /usr/aarch64-linux-gnu/include/bits/types/locale_t.h \
  /usr/aarch64-linux-gnu/include/bits/types/__locale_t.h \
- /usr/aarch64-linux-gnu/include/bits/wchar2.h \
  /usr/aarch64-linux-gnu/include/c++/11/exception \
  /usr/aarch64-linux-gnu/include/c++/11/bits/exception.h \
  /usr/aarch64-linux-gnu/include/c++/11/bits/exception_ptr.h \
@@ -141,11 +140,8 @@ app/CMakeFiles/DartElectricControl.dir/src/main.cpp.o: \
  /usr/aarch64-linux-gnu/include/sys/select.h \
  /usr/aarch64-linux-gnu/include/bits/select.h \
  /usr/aarch64-linux-gnu/include/bits/types/sigset_t.h \
- /usr/aarch64-linux-gnu/include/bits/select2.h \
  /usr/aarch64-linux-gnu/include/alloca.h \
- /usr/aarch64-linux-gnu/include/bits/stdlib-bsearch.h \
  /usr/aarch64-linux-gnu/include/bits/stdlib-float.h \
- /usr/aarch64-linux-gnu/include/bits/stdlib.h \
  /usr/aarch64-linux-gnu/include/c++/11/bits/std_abs.h \
  /usr/aarch64-linux-gnu/include/c++/11/cstdio \
  /usr/aarch64-linux-gnu/include/stdio.h \
@@ -154,8 +150,6 @@ app/CMakeFiles/DartElectricControl.dir/src/main.cpp.o: \
  /usr/aarch64-linux-gnu/include/bits/types/struct_FILE.h \
  /usr/aarch64-linux-gnu/include/bits/types/cookie_io_functions_t.h \
  /usr/aarch64-linux-gnu/include/bits/stdio_lim.h \
- /usr/aarch64-linux-gnu/include/bits/stdio.h \
- /usr/aarch64-linux-gnu/include/bits/stdio2.h \
  /usr/aarch64-linux-gnu/include/c++/11/cerrno \
  /usr/aarch64-linux-gnu/include/errno.h \
  /usr/aarch64-linux-gnu/include/bits/errno.h \
@@ -259,8 +253,6 @@ app/CMakeFiles/DartElectricControl.dir/src/main.cpp.o: \
  /usr/aarch64-linux-gnu/include/c++/11/cstring \
  /usr/aarch64-linux-gnu/include/string.h \
  /usr/aarch64-linux-gnu/include/strings.h \
- /usr/aarch64-linux-gnu/include/bits/strings_fortified.h \
- /usr/aarch64-linux-gnu/include/bits/string_fortified.h \
  /usr/aarch64-linux-gnu/include/c++/11/climits \
  /usr/lib/gcc-cross/aarch64-linux-gnu/11/include/limits.h \
  /usr/lib/gcc-cross/aarch64-linux-gnu/11/include/syslimits.h \
@@ -497,7 +489,6 @@ app/CMakeFiles/DartElectricControl.dir/src/main.cpp.o: \
  /usr/aarch64-linux-gnu/include/bits/confname.h \
  /usr/aarch64-linux-gnu/include/bits/getopt_posix.h \
  /usr/aarch64-linux-gnu/include/bits/getopt_core.h \
- /usr/aarch64-linux-gnu/include/bits/unistd.h \
  /usr/aarch64-linux-gnu/include/bits/unistd_ext.h \
  /usr/aarch64-linux-gnu/include/linux/close_range.h \
  /home/orange/rpi-sysroot/usr/local/include/flatbuffers/stl_emulation.h \
@@ -565,4 +556,29 @@ app/CMakeFiles/DartElectricControl.dir/src/main.cpp.o: \
  /usr/aarch64-linux-gnu/include/bits/ss_flags.h \
  /usr/aarch64-linux-gnu/include/bits/types/struct_sigstack.h \
  /usr/aarch64-linux-gnu/include/bits/sigthread.h \
- /usr/aarch64-linux-gnu/include/bits/signal_ext.h
+ /usr/aarch64-linux-gnu/include/bits/signal_ext.h \
+ /usr/aarch64-linux-gnu/include/c++/11/mutex \
+ /usr/aarch64-linux-gnu/include/c++/11/bits/std_mutex.h \
+ /usr/aarch64-linux-gnu/include/c++/11/bits/unique_lock.h \
+ /usr/aarch64-linux-gnu/include/c++/11/stack \
+ /usr/aarch64-linux-gnu/include/c++/11/deque \
+ /usr/aarch64-linux-gnu/include/c++/11/bits/stl_deque.h \
+ /usr/aarch64-linux-gnu/include/c++/11/bits/deque.tcc \
+ /usr/aarch64-linux-gnu/include/c++/11/bits/stl_stack.h \
+ /home/orange/pi-workspace/DartControl/lib/include/tools/timer.hpp \
+ /home/orange/pi-workspace/DartControl/lib/include/tools/cpu_monitor.hpp \
+ /usr/aarch64-linux-gnu/include/c++/11/fstream \
+ /usr/aarch64-linux-gnu/include/c++/11/bits/codecvt.h \
+ /usr/aarch64-linux-gnu/include/c++/11/aarch64-linux-gnu/bits/basic_file.h \
+ /usr/aarch64-linux-gnu/include/c++/11/aarch64-linux-gnu/bits/c++io.h \
+ /usr/aarch64-linux-gnu/include/c++/11/bits/fstream.tcc \
+ /usr/aarch64-linux-gnu/include/c++/11/iomanip \
+ /usr/aarch64-linux-gnu/include/c++/11/locale \
+ /usr/aarch64-linux-gnu/include/c++/11/bits/locale_facets_nonio.h \
+ /usr/aarch64-linux-gnu/include/c++/11/aarch64-linux-gnu/bits/time_members.h \
+ /usr/aarch64-linux-gnu/include/c++/11/aarch64-linux-gnu/bits/messages_members.h \
+ /usr/aarch64-linux-gnu/include/libintl.h \
+ /usr/aarch64-linux-gnu/include/c++/11/bits/locale_facets_nonio.tcc \
+ /usr/aarch64-linux-gnu/include/c++/11/bits/locale_conv.h \
+ /usr/aarch64-linux-gnu/include/c++/11/bits/quoted_string.h \
+ /home/orange/pi-workspace/DartControl/lib/include/tools/frame_counter.hpp

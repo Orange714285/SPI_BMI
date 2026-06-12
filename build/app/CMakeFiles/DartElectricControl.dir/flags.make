@@ -6,5 +6,5 @@ CXX_DEFINES =
 
 CXX_INCLUDES = -I/home/orange/pi-workspace/DartControl/app/include -I/home/orange/pi-workspace/DartControl/lib/include -isystem /home/orange/rpi-sysroot/usr/include/eigen3 -isystem /home/orange/rpi-sysroot/usr/local/include
 
-CXX_FLAGS = -O3 -DNDEBUG
+CXX_FLAGS = 
 
