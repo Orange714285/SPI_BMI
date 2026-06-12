@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/aarch64-linux-gnu-g++
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/home/orange/pi-workspace/DartControl/lib/include -isystem /home/orange/rpi-sysroot/usr/include/eigen3 -isystem /home/orange/rpi-sysroot/usr/local/include
+CXX_INCLUDES = -I/home/orange/pi-workspace/DartControl/lib/include -I/home/orange/pi-workspace/DartControl/config -I/home/orange/rpi-sysroot/usr/include/libcamera -I/home/orange/rpi-sysroot/usr/include/opencv4 -isystem /home/orange/rpi-sysroot/usr/include/eigen3 -isystem /home/orange/rpi-sysroot/usr/local/include
 
 CXX_FLAGS = 
 

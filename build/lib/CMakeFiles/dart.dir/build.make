@@ -97,10 +97,24 @@ lib/CMakeFiles/dart.dir/src/bmi055_driver.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dart.dir/src/bmi055_driver.cpp.s"
 	cd /home/orange/pi-workspace/DartControl/build/lib && /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/orange/rpi-sysroot $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/orange/pi-workspace/DartControl/lib/src/bmi055_driver.cpp -o CMakeFiles/dart.dir/src/bmi055_driver.cpp.s
 
+lib/CMakeFiles/dart.dir/src/camera.cpp.o: lib/CMakeFiles/dart.dir/flags.make
+lib/CMakeFiles/dart.dir/src/camera.cpp.o: ../lib/src/camera.cpp
+lib/CMakeFiles/dart.dir/src/camera.cpp.o: lib/CMakeFiles/dart.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/orange/pi-workspace/DartControl/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object lib/CMakeFiles/dart.dir/src/camera.cpp.o"
+	cd /home/orange/pi-workspace/DartControl/build/lib && /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/orange/rpi-sysroot $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT lib/CMakeFiles/dart.dir/src/camera.cpp.o -MF CMakeFiles/dart.dir/src/camera.cpp.o.d -o CMakeFiles/dart.dir/src/camera.cpp.o -c /home/orange/pi-workspace/DartControl/lib/src/camera.cpp
+
+lib/CMakeFiles/dart.dir/src/camera.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dart.dir/src/camera.cpp.i"
+	cd /home/orange/pi-workspace/DartControl/build/lib && /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/orange/rpi-sysroot $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/orange/pi-workspace/DartControl/lib/src/camera.cpp > CMakeFiles/dart.dir/src/camera.cpp.i
+
+lib/CMakeFiles/dart.dir/src/camera.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dart.dir/src/camera.cpp.s"
+	cd /home/orange/pi-workspace/DartControl/build/lib && /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/orange/rpi-sysroot $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/orange/pi-workspace/DartControl/lib/src/camera.cpp -o CMakeFiles/dart.dir/src/camera.cpp.s
+
 lib/CMakeFiles/dart.dir/src/capture.cpp.o: lib/CMakeFiles/dart.dir/flags.make
 lib/CMakeFiles/dart.dir/src/capture.cpp.o: ../lib/src/capture.cpp
 lib/CMakeFiles/dart.dir/src/capture.cpp.o: lib/CMakeFiles/dart.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/orange/pi-workspace/DartControl/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object lib/CMakeFiles/dart.dir/src/capture.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/orange/pi-workspace/DartControl/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object lib/CMakeFiles/dart.dir/src/capture.cpp.o"
 	cd /home/orange/pi-workspace/DartControl/build/lib && /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/orange/rpi-sysroot $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT lib/CMakeFiles/dart.dir/src/capture.cpp.o -MF CMakeFiles/dart.dir/src/capture.cpp.o.d -o CMakeFiles/dart.dir/src/capture.cpp.o -c /home/orange/pi-workspace/DartControl/lib/src/capture.cpp
 
 lib/CMakeFiles/dart.dir/src/capture.cpp.i: cmake_force
@@ -111,10 +125,52 @@ lib/CMakeFiles/dart.dir/src/capture.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dart.dir/src/capture.cpp.s"
 	cd /home/orange/pi-workspace/DartControl/build/lib && /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/orange/rpi-sysroot $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/orange/pi-workspace/DartControl/lib/src/capture.cpp -o CMakeFiles/dart.dir/src/capture.cpp.s
 
+lib/CMakeFiles/dart.dir/src/detector.cpp.o: lib/CMakeFiles/dart.dir/flags.make
+lib/CMakeFiles/dart.dir/src/detector.cpp.o: ../lib/src/detector.cpp
+lib/CMakeFiles/dart.dir/src/detector.cpp.o: lib/CMakeFiles/dart.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/orange/pi-workspace/DartControl/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object lib/CMakeFiles/dart.dir/src/detector.cpp.o"
+	cd /home/orange/pi-workspace/DartControl/build/lib && /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/orange/rpi-sysroot $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT lib/CMakeFiles/dart.dir/src/detector.cpp.o -MF CMakeFiles/dart.dir/src/detector.cpp.o.d -o CMakeFiles/dart.dir/src/detector.cpp.o -c /home/orange/pi-workspace/DartControl/lib/src/detector.cpp
+
+lib/CMakeFiles/dart.dir/src/detector.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dart.dir/src/detector.cpp.i"
+	cd /home/orange/pi-workspace/DartControl/build/lib && /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/orange/rpi-sysroot $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/orange/pi-workspace/DartControl/lib/src/detector.cpp > CMakeFiles/dart.dir/src/detector.cpp.i
+
+lib/CMakeFiles/dart.dir/src/detector.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dart.dir/src/detector.cpp.s"
+	cd /home/orange/pi-workspace/DartControl/build/lib && /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/orange/rpi-sysroot $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/orange/pi-workspace/DartControl/lib/src/detector.cpp -o CMakeFiles/dart.dir/src/detector.cpp.s
+
+lib/CMakeFiles/dart.dir/src/image_streamer.cpp.o: lib/CMakeFiles/dart.dir/flags.make
+lib/CMakeFiles/dart.dir/src/image_streamer.cpp.o: ../lib/src/image_streamer.cpp
+lib/CMakeFiles/dart.dir/src/image_streamer.cpp.o: lib/CMakeFiles/dart.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/orange/pi-workspace/DartControl/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object lib/CMakeFiles/dart.dir/src/image_streamer.cpp.o"
+	cd /home/orange/pi-workspace/DartControl/build/lib && /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/orange/rpi-sysroot $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT lib/CMakeFiles/dart.dir/src/image_streamer.cpp.o -MF CMakeFiles/dart.dir/src/image_streamer.cpp.o.d -o CMakeFiles/dart.dir/src/image_streamer.cpp.o -c /home/orange/pi-workspace/DartControl/lib/src/image_streamer.cpp
+
+lib/CMakeFiles/dart.dir/src/image_streamer.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dart.dir/src/image_streamer.cpp.i"
+	cd /home/orange/pi-workspace/DartControl/build/lib && /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/orange/rpi-sysroot $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/orange/pi-workspace/DartControl/lib/src/image_streamer.cpp > CMakeFiles/dart.dir/src/image_streamer.cpp.i
+
+lib/CMakeFiles/dart.dir/src/image_streamer.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dart.dir/src/image_streamer.cpp.s"
+	cd /home/orange/pi-workspace/DartControl/build/lib && /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/orange/rpi-sysroot $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/orange/pi-workspace/DartControl/lib/src/image_streamer.cpp -o CMakeFiles/dart.dir/src/image_streamer.cpp.s
+
+lib/CMakeFiles/dart.dir/src/recorder.cpp.o: lib/CMakeFiles/dart.dir/flags.make
+lib/CMakeFiles/dart.dir/src/recorder.cpp.o: ../lib/src/recorder.cpp
+lib/CMakeFiles/dart.dir/src/recorder.cpp.o: lib/CMakeFiles/dart.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/orange/pi-workspace/DartControl/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object lib/CMakeFiles/dart.dir/src/recorder.cpp.o"
+	cd /home/orange/pi-workspace/DartControl/build/lib && /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/orange/rpi-sysroot $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT lib/CMakeFiles/dart.dir/src/recorder.cpp.o -MF CMakeFiles/dart.dir/src/recorder.cpp.o.d -o CMakeFiles/dart.dir/src/recorder.cpp.o -c /home/orange/pi-workspace/DartControl/lib/src/recorder.cpp
+
+lib/CMakeFiles/dart.dir/src/recorder.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dart.dir/src/recorder.cpp.i"
+	cd /home/orange/pi-workspace/DartControl/build/lib && /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/orange/rpi-sysroot $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/orange/pi-workspace/DartControl/lib/src/recorder.cpp > CMakeFiles/dart.dir/src/recorder.cpp.i
+
+lib/CMakeFiles/dart.dir/src/recorder.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dart.dir/src/recorder.cpp.s"
+	cd /home/orange/pi-workspace/DartControl/build/lib && /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/orange/rpi-sysroot $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/orange/pi-workspace/DartControl/lib/src/recorder.cpp -o CMakeFiles/dart.dir/src/recorder.cpp.s
+
 lib/CMakeFiles/dart.dir/src/spi_bmi055_protocol.cpp.o: lib/CMakeFiles/dart.dir/flags.make
 lib/CMakeFiles/dart.dir/src/spi_bmi055_protocol.cpp.o: ../lib/src/spi_bmi055_protocol.cpp
 lib/CMakeFiles/dart.dir/src/spi_bmi055_protocol.cpp.o: lib/CMakeFiles/dart.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/orange/pi-workspace/DartControl/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object lib/CMakeFiles/dart.dir/src/spi_bmi055_protocol.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/orange/pi-workspace/DartControl/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object lib/CMakeFiles/dart.dir/src/spi_bmi055_protocol.cpp.o"
 	cd /home/orange/pi-workspace/DartControl/build/lib && /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/orange/rpi-sysroot $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT lib/CMakeFiles/dart.dir/src/spi_bmi055_protocol.cpp.o -MF CMakeFiles/dart.dir/src/spi_bmi055_protocol.cpp.o.d -o CMakeFiles/dart.dir/src/spi_bmi055_protocol.cpp.o -c /home/orange/pi-workspace/DartControl/lib/src/spi_bmi055_protocol.cpp
 
 lib/CMakeFiles/dart.dir/src/spi_bmi055_protocol.cpp.i: cmake_force
@@ -129,7 +185,11 @@ lib/CMakeFiles/dart.dir/src/spi_bmi055_protocol.cpp.s: cmake_force
 dart_OBJECTS = \
 "CMakeFiles/dart.dir/src/attitude_algorithm.cpp.o" \
 "CMakeFiles/dart.dir/src/bmi055_driver.cpp.o" \
+"CMakeFiles/dart.dir/src/camera.cpp.o" \
 "CMakeFiles/dart.dir/src/capture.cpp.o" \
+"CMakeFiles/dart.dir/src/detector.cpp.o" \
+"CMakeFiles/dart.dir/src/image_streamer.cpp.o" \
+"CMakeFiles/dart.dir/src/recorder.cpp.o" \
 "CMakeFiles/dart.dir/src/spi_bmi055_protocol.cpp.o"
 
 # External object files for target dart
@@ -137,11 +197,15 @@ dart_EXTERNAL_OBJECTS =
 
 lib/libdart.a: lib/CMakeFiles/dart.dir/src/attitude_algorithm.cpp.o
 lib/libdart.a: lib/CMakeFiles/dart.dir/src/bmi055_driver.cpp.o
+lib/libdart.a: lib/CMakeFiles/dart.dir/src/camera.cpp.o
 lib/libdart.a: lib/CMakeFiles/dart.dir/src/capture.cpp.o
+lib/libdart.a: lib/CMakeFiles/dart.dir/src/detector.cpp.o
+lib/libdart.a: lib/CMakeFiles/dart.dir/src/image_streamer.cpp.o
+lib/libdart.a: lib/CMakeFiles/dart.dir/src/recorder.cpp.o
 lib/libdart.a: lib/CMakeFiles/dart.dir/src/spi_bmi055_protocol.cpp.o
 lib/libdart.a: lib/CMakeFiles/dart.dir/build.make
 lib/libdart.a: lib/CMakeFiles/dart.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/orange/pi-workspace/DartControl/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX static library libdart.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/orange/pi-workspace/DartControl/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Linking CXX static library libdart.a"
 	cd /home/orange/pi-workspace/DartControl/build/lib && $(CMAKE_COMMAND) -P CMakeFiles/dart.dir/cmake_clean_target.cmake
 	cd /home/orange/pi-workspace/DartControl/build/lib && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/dart.dir/link.txt --verbose=$(VERBOSE)
 

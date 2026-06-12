@@ -178,6 +178,30 @@ src/bmi055_driver.cpp.s:
 	cd /home/orange/pi-workspace/DartControl/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/dart.dir/build.make lib/CMakeFiles/dart.dir/src/bmi055_driver.cpp.s
 .PHONY : src/bmi055_driver.cpp.s
 
+src/camera.o: src/camera.cpp.o
+.PHONY : src/camera.o
+
+# target to build an object file
+src/camera.cpp.o:
+	cd /home/orange/pi-workspace/DartControl/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/dart.dir/build.make lib/CMakeFiles/dart.dir/src/camera.cpp.o
+.PHONY : src/camera.cpp.o
+
+src/camera.i: src/camera.cpp.i
+.PHONY : src/camera.i
+
+# target to preprocess a source file
+src/camera.cpp.i:
+	cd /home/orange/pi-workspace/DartControl/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/dart.dir/build.make lib/CMakeFiles/dart.dir/src/camera.cpp.i
+.PHONY : src/camera.cpp.i
+
+src/camera.s: src/camera.cpp.s
+.PHONY : src/camera.s
+
+# target to generate assembly for a file
+src/camera.cpp.s:
+	cd /home/orange/pi-workspace/DartControl/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/dart.dir/build.make lib/CMakeFiles/dart.dir/src/camera.cpp.s
+.PHONY : src/camera.cpp.s
+
 src/capture.o: src/capture.cpp.o
 .PHONY : src/capture.o
 
@@ -201,6 +225,78 @@ src/capture.s: src/capture.cpp.s
 src/capture.cpp.s:
 	cd /home/orange/pi-workspace/DartControl/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/dart.dir/build.make lib/CMakeFiles/dart.dir/src/capture.cpp.s
 .PHONY : src/capture.cpp.s
+
+src/detector.o: src/detector.cpp.o
+.PHONY : src/detector.o
+
+# target to build an object file
+src/detector.cpp.o:
+	cd /home/orange/pi-workspace/DartControl/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/dart.dir/build.make lib/CMakeFiles/dart.dir/src/detector.cpp.o
+.PHONY : src/detector.cpp.o
+
+src/detector.i: src/detector.cpp.i
+.PHONY : src/detector.i
+
+# target to preprocess a source file
+src/detector.cpp.i:
+	cd /home/orange/pi-workspace/DartControl/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/dart.dir/build.make lib/CMakeFiles/dart.dir/src/detector.cpp.i
+.PHONY : src/detector.cpp.i
+
+src/detector.s: src/detector.cpp.s
+.PHONY : src/detector.s
+
+# target to generate assembly for a file
+src/detector.cpp.s:
+	cd /home/orange/pi-workspace/DartControl/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/dart.dir/build.make lib/CMakeFiles/dart.dir/src/detector.cpp.s
+.PHONY : src/detector.cpp.s
+
+src/image_streamer.o: src/image_streamer.cpp.o
+.PHONY : src/image_streamer.o
+
+# target to build an object file
+src/image_streamer.cpp.o:
+	cd /home/orange/pi-workspace/DartControl/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/dart.dir/build.make lib/CMakeFiles/dart.dir/src/image_streamer.cpp.o
+.PHONY : src/image_streamer.cpp.o
+
+src/image_streamer.i: src/image_streamer.cpp.i
+.PHONY : src/image_streamer.i
+
+# target to preprocess a source file
+src/image_streamer.cpp.i:
+	cd /home/orange/pi-workspace/DartControl/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/dart.dir/build.make lib/CMakeFiles/dart.dir/src/image_streamer.cpp.i
+.PHONY : src/image_streamer.cpp.i
+
+src/image_streamer.s: src/image_streamer.cpp.s
+.PHONY : src/image_streamer.s
+
+# target to generate assembly for a file
+src/image_streamer.cpp.s:
+	cd /home/orange/pi-workspace/DartControl/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/dart.dir/build.make lib/CMakeFiles/dart.dir/src/image_streamer.cpp.s
+.PHONY : src/image_streamer.cpp.s
+
+src/recorder.o: src/recorder.cpp.o
+.PHONY : src/recorder.o
+
+# target to build an object file
+src/recorder.cpp.o:
+	cd /home/orange/pi-workspace/DartControl/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/dart.dir/build.make lib/CMakeFiles/dart.dir/src/recorder.cpp.o
+.PHONY : src/recorder.cpp.o
+
+src/recorder.i: src/recorder.cpp.i
+.PHONY : src/recorder.i
+
+# target to preprocess a source file
+src/recorder.cpp.i:
+	cd /home/orange/pi-workspace/DartControl/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/dart.dir/build.make lib/CMakeFiles/dart.dir/src/recorder.cpp.i
+.PHONY : src/recorder.cpp.i
+
+src/recorder.s: src/recorder.cpp.s
+.PHONY : src/recorder.s
+
+# target to generate assembly for a file
+src/recorder.cpp.s:
+	cd /home/orange/pi-workspace/DartControl/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/dart.dir/build.make lib/CMakeFiles/dart.dir/src/recorder.cpp.s
+.PHONY : src/recorder.cpp.s
 
 src/spi_bmi055_protocol.o: src/spi_bmi055_protocol.cpp.o
 .PHONY : src/spi_bmi055_protocol.o
@@ -241,9 +337,21 @@ help:
 	@echo "... src/bmi055_driver.o"
 	@echo "... src/bmi055_driver.i"
 	@echo "... src/bmi055_driver.s"
+	@echo "... src/camera.o"
+	@echo "... src/camera.i"
+	@echo "... src/camera.s"
 	@echo "... src/capture.o"
 	@echo "... src/capture.i"
 	@echo "... src/capture.s"
+	@echo "... src/detector.o"
+	@echo "... src/detector.i"
+	@echo "... src/detector.s"
+	@echo "... src/image_streamer.o"
+	@echo "... src/image_streamer.i"
+	@echo "... src/image_streamer.s"
+	@echo "... src/recorder.o"
+	@echo "... src/recorder.i"
+	@echo "... src/recorder.s"
 	@echo "... src/spi_bmi055_protocol.o"
 	@echo "... src/spi_bmi055_protocol.i"
 	@echo "... src/spi_bmi055_protocol.s"

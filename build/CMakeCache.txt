@@ -218,11 +218,188 @@ DartElectricControl_SOURCE_DIR:STATIC=/home/orange/pi-workspace/DartControl
 //The directory containing a CMake configuration file for Eigen3.
 Eigen3_DIR:PATH=/home/orange/rpi-sysroot/usr/share/eigen3/cmake
 
+//Arguments to supply to pkg-config
+PKG_CONFIG_ARGN:STRING=
+
+//pkg-config executable
+PKG_CONFIG_EXECUTABLE:FILEPATH=/usr/bin/pkg-config
+
 //Dependencies for the target
-dart_LIB_DEPENDS:STATIC=general;pigpio;general;gpiod;general;flatbuffers::flatbuffers;general;zstd;general;lz4;
+dart_LIB_DEPENDS:STATIC=general;pigpio;general;gpiod;general;flatbuffers::flatbuffers;general;zstd;general;lz4;general;camera;general;camera-base;general;opencv_stitching;general;opencv_alphamat;general;opencv_aruco;general;opencv_bgsegm;general;opencv_bioinspired;general;opencv_ccalib;general;opencv_cvv;general;opencv_dnn_objdetect;general;opencv_dnn_superres;general;opencv_dpm;general;opencv_face;general;opencv_freetype;general;opencv_fuzzy;general;opencv_hdf;general;opencv_hfs;general;opencv_img_hash;general;opencv_intensity_transform;general;opencv_line_descriptor;general;opencv_mcc;general;opencv_quality;general;opencv_rapid;general;opencv_reg;general;opencv_rgbd;general;opencv_saliency;general;opencv_shape;general;opencv_signal;general;opencv_stereo;general;opencv_structured_light;general;opencv_phase_unwrapping;general;opencv_superres;general;opencv_optflow;general;opencv_surface_matching;general;opencv_tracking;general;opencv_highgui;general;opencv_datasets;general;opencv_text;general;opencv_plot;general;opencv_ml;general;opencv_videostab;general;opencv_videoio;general;opencv_viz;general;opencv_wechat_qrcode;general;opencv_ximgproc;general;opencv_video;general;opencv_xobjdetect;general;opencv_objdetect;general;opencv_calib3d;general;opencv_imgcodecs;general;opencv_features2d;general;opencv_dnn;general;opencv_flann;general;opencv_xphoto;general;opencv_photo;general;opencv_imgproc;general;opencv_core;
 
 //The directory containing a CMake configuration file for flatbuffers.
 flatbuffers_DIR:PATH=/home/orange/rpi-sysroot/usr/local/lib/cmake/flatbuffers
+
+//Path to a library.
+pkgcfg_lib_LIBCAMERA_camera:FILEPATH=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu/libcamera.so
+
+//Path to a library.
+pkgcfg_lib_LIBCAMERA_camera-base:FILEPATH=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu/libcamera-base.so
+
+//Path to a library.
+pkgcfg_lib_OPENCV_opencv_alphamat:FILEPATH=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu/libopencv_alphamat.so
+
+//Path to a library.
+pkgcfg_lib_OPENCV_opencv_aruco:FILEPATH=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu/libopencv_aruco.so
+
+//Path to a library.
+pkgcfg_lib_OPENCV_opencv_bgsegm:FILEPATH=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu/libopencv_bgsegm.so
+
+//Path to a library.
+pkgcfg_lib_OPENCV_opencv_bioinspired:FILEPATH=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu/libopencv_bioinspired.so
+
+//Path to a library.
+pkgcfg_lib_OPENCV_opencv_calib3d:FILEPATH=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu/libopencv_calib3d.so
+
+//Path to a library.
+pkgcfg_lib_OPENCV_opencv_ccalib:FILEPATH=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu/libopencv_ccalib.so
+
+//Path to a library.
+pkgcfg_lib_OPENCV_opencv_core:FILEPATH=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu/libopencv_core.so
+
+//Path to a library.
+pkgcfg_lib_OPENCV_opencv_cvv:FILEPATH=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu/libopencv_cvv.so
+
+//Path to a library.
+pkgcfg_lib_OPENCV_opencv_datasets:FILEPATH=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu/libopencv_datasets.so
+
+//Path to a library.
+pkgcfg_lib_OPENCV_opencv_dnn:FILEPATH=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu/libopencv_dnn.so
+
+//Path to a library.
+pkgcfg_lib_OPENCV_opencv_dnn_objdetect:FILEPATH=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu/libopencv_dnn_objdetect.so
+
+//Path to a library.
+pkgcfg_lib_OPENCV_opencv_dnn_superres:FILEPATH=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu/libopencv_dnn_superres.so
+
+//Path to a library.
+pkgcfg_lib_OPENCV_opencv_dpm:FILEPATH=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu/libopencv_dpm.so
+
+//Path to a library.
+pkgcfg_lib_OPENCV_opencv_face:FILEPATH=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu/libopencv_face.so
+
+//Path to a library.
+pkgcfg_lib_OPENCV_opencv_features2d:FILEPATH=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu/libopencv_features2d.so
+
+//Path to a library.
+pkgcfg_lib_OPENCV_opencv_flann:FILEPATH=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu/libopencv_flann.so
+
+//Path to a library.
+pkgcfg_lib_OPENCV_opencv_freetype:FILEPATH=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu/libopencv_freetype.so
+
+//Path to a library.
+pkgcfg_lib_OPENCV_opencv_fuzzy:FILEPATH=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu/libopencv_fuzzy.so
+
+//Path to a library.
+pkgcfg_lib_OPENCV_opencv_hdf:FILEPATH=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu/libopencv_hdf.so
+
+//Path to a library.
+pkgcfg_lib_OPENCV_opencv_hfs:FILEPATH=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu/libopencv_hfs.so
+
+//Path to a library.
+pkgcfg_lib_OPENCV_opencv_highgui:FILEPATH=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu/libopencv_highgui.so
+
+//Path to a library.
+pkgcfg_lib_OPENCV_opencv_img_hash:FILEPATH=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu/libopencv_img_hash.so
+
+//Path to a library.
+pkgcfg_lib_OPENCV_opencv_imgcodecs:FILEPATH=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu/libopencv_imgcodecs.so
+
+//Path to a library.
+pkgcfg_lib_OPENCV_opencv_imgproc:FILEPATH=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu/libopencv_imgproc.so
+
+//Path to a library.
+pkgcfg_lib_OPENCV_opencv_intensity_transform:FILEPATH=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu/libopencv_intensity_transform.so
+
+//Path to a library.
+pkgcfg_lib_OPENCV_opencv_line_descriptor:FILEPATH=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu/libopencv_line_descriptor.so
+
+//Path to a library.
+pkgcfg_lib_OPENCV_opencv_mcc:FILEPATH=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu/libopencv_mcc.so
+
+//Path to a library.
+pkgcfg_lib_OPENCV_opencv_ml:FILEPATH=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu/libopencv_ml.so
+
+//Path to a library.
+pkgcfg_lib_OPENCV_opencv_objdetect:FILEPATH=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu/libopencv_objdetect.so
+
+//Path to a library.
+pkgcfg_lib_OPENCV_opencv_optflow:FILEPATH=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu/libopencv_optflow.so
+
+//Path to a library.
+pkgcfg_lib_OPENCV_opencv_phase_unwrapping:FILEPATH=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu/libopencv_phase_unwrapping.so
+
+//Path to a library.
+pkgcfg_lib_OPENCV_opencv_photo:FILEPATH=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu/libopencv_photo.so
+
+//Path to a library.
+pkgcfg_lib_OPENCV_opencv_plot:FILEPATH=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu/libopencv_plot.so
+
+//Path to a library.
+pkgcfg_lib_OPENCV_opencv_quality:FILEPATH=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu/libopencv_quality.so
+
+//Path to a library.
+pkgcfg_lib_OPENCV_opencv_rapid:FILEPATH=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu/libopencv_rapid.so
+
+//Path to a library.
+pkgcfg_lib_OPENCV_opencv_reg:FILEPATH=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu/libopencv_reg.so
+
+//Path to a library.
+pkgcfg_lib_OPENCV_opencv_rgbd:FILEPATH=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu/libopencv_rgbd.so
+
+//Path to a library.
+pkgcfg_lib_OPENCV_opencv_saliency:FILEPATH=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu/libopencv_saliency.so
+
+//Path to a library.
+pkgcfg_lib_OPENCV_opencv_shape:FILEPATH=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu/libopencv_shape.so
+
+//Path to a library.
+pkgcfg_lib_OPENCV_opencv_signal:FILEPATH=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu/libopencv_signal.so
+
+//Path to a library.
+pkgcfg_lib_OPENCV_opencv_stereo:FILEPATH=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu/libopencv_stereo.so
+
+//Path to a library.
+pkgcfg_lib_OPENCV_opencv_stitching:FILEPATH=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu/libopencv_stitching.so
+
+//Path to a library.
+pkgcfg_lib_OPENCV_opencv_structured_light:FILEPATH=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu/libopencv_structured_light.so
+
+//Path to a library.
+pkgcfg_lib_OPENCV_opencv_superres:FILEPATH=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu/libopencv_superres.so
+
+//Path to a library.
+pkgcfg_lib_OPENCV_opencv_surface_matching:FILEPATH=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu/libopencv_surface_matching.so
+
+//Path to a library.
+pkgcfg_lib_OPENCV_opencv_text:FILEPATH=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu/libopencv_text.so
+
+//Path to a library.
+pkgcfg_lib_OPENCV_opencv_tracking:FILEPATH=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu/libopencv_tracking.so
+
+//Path to a library.
+pkgcfg_lib_OPENCV_opencv_video:FILEPATH=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu/libopencv_video.so
+
+//Path to a library.
+pkgcfg_lib_OPENCV_opencv_videoio:FILEPATH=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu/libopencv_videoio.so
+
+//Path to a library.
+pkgcfg_lib_OPENCV_opencv_videostab:FILEPATH=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu/libopencv_videostab.so
+
+//Path to a library.
+pkgcfg_lib_OPENCV_opencv_viz:FILEPATH=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu/libopencv_viz.so
+
+//Path to a library.
+pkgcfg_lib_OPENCV_opencv_wechat_qrcode:FILEPATH=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu/libopencv_wechat_qrcode.so
+
+//Path to a library.
+pkgcfg_lib_OPENCV_opencv_ximgproc:FILEPATH=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu/libopencv_ximgproc.so
+
+//Path to a library.
+pkgcfg_lib_OPENCV_opencv_xobjdetect:FILEPATH=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu/libopencv_xobjdetect.so
+
+//Path to a library.
+pkgcfg_lib_OPENCV_opencv_xphoto:FILEPATH=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu/libopencv_xphoto.so
 
 
 ########################
@@ -368,4 +545,199 @@ CMAKE_STRIP-ADVANCED:INTERNAL=1
 CMAKE_UNAME:INTERNAL=/usr/bin/uname
 //ADVANCED property for variable: CMAKE_VERBOSE_MAKEFILE
 CMAKE_VERBOSE_MAKEFILE-ADVANCED:INTERNAL=1
+//Details about finding PkgConfig
+FIND_PACKAGE_MESSAGE_DETAILS_PkgConfig:INTERNAL=[/usr/bin/pkg-config][v1.8.0()]
+LIBCAMERA_CFLAGS:INTERNAL=-I/home/orange/rpi-sysroot/usr/include/libcamera
+LIBCAMERA_CFLAGS_I:INTERNAL=
+LIBCAMERA_CFLAGS_OTHER:INTERNAL=
+LIBCAMERA_FOUND:INTERNAL=1
+LIBCAMERA_INCLUDEDIR:INTERNAL=/home/orange/rpi-sysroot/usr/include
+LIBCAMERA_INCLUDE_DIRS:INTERNAL=/home/orange/rpi-sysroot/usr/include/libcamera
+LIBCAMERA_LDFLAGS:INTERNAL=-L/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu;-lcamera;-lcamera-base
+LIBCAMERA_LDFLAGS_OTHER:INTERNAL=
+LIBCAMERA_LIBDIR:INTERNAL=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu
+LIBCAMERA_LIBRARIES:INTERNAL=camera;camera-base
+LIBCAMERA_LIBRARY_DIRS:INTERNAL=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu
+LIBCAMERA_LIBS:INTERNAL=
+LIBCAMERA_LIBS_L:INTERNAL=
+LIBCAMERA_LIBS_OTHER:INTERNAL=
+LIBCAMERA_LIBS_PATHS:INTERNAL=
+LIBCAMERA_MODULE_NAME:INTERNAL=libcamera
+LIBCAMERA_PREFIX:INTERNAL=/home/orange/rpi-sysroot/usr
+LIBCAMERA_STATIC_CFLAGS:INTERNAL=-I/home/orange/rpi-sysroot/usr/include/libcamera
+LIBCAMERA_STATIC_CFLAGS_I:INTERNAL=
+LIBCAMERA_STATIC_CFLAGS_OTHER:INTERNAL=
+LIBCAMERA_STATIC_INCLUDE_DIRS:INTERNAL=/home/orange/rpi-sysroot/usr/include/libcamera
+LIBCAMERA_STATIC_LDFLAGS:INTERNAL=-L/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu;-lcamera;-lcamera-base
+LIBCAMERA_STATIC_LDFLAGS_OTHER:INTERNAL=
+LIBCAMERA_STATIC_LIBDIR:INTERNAL=
+LIBCAMERA_STATIC_LIBRARIES:INTERNAL=camera;camera-base
+LIBCAMERA_STATIC_LIBRARY_DIRS:INTERNAL=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu
+LIBCAMERA_STATIC_LIBS:INTERNAL=
+LIBCAMERA_STATIC_LIBS_L:INTERNAL=
+LIBCAMERA_STATIC_LIBS_OTHER:INTERNAL=
+LIBCAMERA_STATIC_LIBS_PATHS:INTERNAL=
+LIBCAMERA_VERSION:INTERNAL=0.7.1
+LIBCAMERA_libcamera_INCLUDEDIR:INTERNAL=
+LIBCAMERA_libcamera_LIBDIR:INTERNAL=
+LIBCAMERA_libcamera_PREFIX:INTERNAL=
+LIBCAMERA_libcamera_VERSION:INTERNAL=
+OPENCV_CFLAGS:INTERNAL=-I/home/orange/rpi-sysroot/usr/include/opencv4
+OPENCV_CFLAGS_I:INTERNAL=
+OPENCV_CFLAGS_OTHER:INTERNAL=
+OPENCV_FOUND:INTERNAL=1
+OPENCV_INCLUDEDIR:INTERNAL=/home/orange/rpi-sysroot/usr/include/opencv4
+OPENCV_INCLUDE_DIRS:INTERNAL=/home/orange/rpi-sysroot/usr/include/opencv4
+OPENCV_LDFLAGS:INTERNAL=-L/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu;-lopencv_stitching;-lopencv_alphamat;-lopencv_aruco;-lopencv_bgsegm;-lopencv_bioinspired;-lopencv_ccalib;-lopencv_cvv;-lopencv_dnn_objdetect;-lopencv_dnn_superres;-lopencv_dpm;-lopencv_face;-lopencv_freetype;-lopencv_fuzzy;-lopencv_hdf;-lopencv_hfs;-lopencv_img_hash;-lopencv_intensity_transform;-lopencv_line_descriptor;-lopencv_mcc;-lopencv_quality;-lopencv_rapid;-lopencv_reg;-lopencv_rgbd;-lopencv_saliency;-lopencv_shape;-lopencv_signal;-lopencv_stereo;-lopencv_structured_light;-lopencv_phase_unwrapping;-lopencv_superres;-lopencv_optflow;-lopencv_surface_matching;-lopencv_tracking;-lopencv_highgui;-lopencv_datasets;-lopencv_text;-lopencv_plot;-lopencv_ml;-lopencv_videostab;-lopencv_videoio;-lopencv_viz;-lopencv_wechat_qrcode;-lopencv_ximgproc;-lopencv_video;-lopencv_xobjdetect;-lopencv_objdetect;-lopencv_calib3d;-lopencv_imgcodecs;-lopencv_features2d;-lopencv_dnn;-lopencv_flann;-lopencv_xphoto;-lopencv_photo;-lopencv_imgproc;-lopencv_core
+OPENCV_LDFLAGS_OTHER:INTERNAL=
+OPENCV_LIBDIR:INTERNAL=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu
+OPENCV_LIBRARIES:INTERNAL=opencv_stitching;opencv_alphamat;opencv_aruco;opencv_bgsegm;opencv_bioinspired;opencv_ccalib;opencv_cvv;opencv_dnn_objdetect;opencv_dnn_superres;opencv_dpm;opencv_face;opencv_freetype;opencv_fuzzy;opencv_hdf;opencv_hfs;opencv_img_hash;opencv_intensity_transform;opencv_line_descriptor;opencv_mcc;opencv_quality;opencv_rapid;opencv_reg;opencv_rgbd;opencv_saliency;opencv_shape;opencv_signal;opencv_stereo;opencv_structured_light;opencv_phase_unwrapping;opencv_superres;opencv_optflow;opencv_surface_matching;opencv_tracking;opencv_highgui;opencv_datasets;opencv_text;opencv_plot;opencv_ml;opencv_videostab;opencv_videoio;opencv_viz;opencv_wechat_qrcode;opencv_ximgproc;opencv_video;opencv_xobjdetect;opencv_objdetect;opencv_calib3d;opencv_imgcodecs;opencv_features2d;opencv_dnn;opencv_flann;opencv_xphoto;opencv_photo;opencv_imgproc;opencv_core
+OPENCV_LIBRARY_DIRS:INTERNAL=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu
+OPENCV_LIBS:INTERNAL=
+OPENCV_LIBS_L:INTERNAL=
+OPENCV_LIBS_OTHER:INTERNAL=
+OPENCV_LIBS_PATHS:INTERNAL=
+OPENCV_MODULE_NAME:INTERNAL=opencv4
+OPENCV_PREFIX:INTERNAL=/home/orange/rpi-sysroot/usr
+OPENCV_STATIC_CFLAGS:INTERNAL=-I/home/orange/rpi-sysroot/usr/include/opencv4
+OPENCV_STATIC_CFLAGS_I:INTERNAL=
+OPENCV_STATIC_CFLAGS_OTHER:INTERNAL=
+OPENCV_STATIC_INCLUDE_DIRS:INTERNAL=/home/orange/rpi-sysroot/usr/include/opencv4
+OPENCV_STATIC_LDFLAGS:INTERNAL=-L/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu;-lopencv_stitching;-lopencv_alphamat;-lopencv_aruco;-lopencv_bgsegm;-lopencv_bioinspired;-lopencv_ccalib;-lopencv_cvv;-lopencv_dnn_objdetect;-lopencv_dnn_superres;-lopencv_dpm;-lopencv_face;-lopencv_freetype;-lopencv_fuzzy;-lopencv_hdf;-lopencv_hfs;-lopencv_img_hash;-lopencv_intensity_transform;-lopencv_line_descriptor;-lopencv_mcc;-lopencv_quality;-lopencv_rapid;-lopencv_reg;-lopencv_rgbd;-lopencv_saliency;-lopencv_shape;-lopencv_signal;-lopencv_stereo;-lopencv_structured_light;-lopencv_phase_unwrapping;-lopencv_superres;-lopencv_optflow;-lopencv_surface_matching;-lopencv_tracking;-lopencv_highgui;-lopencv_datasets;-lopencv_text;-lopencv_plot;-lopencv_ml;-lopencv_videostab;-lopencv_videoio;-lopencv_viz;-lopencv_wechat_qrcode;-lopencv_ximgproc;-lopencv_video;-lopencv_xobjdetect;-lopencv_objdetect;-lopencv_calib3d;-lopencv_imgcodecs;-lopencv_features2d;-lopencv_dnn;-lopencv_flann;-lopencv_xphoto;-lopencv_photo;-lopencv_imgproc;-lopencv_core;-ldl;-lm;-lpthread;-lrt
+OPENCV_STATIC_LDFLAGS_OTHER:INTERNAL=
+OPENCV_STATIC_LIBDIR:INTERNAL=
+OPENCV_STATIC_LIBRARIES:INTERNAL=opencv_stitching;opencv_alphamat;opencv_aruco;opencv_bgsegm;opencv_bioinspired;opencv_ccalib;opencv_cvv;opencv_dnn_objdetect;opencv_dnn_superres;opencv_dpm;opencv_face;opencv_freetype;opencv_fuzzy;opencv_hdf;opencv_hfs;opencv_img_hash;opencv_intensity_transform;opencv_line_descriptor;opencv_mcc;opencv_quality;opencv_rapid;opencv_reg;opencv_rgbd;opencv_saliency;opencv_shape;opencv_signal;opencv_stereo;opencv_structured_light;opencv_phase_unwrapping;opencv_superres;opencv_optflow;opencv_surface_matching;opencv_tracking;opencv_highgui;opencv_datasets;opencv_text;opencv_plot;opencv_ml;opencv_videostab;opencv_videoio;opencv_viz;opencv_wechat_qrcode;opencv_ximgproc;opencv_video;opencv_xobjdetect;opencv_objdetect;opencv_calib3d;opencv_imgcodecs;opencv_features2d;opencv_dnn;opencv_flann;opencv_xphoto;opencv_photo;opencv_imgproc;opencv_core;dl;m;pthread;rt
+OPENCV_STATIC_LIBRARY_DIRS:INTERNAL=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu
+OPENCV_STATIC_LIBS:INTERNAL=
+OPENCV_STATIC_LIBS_L:INTERNAL=
+OPENCV_STATIC_LIBS_OTHER:INTERNAL=
+OPENCV_STATIC_LIBS_PATHS:INTERNAL=
+OPENCV_VERSION:INTERNAL=4.10.0
+OPENCV_opencv4_INCLUDEDIR:INTERNAL=
+OPENCV_opencv4_LIBDIR:INTERNAL=
+OPENCV_opencv4_PREFIX:INTERNAL=
+OPENCV_opencv4_VERSION:INTERNAL=
+//ADVANCED property for variable: PKG_CONFIG_ARGN
+PKG_CONFIG_ARGN-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: PKG_CONFIG_EXECUTABLE
+PKG_CONFIG_EXECUTABLE-ADVANCED:INTERNAL=1
+__pkg_config_arguments_LIBCAMERA:INTERNAL=REQUIRED;libcamera
+__pkg_config_arguments_OPENCV:INTERNAL=REQUIRED;opencv4
+__pkg_config_checked_LIBCAMERA:INTERNAL=1
+__pkg_config_checked_OPENCV:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_LIBCAMERA_camera
+pkgcfg_lib_LIBCAMERA_camera-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_LIBCAMERA_camera-base
+pkgcfg_lib_LIBCAMERA_camera-base-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_OPENCV_opencv_alphamat
+pkgcfg_lib_OPENCV_opencv_alphamat-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_OPENCV_opencv_aruco
+pkgcfg_lib_OPENCV_opencv_aruco-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_OPENCV_opencv_bgsegm
+pkgcfg_lib_OPENCV_opencv_bgsegm-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_OPENCV_opencv_bioinspired
+pkgcfg_lib_OPENCV_opencv_bioinspired-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_OPENCV_opencv_calib3d
+pkgcfg_lib_OPENCV_opencv_calib3d-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_OPENCV_opencv_ccalib
+pkgcfg_lib_OPENCV_opencv_ccalib-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_OPENCV_opencv_core
+pkgcfg_lib_OPENCV_opencv_core-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_OPENCV_opencv_cvv
+pkgcfg_lib_OPENCV_opencv_cvv-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_OPENCV_opencv_datasets
+pkgcfg_lib_OPENCV_opencv_datasets-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_OPENCV_opencv_dnn
+pkgcfg_lib_OPENCV_opencv_dnn-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_OPENCV_opencv_dnn_objdetect
+pkgcfg_lib_OPENCV_opencv_dnn_objdetect-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_OPENCV_opencv_dnn_superres
+pkgcfg_lib_OPENCV_opencv_dnn_superres-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_OPENCV_opencv_dpm
+pkgcfg_lib_OPENCV_opencv_dpm-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_OPENCV_opencv_face
+pkgcfg_lib_OPENCV_opencv_face-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_OPENCV_opencv_features2d
+pkgcfg_lib_OPENCV_opencv_features2d-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_OPENCV_opencv_flann
+pkgcfg_lib_OPENCV_opencv_flann-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_OPENCV_opencv_freetype
+pkgcfg_lib_OPENCV_opencv_freetype-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_OPENCV_opencv_fuzzy
+pkgcfg_lib_OPENCV_opencv_fuzzy-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_OPENCV_opencv_hdf
+pkgcfg_lib_OPENCV_opencv_hdf-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_OPENCV_opencv_hfs
+pkgcfg_lib_OPENCV_opencv_hfs-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_OPENCV_opencv_highgui
+pkgcfg_lib_OPENCV_opencv_highgui-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_OPENCV_opencv_img_hash
+pkgcfg_lib_OPENCV_opencv_img_hash-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_OPENCV_opencv_imgcodecs
+pkgcfg_lib_OPENCV_opencv_imgcodecs-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_OPENCV_opencv_imgproc
+pkgcfg_lib_OPENCV_opencv_imgproc-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_OPENCV_opencv_intensity_transform
+pkgcfg_lib_OPENCV_opencv_intensity_transform-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_OPENCV_opencv_line_descriptor
+pkgcfg_lib_OPENCV_opencv_line_descriptor-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_OPENCV_opencv_mcc
+pkgcfg_lib_OPENCV_opencv_mcc-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_OPENCV_opencv_ml
+pkgcfg_lib_OPENCV_opencv_ml-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_OPENCV_opencv_objdetect
+pkgcfg_lib_OPENCV_opencv_objdetect-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_OPENCV_opencv_optflow
+pkgcfg_lib_OPENCV_opencv_optflow-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_OPENCV_opencv_phase_unwrapping
+pkgcfg_lib_OPENCV_opencv_phase_unwrapping-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_OPENCV_opencv_photo
+pkgcfg_lib_OPENCV_opencv_photo-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_OPENCV_opencv_plot
+pkgcfg_lib_OPENCV_opencv_plot-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_OPENCV_opencv_quality
+pkgcfg_lib_OPENCV_opencv_quality-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_OPENCV_opencv_rapid
+pkgcfg_lib_OPENCV_opencv_rapid-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_OPENCV_opencv_reg
+pkgcfg_lib_OPENCV_opencv_reg-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_OPENCV_opencv_rgbd
+pkgcfg_lib_OPENCV_opencv_rgbd-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_OPENCV_opencv_saliency
+pkgcfg_lib_OPENCV_opencv_saliency-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_OPENCV_opencv_shape
+pkgcfg_lib_OPENCV_opencv_shape-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_OPENCV_opencv_signal
+pkgcfg_lib_OPENCV_opencv_signal-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_OPENCV_opencv_stereo
+pkgcfg_lib_OPENCV_opencv_stereo-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_OPENCV_opencv_stitching
+pkgcfg_lib_OPENCV_opencv_stitching-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_OPENCV_opencv_structured_light
+pkgcfg_lib_OPENCV_opencv_structured_light-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_OPENCV_opencv_superres
+pkgcfg_lib_OPENCV_opencv_superres-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_OPENCV_opencv_surface_matching
+pkgcfg_lib_OPENCV_opencv_surface_matching-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_OPENCV_opencv_text
+pkgcfg_lib_OPENCV_opencv_text-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_OPENCV_opencv_tracking
+pkgcfg_lib_OPENCV_opencv_tracking-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_OPENCV_opencv_video
+pkgcfg_lib_OPENCV_opencv_video-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_OPENCV_opencv_videoio
+pkgcfg_lib_OPENCV_opencv_videoio-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_OPENCV_opencv_videostab
+pkgcfg_lib_OPENCV_opencv_videostab-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_OPENCV_opencv_viz
+pkgcfg_lib_OPENCV_opencv_viz-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_OPENCV_opencv_wechat_qrcode
+pkgcfg_lib_OPENCV_opencv_wechat_qrcode-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_OPENCV_opencv_ximgproc
+pkgcfg_lib_OPENCV_opencv_ximgproc-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_OPENCV_opencv_xobjdetect
+pkgcfg_lib_OPENCV_opencv_xobjdetect-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_OPENCV_opencv_xphoto
+pkgcfg_lib_OPENCV_opencv_xphoto-ADVANCED:INTERNAL=1
+prefix_result:INTERNAL=/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu
 

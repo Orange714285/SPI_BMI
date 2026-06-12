@@ -512,6 +512,39 @@ app/CMakeFiles/DartElectricControl.dir/src/main.cpp.o: \
  /usr/aarch64-linux-gnu/include/c++/11/unordered_set \
  /usr/aarch64-linux-gnu/include/c++/11/bits/unordered_set.h \
  /home/orange/pi-workspace/DartControl/lib/include/data_type.hpp \
+ /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/libcamera.h \
+ /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/camera.h \
+ /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/base/class.h \
+ /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/base/flags.h \
+ /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/base/object.h \
+ /usr/aarch64-linux-gnu/include/c++/11/list \
+ /usr/aarch64-linux-gnu/include/c++/11/bits/stl_list.h \
+ /usr/aarch64-linux-gnu/include/c++/11/bits/list.tcc \
+ /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/base/bound_method.h \
+ /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/base/signal.h \
+ /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/controls.h \
+ /usr/aarch64-linux-gnu/include/c++/11/map \
+ /usr/aarch64-linux-gnu/include/c++/11/bits/stl_map.h \
+ /usr/aarch64-linux-gnu/include/c++/11/bits/stl_multimap.h \
+ /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/base/span.h \
+ /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/geometry.h \
+ /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/orientation.h \
+ /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/request.h \
+ /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/fence.h \
+ /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/base/unique_fd.h \
+ /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/stream.h \
+ /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/color_space.h \
+ /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/framebuffer.h \
+ /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/base/shared_fd.h \
+ /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/pixel_format.h \
+ /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/camera_manager.h \
+ /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/control_ids.h \
+ /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/formats.h \
+ /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/framebuffer_allocator.h \
+ /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/logging.h \
+ /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/property_ids.h \
+ /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/transform.h \
+ /home/orange/rpi-sysroot/usr/include/libcamera/libcamera/version.h \
  /usr/aarch64-linux-gnu/include/c++/11/csignal \
  /usr/aarch64-linux-gnu/include/signal.h \
  /usr/aarch64-linux-gnu/include/bits/signum-generic.h \

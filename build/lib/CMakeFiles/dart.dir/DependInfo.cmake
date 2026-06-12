@@ -10,7 +10,11 @@ set(CMAKE_DEPENDS_LANGUAGES
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/orange/pi-workspace/DartControl/lib/src/attitude_algorithm.cpp" "lib/CMakeFiles/dart.dir/src/attitude_algorithm.cpp.o" "gcc" "lib/CMakeFiles/dart.dir/src/attitude_algorithm.cpp.o.d"
   "/home/orange/pi-workspace/DartControl/lib/src/bmi055_driver.cpp" "lib/CMakeFiles/dart.dir/src/bmi055_driver.cpp.o" "gcc" "lib/CMakeFiles/dart.dir/src/bmi055_driver.cpp.o.d"
+  "/home/orange/pi-workspace/DartControl/lib/src/camera.cpp" "lib/CMakeFiles/dart.dir/src/camera.cpp.o" "gcc" "lib/CMakeFiles/dart.dir/src/camera.cpp.o.d"
   "/home/orange/pi-workspace/DartControl/lib/src/capture.cpp" "lib/CMakeFiles/dart.dir/src/capture.cpp.o" "gcc" "lib/CMakeFiles/dart.dir/src/capture.cpp.o.d"
+  "/home/orange/pi-workspace/DartControl/lib/src/detector.cpp" "lib/CMakeFiles/dart.dir/src/detector.cpp.o" "gcc" "lib/CMakeFiles/dart.dir/src/detector.cpp.o.d"
+  "/home/orange/pi-workspace/DartControl/lib/src/image_streamer.cpp" "lib/CMakeFiles/dart.dir/src/image_streamer.cpp.o" "gcc" "lib/CMakeFiles/dart.dir/src/image_streamer.cpp.o.d"
+  "/home/orange/pi-workspace/DartControl/lib/src/recorder.cpp" "lib/CMakeFiles/dart.dir/src/recorder.cpp.o" "gcc" "lib/CMakeFiles/dart.dir/src/recorder.cpp.o.d"
   "/home/orange/pi-workspace/DartControl/lib/src/spi_bmi055_protocol.cpp" "lib/CMakeFiles/dart.dir/src/spi_bmi055_protocol.cpp.o" "gcc" "lib/CMakeFiles/dart.dir/src/spi_bmi055_protocol.cpp.o.d"
   )
 

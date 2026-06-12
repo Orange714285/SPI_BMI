@@ -79,5 +79,5 @@ endif()
 
 set(CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES "/usr/aarch64-linux-gnu/include/c++/11;/usr/aarch64-linux-gnu/include/c++/11/aarch64-linux-gnu;/usr/aarch64-linux-gnu/include/c++/11/backward;/usr/lib/gcc-cross/aarch64-linux-gnu/11/include;/usr/aarch64-linux-gnu/include;/home/orange/rpi-sysroot/usr/include/aarch64-linux-gnu;/home/orange/rpi-sysroot/usr/include")
 set(CMAKE_CXX_IMPLICIT_LINK_LIBRARIES "stdc++;m;gcc_s;gcc;c;gcc_s;gcc")
-set(CMAKE_CXX_IMPLICIT_LINK_DIRECTORIES "/usr/lib/gcc-cross/aarch64-linux-gnu/11;/usr/aarch64-linux-gnu/lib;/home/orange/rpi-sysroot/lib/aarch64-linux-gnu;/home/orange/rpi-sysroot/lib;/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu;/home/orange/rpi-sysroot/usr/lib")
+set(CMAKE_CXX_IMPLICIT_LINK_DIRECTORIES "/home/orange/rpi-sysroot/usr/lib/aarch64-linux-gnu;/home/orange/rpi-sysroot/usr/lib/gcc/aarch64-linux-gnu/14;/usr/lib/gcc-cross/aarch64-linux-gnu/11;/usr/aarch64-linux-gnu/lib;/home/orange/rpi-sysroot/lib/aarch64-linux-gnu;/home/orange/rpi-sysroot/lib;/home/orange/rpi-sysroot/usr/lib")
 set(CMAKE_CXX_IMPLICIT_LINK_FRAMEWORK_DIRECTORIES "")
