@@ -1,8 +1,0 @@
-/home/orange/pi-workspace/DartControl/build/CMakeFiles/edit_cache.dir
-/home/orange/pi-workspace/DartControl/build/CMakeFiles/rebuild_cache.dir
-/home/orange/pi-workspace/DartControl/build/lib/CMakeFiles/dart.dir
-/home/orange/pi-workspace/DartControl/build/lib/CMakeFiles/edit_cache.dir
-/home/orange/pi-workspace/DartControl/build/lib/CMakeFiles/rebuild_cache.dir
-/home/orange/pi-workspace/DartControl/build/app/CMakeFiles/DartElectricControl.dir
-/home/orange/pi-workspace/DartControl/build/app/CMakeFiles/edit_cache.dir
-/home/orange/pi-workspace/DartControl/build/app/CMakeFiles/rebuild_cache.dir
