@@ -36,7 +36,11 @@ struct CarData FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
     VT_PITCH = 20,
     VT_INDEX = 22,
     VT_CPU_USAGE = 24,
-    VT_FPS = 26
+    VT_FPS = 26,
+    VT_TARGET_PIXEL_X = 28,
+    VT_TARGET_PIXEL_Y = 30,
+    VT_TARGET_STATUS = 32,
+    VT_FRAME_DT_MS = 34
   };
   float acc_frd_x_mg() const {
     return GetField<float>(VT_ACC_FRD_X_MG, 0.0f);
@@ -74,6 +78,18 @@ struct CarData FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   double fps() const {
     return GetField<double>(VT_FPS, 0.0);
   }
+  int32_t target_pixel_x() const {
+    return GetField<int32_t>(VT_TARGET_PIXEL_X, 0);
+  }
+  int32_t target_pixel_y() const {
+    return GetField<int32_t>(VT_TARGET_PIXEL_Y, 0);
+  }
+  int32_t target_status() const {
+    return GetField<int32_t>(VT_TARGET_STATUS, 0);
+  }
+  int32_t frame_dt_ms() const {
+    return GetField<int32_t>(VT_FRAME_DT_MS, 0);
+  }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<float>(verifier, VT_ACC_FRD_X_MG, 4) &&
@@ -88,6 +104,10 @@ struct CarData FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
            VerifyField<float>(verifier, VT_INDEX, 4) &&
            VerifyField<double>(verifier, VT_CPU_USAGE, 8) &&
            VerifyField<double>(verifier, VT_FPS, 8) &&
+           VerifyField<int32_t>(verifier, VT_TARGET_PIXEL_X, 4) &&
+           VerifyField<int32_t>(verifier, VT_TARGET_PIXEL_Y, 4) &&
+           VerifyField<int32_t>(verifier, VT_TARGET_STATUS, 4) &&
+           VerifyField<int32_t>(verifier, VT_FRAME_DT_MS, 4) &&
            verifier.EndTable();
   }
 };
@@ -132,6 +152,18 @@ struct CarDataBuilder {
   void add_fps(double fps) {
     fbb_.AddElement<double>(CarData::VT_FPS, fps, 0.0);
   }
+  void add_target_pixel_x(int32_t target_pixel_x) {
+    fbb_.AddElement<int32_t>(CarData::VT_TARGET_PIXEL_X, target_pixel_x, 0);
+  }
+  void add_target_pixel_y(int32_t target_pixel_y) {
+    fbb_.AddElement<int32_t>(CarData::VT_TARGET_PIXEL_Y, target_pixel_y, 0);
+  }
+  void add_target_status(int32_t target_status) {
+    fbb_.AddElement<int32_t>(CarData::VT_TARGET_STATUS, target_status, 0);
+  }
+  void add_frame_dt_ms(int32_t frame_dt_ms) {
+    fbb_.AddElement<int32_t>(CarData::VT_FRAME_DT_MS, frame_dt_ms, 0);
+  }
   explicit CarDataBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
@@ -156,10 +188,18 @@ inline ::flatbuffers::Offset<CarData> CreateCarData(
     float pitch = 0.0f,
     float index = 0.0f,
     double cpu_usage = 0.0,
-    double fps = 0.0) {
+    double fps = 0.0,
+    int32_t target_pixel_x = 0,
+    int32_t target_pixel_y = 0,
+    int32_t target_status = 0,
+    int32_t frame_dt_ms = 0) {
   CarDataBuilder builder_(_fbb);
   builder_.add_fps(fps);
   builder_.add_cpu_usage(cpu_usage);
+  builder_.add_frame_dt_ms(frame_dt_ms);
+  builder_.add_target_status(target_status);
+  builder_.add_target_pixel_y(target_pixel_y);
+  builder_.add_target_pixel_x(target_pixel_x);
   builder_.add_index(index);
   builder_.add_pitch(pitch);
   builder_.add_yaw(yaw);

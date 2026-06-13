@@ -11,14 +11,11 @@ Detector::Detector()
     m_state = State::LOST;
 }
 
-Detector::~Detector()
-{
-}
-
+Detector::~Detector(){}
 void Detector::detect_and_draw_lights(cv::Mat &frame)
 {
     m_now = std::chrono::steady_clock::now();
-    m_detect_result.frame_dtMs = static_cast<uint16_t>(
+    m_vision_data.m_frame_dt_ms = static_cast<double>(
         std::chrono::duration_cast<std::chrono::milliseconds>(m_now - m_last).count());
     m_last = m_now;
 
@@ -68,21 +65,22 @@ void Detector::detect_and_draw_lights(cv::Mat &frame)
         cv::Rect best_bbox_on_frame(
             best_bbox.x + m_roi_rect.x, best_bbox.y + m_roi_rect.y,
             best_bbox.width, best_bbox.height);
-        m_detect_result.pixel_x = best_bbox_on_frame.x + best_bbox_on_frame.width  / 2.0f;
-        m_detect_result.pixel_y = best_bbox_on_frame.y + best_bbox_on_frame.height / 2.0f;
+        m_vision_data.m_target_pixel_x = best_bbox_on_frame.x + best_bbox_on_frame.width  / 2.0;
+        m_vision_data.m_target_pixel_y = best_bbox_on_frame.y + best_bbox_on_frame.height / 2.0;
         cv::rectangle(frame, best_bbox_on_frame, cv::Scalar(255, 255, 0), 1);
+        m_vision_data.m_target_status = 1.0;
         m_state = State::FOUND;
     }
     else
     {
-        m_detect_result.pixel_x = 0;
-        m_detect_result.pixel_y = 0;
+        m_vision_data.m_target_pixel_x = 0;
+        m_vision_data.m_target_pixel_y = 0;
+        m_vision_data.m_target_status = 0.0;
         m_state = State::LOST;
     }
 
     m_index++;
-    m_detect_result.index = m_index;
-    m_sum_dtMs += m_detect_result.frame_dtMs;
+    m_sum_dtMs += static_cast<uint64_t>(m_vision_data.m_frame_dt_ms);
     cv::putText(frame, "Time:" + std::to_string(m_sum_dtMs) + "Ms",
                 cv::Point(30, 30), cv::FONT_HERSHEY_SIMPLEX,
                 0.5, cv::Scalar(255, 255, 255), 1, cv::LINE_AA);
@@ -105,8 +103,8 @@ void Detector::set_roi(const cv::Size& frame_size)
     }
     else if (m_state == State::FOUND)
     {
-        const int roi_x = static_cast<int>(std::round(m_detect_result.pixel_x - m_roi_width  / 2.0));
-        const int roi_y = static_cast<int>(std::round(m_detect_result.pixel_y - m_roi_height / 2.0));
+        const int roi_x = static_cast<int>(std::round(m_vision_data.m_target_pixel_x - m_roi_width  / 2.0));
+        const int roi_y = static_cast<int>(std::round(m_vision_data.m_target_pixel_y - m_roi_height / 2.0));
         m_roi_rect = cv::Rect(roi_x, roi_y, m_roi_width, m_roi_height) & frame_rect;
 
         if (m_roi_rect.width <= 0 || m_roi_rect.height <= 0)

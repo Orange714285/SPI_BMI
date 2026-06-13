@@ -66,7 +66,11 @@ bool Capture::update(CarData& car_data)
         car_data.pitch,
         car_data.index,
         car_data.m_cpu_usage,
-        car_data.m_fps
+        car_data.m_fps,
+        car_data.m_target_pixel_x,
+        car_data.m_target_pixel_y,
+        car_data.m_target_status,
+        car_data.m_frame_dt_ms
     );
     m_builder.Finish(foxglove_car_data);
 

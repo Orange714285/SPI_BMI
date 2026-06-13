@@ -6,8 +6,10 @@
 
 struct VisionData
 {
-    int m_light_pixel_x;
-    int m_light_pixel_y;
+    int m_target_pixel_x{0};
+    int m_target_pixel_y{0};
+    int m_target_status{0};
+    int m_frame_dt_ms{0};
 };
 
 struct FrameData
@@ -38,6 +40,11 @@ public:
     double m_cpu_usage;
     double m_fps;
 
+    int m_target_pixel_x;
+    int m_target_pixel_y;
+    int m_target_status;
+    int  m_frame_dt_ms;
+
     void data_update(float acc_x, float acc_y, float acc_z,
                    float gyro_x, float gyro_y, float gyro_z,
                    float r, float p, float y, float idx,double cpu_usage,double fps)
@@ -54,6 +61,14 @@ public:
         index = idx;
         m_cpu_usage = cpu_usage;
         m_fps = fps;
+    }
+
+    void vision_update(const VisionData& v)
+    {
+        m_target_pixel_x = v.m_target_pixel_x;
+        m_target_pixel_y = v.m_target_pixel_y;
+        m_target_status  = v.m_target_status;
+        m_frame_dt_ms    = v.m_frame_dt_ms;
     }
 
     void print(std::string_view state_label) const

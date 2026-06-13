@@ -4,21 +4,38 @@
 #include "attitude_algorithm.hpp"
 #include "capture.hpp"
 #include "data_type.hpp"
+#include <camera.hpp>
+#include <detector.hpp>
+#include <image_streamer.hpp>
+#include <recorder.hpp>
+
 #include <chrono>
 #include <thread>
 #include <csignal>
 #include <atomic>
 #include <tools/cpu_monitor.hpp>
 #include <tools/frame_counter.hpp>
+
 std::atomic<bool> g_running{true};
 int dart_state = 0;
+
+std::atomic<VisionData> g_vision_data;
 
 void signal_handler(int )
 {
     g_running.store(false);
 }
-
+void dart_control();
+void dart_vision();
 int main() 
+{
+    std::thread dart_control_thread(dart_control);
+    std::thread dart_vision_thread(dart_vision);
+    dart_control_thread.join();
+    dart_vision_thread.join();
+}
+
+void dart_control()
 {
     BMI055 bmi055;
     AccAttitudeAlgorithmer acc_attitude_algorithmer;
@@ -30,17 +47,16 @@ int main()
     {
         std::cerr << "[ERROR] Capturer init failed! " << std::endl;
         capturer.finish();
-        return -1;
+        return ;
     }
     if (!bmi055.BMI055_init())
     {
         std::cerr << "[ERROR] BMI055 init failed!" << std::endl;
-        return -1;
+        return ;
     }
     std::cerr << "[INFO] BMI055 init successed!" << std::endl;
 
     signal(SIGINT, signal_handler);
-    std::cout << "\033[2J\033[H";
 
     enum State { PRE_FLIGHT, FLIGHT };
     State state = PRE_FLIGHT;
@@ -56,17 +72,17 @@ int main()
             if (!bmi055.acc_wait_for_new_info())
             {
                 std::cerr << "[ERROR] acc_wait_for_new_info failed!" << std::endl;
-                return 0;
+                return ;
             }
             if (!bmi055.acc_get_accd_all_mg())
             {
                 std::cerr << "[ERROR] acc_get_accd_mg failed!" << std::endl;
-                return 0;
+                return ;
             }
             if (!bmi055.gyr_get_rate_all_dps())
             {
                 std::cerr << "[ERROR] gyro get all rate dps failed!" << std::endl;
-                return 0;
+                return ;
         // ==================
             }
         }
@@ -76,17 +92,17 @@ int main()
             if (!bmi055.gyr_wait_for_new_info())
             {
                 std::cerr << "[ERROR] gyr_wait_for_new_info failed!" << std::endl;
-                return 0;
+                return ;
             }
             if (!bmi055.gyr_get_rate_all_dps())
             {
                 std::cerr << "[ERROR] gyr_get_rate_all_deg_per_s failed!" << std::endl;
-                return 0;
+                return ;
             }
             if (!bmi055.acc_get_accd_all_mg())
             {
                 std::cerr << "[ERROR] acc_get_accd_mg failed!" << std::endl;
-                return 0;
+                return ;
             }
         }
 		// ================ imu -> frd 转系 ================
@@ -121,6 +137,7 @@ int main()
         float roll  = (state == PRE_FLIGHT) ? acc_attitude_algorithmer.m_roll  : gyro_attitude_algorithmer.m_roll;
         float pitch = (state == PRE_FLIGHT) ? acc_attitude_algorithmer.m_pitch : gyro_attitude_algorithmer.m_pitch;
         float yaw   = (state == PRE_FLIGHT) ? 0.0f : gyro_attitude_algorithmer.m_yaw;
+
         CpuMonitor::sample();
         FrameCounter::tick();
         dart_data.data_update(
@@ -132,9 +149,40 @@ int main()
             gyro_attitude_algorithmer.m_frd_gyro_z,
             roll, pitch, yaw,
             bmi055.index,CpuMonitor::usage(),FrameCounter::fps());
+        dart_data.vision_update(g_vision_data.load());
         capturer.update(dart_data);
+        
     }
     capturer.finish();
     std::cout << "[INFO] Received SIGINT, exiting cleanly." << std::endl;
-    return 0;
+    return ;
+}
+void dart_vision()
+{
+    signal(SIGINT, signal_handler);
+    Camera ov5647;
+    Detector detector;
+
+    if (!ov5647.start())
+    {
+        ov5647.stop();
+        return ;
+    }
+
+    while (g_running.load())
+    {
+        cv::Mat frame = ov5647.wait_and_get_latest_frame();
+        detector.detect_and_draw_lights(frame);
+        g_vision_data.store(detector.m_vision_data);
+        if (!g_running.load())
+            break;
+        if (frame.empty())
+        {
+            std::cout << "Frame empty!" << std::endl;
+            break;
+        }
+    }
+
+    ov5647.stop();
+    return ;
 }
