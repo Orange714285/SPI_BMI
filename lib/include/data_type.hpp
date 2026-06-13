@@ -21,10 +21,12 @@ public:
     float yaw;
     float pitch;
     float index;
+    double m_cpu_usage;
+    double m_fps;
 
     void data_update(float acc_x, float acc_y, float acc_z,
                    float gyro_x, float gyro_y, float gyro_z,
-                   float r, float p, float y, float idx)
+                   float r, float p, float y, float idx,double cpu_usage,double fps)
     {
         acc_frd_x_mg  = acc_x;
         acc_frd_y_mg  = acc_y;
@@ -36,6 +38,8 @@ public:
         pitch = p;
         yaw   = y;
         index = idx;
+        m_cpu_usage = cpu_usage;
+        m_fps = fps;
     }
 
     void print(std::string_view state_label) const

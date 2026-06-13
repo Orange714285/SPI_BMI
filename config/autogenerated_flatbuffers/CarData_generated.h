@@ -13,6 +13,9 @@ static_assert(FLATBUFFERS_VERSION_MAJOR == 25 &&
               FLATBUFFERS_VERSION_REVISION == 10,
              "Non-compatible flatbuffers version included");
 
+// For access to the binary schema that produced this file.
+#include "CarData_bfbs_generated.h"
+
 namespace foxglove {
 
 struct CarData;
@@ -20,6 +23,7 @@ struct CarDataBuilder;
 
 struct CarData FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef CarDataBuilder Builder;
+  typedef foxglove::CarDataBinarySchema BinarySchema;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_ACC_FRD_X_MG = 4,
     VT_ACC_FRD_Y_MG = 6,
@@ -30,7 +34,9 @@ struct CarData FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
     VT_ROLL = 16,
     VT_YAW = 18,
     VT_PITCH = 20,
-    VT_INDEX = 22
+    VT_INDEX = 22,
+    VT_CPU_USAGE = 24,
+    VT_FPS = 26
   };
   float acc_frd_x_mg() const {
     return GetField<float>(VT_ACC_FRD_X_MG, 0.0f);
@@ -62,6 +68,12 @@ struct CarData FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   float index() const {
     return GetField<float>(VT_INDEX, 0.0f);
   }
+  double cpu_usage() const {
+    return GetField<double>(VT_CPU_USAGE, 0.0);
+  }
+  double fps() const {
+    return GetField<double>(VT_FPS, 0.0);
+  }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<float>(verifier, VT_ACC_FRD_X_MG, 4) &&
@@ -74,6 +86,8 @@ struct CarData FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
            VerifyField<float>(verifier, VT_YAW, 4) &&
            VerifyField<float>(verifier, VT_PITCH, 4) &&
            VerifyField<float>(verifier, VT_INDEX, 4) &&
+           VerifyField<double>(verifier, VT_CPU_USAGE, 8) &&
+           VerifyField<double>(verifier, VT_FPS, 8) &&
            verifier.EndTable();
   }
 };
@@ -112,6 +126,12 @@ struct CarDataBuilder {
   void add_index(float index) {
     fbb_.AddElement<float>(CarData::VT_INDEX, index, 0.0f);
   }
+  void add_cpu_usage(double cpu_usage) {
+    fbb_.AddElement<double>(CarData::VT_CPU_USAGE, cpu_usage, 0.0);
+  }
+  void add_fps(double fps) {
+    fbb_.AddElement<double>(CarData::VT_FPS, fps, 0.0);
+  }
   explicit CarDataBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
@@ -134,8 +154,12 @@ inline ::flatbuffers::Offset<CarData> CreateCarData(
     float roll = 0.0f,
     float yaw = 0.0f,
     float pitch = 0.0f,
-    float index = 0.0f) {
+    float index = 0.0f,
+    double cpu_usage = 0.0,
+    double fps = 0.0) {
   CarDataBuilder builder_(_fbb);
+  builder_.add_fps(fps);
+  builder_.add_cpu_usage(cpu_usage);
   builder_.add_index(index);
   builder_.add_pitch(pitch);
   builder_.add_yaw(yaw);

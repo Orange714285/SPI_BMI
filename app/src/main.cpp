@@ -8,7 +8,8 @@
 #include <thread>
 #include <csignal>
 #include <atomic>
-
+#include <tools/cpu_monitor.hpp>
+#include <tools/frame_counter.hpp>
 std::atomic<bool> g_running{true};
 int dart_state = 0;
 void signal_handler(int signum)
@@ -42,6 +43,7 @@ int main()
 
     enum State { PRE_FLIGHT, FLIGHT };
     State state = PRE_FLIGHT;
+    CpuMonitor::sample();   // 建立基准
     while (g_running)
     {
         bmi055.index++;
@@ -118,7 +120,8 @@ int main()
         float roll  = (state == PRE_FLIGHT) ? acc_attitude_algorithmer.m_roll  : gyro_attitude_algorithmer.m_roll;
         float pitch = (state == PRE_FLIGHT) ? acc_attitude_algorithmer.m_pitch : gyro_attitude_algorithmer.m_pitch;
         float yaw   = (state == PRE_FLIGHT) ? 0.0f : gyro_attitude_algorithmer.m_yaw;
-
+        CpuMonitor::sample();
+        FrameCounter::tick();
         dart_data.data_update(
             acc_attitude_algorithmer.m_frd_acc_x,
             acc_attitude_algorithmer.m_frd_acc_y,
@@ -127,11 +130,8 @@ int main()
             gyro_attitude_algorithmer.m_frd_gyro_y,
             gyro_attitude_algorithmer.m_frd_gyro_z,
             roll, pitch, yaw,
-            bmi055.index);
+            bmi055.index,CpuMonitor::usage(),FrameCounter::fps());
         capturer.update(dart_data);
-        dart_data.print(state == PRE_FLIGHT ? "PRE_FLIGHT" : "FLIGHT");
-        
-
     }
     capturer.finish();
     std::cout << "[INFO] Received SIGINT, exiting cleanly." << std::endl;

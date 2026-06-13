@@ -11,6 +11,8 @@ table CarData
     roll : float;
     yaw : float;
     pitch : float;
-    index : float; 
+    index : float;
+    cpu_usage : double;
+    fps : double;
 }
 root_type CarData;
