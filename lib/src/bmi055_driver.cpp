@@ -656,7 +656,7 @@ bool BMI055::gyr_self_test()
         std::cerr << "[ERROR] gyr_self_test: spi stop failed!" << std::endl;
         return false;
     }
-    if (!(receive >>4 ) == 0x01)
+    if (!((receive >> 4) == 0x01))
     {
         std::cout << std::hex << static_cast<int>(receive) << std::dec << std::endl;      
         std::cerr << "[ERROR] gyr_self_test: sensor function has something wrong!" << std::endl;

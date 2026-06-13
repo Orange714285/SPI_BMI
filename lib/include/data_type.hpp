@@ -1,11 +1,25 @@
 # pragma once
 #include <iostream>
 #include <string_view>
+#include <cstdint>
+#include <libcamera/libcamera.h>
 
 struct VisionData
 {
     int m_light_pixel_x;
     int m_light_pixel_y;
+};
+
+struct FrameData
+{
+    libcamera::FrameBuffer::Plane plane;
+    unsigned int width = 0;
+    unsigned int height = 0;
+    unsigned int stride = 0;
+    uint64_t sequence = 0;
+    bool valid = false;
+
+    FrameData():plane{libcamera::SharedFD(-1),0,0}{}
 };
 
 class CarData

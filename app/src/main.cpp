@@ -12,7 +12,8 @@
 #include <tools/frame_counter.hpp>
 std::atomic<bool> g_running{true};
 int dart_state = 0;
-void signal_handler(int signum)
+
+void signal_handler(int )
 {
     g_running.store(false);
 }
