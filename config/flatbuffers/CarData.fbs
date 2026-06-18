@@ -14,5 +14,9 @@ table CarData
     index : float;
     cpu_usage : double;
     fps : double;
+    target_pixel_x : int;
+    target_pixel_y : int;
+    target_status : int;
+    frame_dt_ms : int;
 }
 root_type CarData;

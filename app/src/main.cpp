@@ -4,43 +4,62 @@
 #include "attitude_algorithm.hpp"
 #include "capture.hpp"
 #include "data_type.hpp"
+#include <camera.hpp>
+#include <detector.hpp>
+#include <image_streamer.hpp>
+
 #include <chrono>
 #include <thread>
 #include <csignal>
 #include <atomic>
 #include <tools/cpu_monitor.hpp>
 #include <tools/frame_counter.hpp>
+
 std::atomic<bool> g_running{true};
 int dart_state = 0;
+
+std::atomic<VisionData> g_vision_data;
 
 void signal_handler(int )
 {
     g_running.store(false);
 }
-
+void dart_control(Capturer& capturer);
+void dart_vision(Capturer& capturer);
 int main() 
+{
+    // 创建唯一 Capturer，电控和视频写入同一个 .mcap 文件
+    Capturer capturer;
+    if (!capturer.init())
+    {
+        std::cerr << "[ERROR] Capturer init failed!" << std::endl;
+        capturer.finish();
+        return -1;
+    }
+
+    std::thread dart_control_thread(dart_control, std::ref(capturer));
+    std::thread dart_vision_thread(dart_vision, std::ref(capturer));
+    dart_control_thread.join();
+    dart_vision_thread.join();
+    capturer.finish();
+    std::cout << "[INFO] Exiting cleanly." << std::endl;
+}
+
+void dart_control(Capturer& capturer)
 {
     BMI055 bmi055;
     AccAttitudeAlgorithmer acc_attitude_algorithmer;
     GyroAttitudeAlgorithmer gyro_attitude_algorithmer;
     CarData dart_data;
-    Capture capturer;
 
-    if (!capturer.init())
-    {
-        std::cerr << "[ERROR] Capturer init failed! " << std::endl;
-        capturer.finish();
-        return -1;
-    }
     if (!bmi055.BMI055_init())
     {
         std::cerr << "[ERROR] BMI055 init failed!" << std::endl;
-        return -1;
+        return ;
     }
     std::cerr << "[INFO] BMI055 init successed!" << std::endl;
 
     signal(SIGINT, signal_handler);
-    std::cout << "\033[2J\033[H";
 
     enum State { PRE_FLIGHT, FLIGHT };
     State state = PRE_FLIGHT;
@@ -56,17 +75,17 @@ int main()
             if (!bmi055.acc_wait_for_new_info())
             {
                 std::cerr << "[ERROR] acc_wait_for_new_info failed!" << std::endl;
-                return 0;
+                return ;
             }
             if (!bmi055.acc_get_accd_all_mg())
             {
                 std::cerr << "[ERROR] acc_get_accd_mg failed!" << std::endl;
-                return 0;
+                return ;
             }
             if (!bmi055.gyr_get_rate_all_dps())
             {
                 std::cerr << "[ERROR] gyro get all rate dps failed!" << std::endl;
-                return 0;
+                return ;
         // ==================
             }
         }
@@ -76,20 +95,20 @@ int main()
             if (!bmi055.gyr_wait_for_new_info())
             {
                 std::cerr << "[ERROR] gyr_wait_for_new_info failed!" << std::endl;
-                return 0;
+                return ;
             }
             if (!bmi055.gyr_get_rate_all_dps())
             {
                 std::cerr << "[ERROR] gyr_get_rate_all_deg_per_s failed!" << std::endl;
-                return 0;
+                return ;
             }
             if (!bmi055.acc_get_accd_all_mg())
             {
                 std::cerr << "[ERROR] acc_get_accd_mg failed!" << std::endl;
-                return 0;
+                return ;
             }
         }
-		// ================ imu -> frd 转系 ================
+			// ================ imu -> frd 转系 ================
         acc_attitude_algorithmer.transform_coordinate(
                 bmi055.m_acc_imu_accd_x_mg,
                 bmi055.m_acc_imu_accd_y_mg,
@@ -98,7 +117,7 @@ int main()
                 bmi055.m_gyr_rate_x_dps,
                 bmi055.m_gyr_rate_y_dps,
                 bmi055.m_gyr_rate_z_dps);
-		// ==================== 姿态解算 ====================
+			// ==================== 姿态解算 ====================
         if (state == PRE_FLIGHT)
         {
             acc_attitude_algorithmer.algorithmer();
@@ -121,6 +140,7 @@ int main()
         float roll  = (state == PRE_FLIGHT) ? acc_attitude_algorithmer.m_roll  : gyro_attitude_algorithmer.m_roll;
         float pitch = (state == PRE_FLIGHT) ? acc_attitude_algorithmer.m_pitch : gyro_attitude_algorithmer.m_pitch;
         float yaw   = (state == PRE_FLIGHT) ? 0.0f : gyro_attitude_algorithmer.m_yaw;
+
         CpuMonitor::sample();
         FrameCounter::tick();
         dart_data.data_update(
@@ -132,9 +152,48 @@ int main()
             gyro_attitude_algorithmer.m_frd_gyro_z,
             roll, pitch, yaw,
             bmi055.index,CpuMonitor::usage(),FrameCounter::fps());
-        capturer.update(dart_data);
+        dart_data.vision_update(g_vision_data.load());
+        capturer.update_car_data(dart_data);
+        
     }
-    capturer.finish();
-    std::cout << "[INFO] Received SIGINT, exiting cleanly." << std::endl;
-    return 0;
+    std::cout << "[INFO] dart_control thread received SIGINT, exiting cleanly." << std::endl;
+    return ;
+}
+void dart_vision(Capturer& capturer)
+{
+    signal(SIGINT, signal_handler);
+    Camera ov5647;
+    Detector detector;
+    ImageStreamer image_streamer;
+    if (!ov5647.start())
+    {
+        ov5647.stop();
+        std::cerr << "[ERROR] Camera init failed!" << std::endl;
+        return ;
+    }
+    int index = 0;
+    while (g_running.load())
+    {
+        cv::Mat frame = ov5647.wait_and_get_latest_frame();
+        detector.detect_and_draw_lights(frame);
+        g_vision_data.store(detector.m_vision_data);
+        if (!g_running.load())
+            break;
+        if (frame.empty())
+        {
+            std::cout << "Frame empty!" << std::endl;
+            break;
+        }
+        // ── 视频帧写入共享的 MCAP 文件 ──
+        image_streamer.send(frame);
+        index ++;
+        if (index%2 ==0)
+        {   
+            capturer.write_video_frame(frame, 50);
+        }
+    }
+
+    ov5647.stop();
+    std::cout << "[INFO] dart_vision thread exiting cleanly." << std::endl;
+    return ;
 }

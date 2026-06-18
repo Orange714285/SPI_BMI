@@ -2,6 +2,7 @@
 
 #include <chrono>
 #include <ctime>
+#include <deque>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -11,19 +12,19 @@
 /**
  * @brief CPU 占用率监控（全静态方法，无需实例化）
  *
- * 通过两次读取 /proc/stat 的差值计算占用率。
+ * 通过多次读取 /proc/stat 的滑动窗口计算最近 0.5s 的平均占用率。
  *
  * 用法：
- *   CpuMonitor::sample();                     // 初始采样
+ *   CpuMonitor::sample();                     // 初始采样（建立基准）
  *   // ... 主循环每帧调一次 ...
  *   CpuMonitor::sample();
- *   double usage = CpuMonitor::usage();        // 获取当前占用率 (%)
+ *   double usage = CpuMonitor::usage();        // 最近 0.5s 平均占用率 (%)
  *   CpuMonitor::log_to_csv("cpu.csv");         // 写入 20260611_173000_cpu.csv
  */
 class CpuMonitor
 {
 public:
-    /** @brief 读取 /proc/stat 并计算当前 CPU 占用率 */
+    /** @brief 读取 /proc/stat 并存入滑动窗口 */
     static void sample()
     {
         std::ifstream stat("/proc/stat");
@@ -42,26 +43,55 @@ public:
         size_t total = user + nice + system + idle + iowait + irq + softirq + steal;
         size_t idle_total = idle + iowait;  // iowait 也视为空闲
 
-        if (s_has_prev)
-        {
-            size_t delta_total = total - s_prev_total;
-            size_t delta_idle  = idle_total - s_prev_idle;
-            s_last_usage = (delta_total > 0)
-                ? (1.0 - static_cast<double>(delta_idle) / delta_total) * 100.0
-                : 0.0;
-        }
-        else
-        {
-            s_last_usage = 0.0;   // 首次采样，尚无差值
-        }
+        auto now = std::chrono::steady_clock::now();
+        s_history.push_back({now, total, idle_total});
 
-        s_prev_total = total;
-        s_prev_idle  = idle_total;
-        s_has_prev   = true;
+        // 限制历史长度，防止无限增长
+        while (s_history.size() > s_max_history)
+            s_history.pop_front();
     }
 
-    /** @brief 返回最近一次 sample() 计算的 CPU 占用率 (0~100)，未采样则返回 -1 */
-    static double usage() { return s_last_usage; }
+    /**
+     * @brief 返回最近 0.5s 的平均 CPU 占用率 (0~100)
+     *
+     * 从滑动窗口中剔除超过 500ms 的旧采样点，
+     * 用最早有效点和最新点的计数差值计算平均占用率。
+     * 若窗口内不足 2 个采样点，返回 0。
+     */
+    static double usage()
+    {
+        if (s_history.size() < 2)
+            return 0.0;
+
+        auto now = std::chrono::steady_clock::now();
+        constexpr auto window = std::chrono::milliseconds(500);
+
+        // 剔除窗口外的旧采样点（保留至少 2 个）
+        while (s_history.size() > 2)
+        {
+            auto age = std::chrono::duration_cast<std::chrono::milliseconds>(
+                now - s_history.front().timestamp);
+            if (age > window)
+                s_history.pop_front();
+            else
+                break;
+        }
+
+        if (s_history.size() < 2)
+            return 0.0;
+
+        const auto& oldest = s_history.front();
+        const auto& newest = s_history.back();
+
+        size_t delta_total = newest.total - oldest.total;
+        size_t delta_idle  = newest.idle  - oldest.idle;
+
+        if (delta_total == 0)
+            return 0.0;
+
+        s_last_usage = (1.0 - static_cast<double>(delta_idle) / delta_total) * 100.0;
+        return s_last_usage;
+    }
 
     /**
      * @brief 将当前时间戳和 CPU 占用率追加到 CSV 文件
@@ -92,13 +122,21 @@ public:
 
         out << std::put_time(&tm, "%Y-%m-%d %H:%M:%S")
             << ", " << std::fixed << std::setprecision(1)
-            << s_last_usage << "%\n";
+            << usage() << "%\n";   // 使用滑动窗口平均值
     }
 
 private:
-    inline static size_t s_prev_total  = 0;
-    inline static size_t s_prev_idle   = 0;
+    struct Snapshot
+    {
+        std::chrono::steady_clock::time_point timestamp;
+        size_t total;
+        size_t idle;
+    };
+
+    inline static std::deque<Snapshot> s_history;
     inline static double s_last_usage  = -1.0;
-    inline static bool   s_has_prev    = false;
     inline static std::string s_filename;
+
+    // 800Hz × 1s = 800 个采样点足够覆盖 0.5s 窗口
+    static constexpr size_t s_max_history = 1024;
 };

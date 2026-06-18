@@ -1,0 +1,47 @@
+[
+{
+  "directory": "/home/orange/pi-workspace/DartControl/build/lib",
+  "command": "/usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/orange/rpi-sysroot  -I/home/orange/pi-workspace/DartControl/lib/include -I/home/orange/pi-workspace/DartControl/config -I/home/orange/rpi-sysroot/usr/include/libcamera -I/home/orange/rpi-sysroot/usr/include/opencv4 -isystem /home/orange/rpi-sysroot/usr/include/eigen3 -isystem /home/orange/rpi-sysroot/usr/local/include -g -O3 -march=armv8-a -Wall -Wextra -std=gnu++17 -o CMakeFiles/dart.dir/src/attitude_algorithm.cpp.o -c /home/orange/pi-workspace/DartControl/lib/src/attitude_algorithm.cpp",
+  "file": "/home/orange/pi-workspace/DartControl/lib/src/attitude_algorithm.cpp"
+},
+{
+  "directory": "/home/orange/pi-workspace/DartControl/build/lib",
+  "command": "/usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/orange/rpi-sysroot  -I/home/orange/pi-workspace/DartControl/lib/include -I/home/orange/pi-workspace/DartControl/config -I/home/orange/rpi-sysroot/usr/include/libcamera -I/home/orange/rpi-sysroot/usr/include/opencv4 -isystem /home/orange/rpi-sysroot/usr/include/eigen3 -isystem /home/orange/rpi-sysroot/usr/local/include -g -O3 -march=armv8-a -Wall -Wextra -std=gnu++17 -o CMakeFiles/dart.dir/src/bmi055_driver.cpp.o -c /home/orange/pi-workspace/DartControl/lib/src/bmi055_driver.cpp",
+  "file": "/home/orange/pi-workspace/DartControl/lib/src/bmi055_driver.cpp"
+},
+{
+  "directory": "/home/orange/pi-workspace/DartControl/build/lib",
+  "command": "/usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/orange/rpi-sysroot  -I/home/orange/pi-workspace/DartControl/lib/include -I/home/orange/pi-workspace/DartControl/config -I/home/orange/rpi-sysroot/usr/include/libcamera -I/home/orange/rpi-sysroot/usr/include/opencv4 -isystem /home/orange/rpi-sysroot/usr/include/eigen3 -isystem /home/orange/rpi-sysroot/usr/local/include -g -O3 -march=armv8-a -Wall -Wextra -std=gnu++17 -o CMakeFiles/dart.dir/src/camera.cpp.o -c /home/orange/pi-workspace/DartControl/lib/src/camera.cpp",
+  "file": "/home/orange/pi-workspace/DartControl/lib/src/camera.cpp"
+},
+{
+  "directory": "/home/orange/pi-workspace/DartControl/build/lib",
+  "command": "/usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/orange/rpi-sysroot  -I/home/orange/pi-workspace/DartControl/lib/include -I/home/orange/pi-workspace/DartControl/config -I/home/orange/rpi-sysroot/usr/include/libcamera -I/home/orange/rpi-sysroot/usr/include/opencv4 -isystem /home/orange/rpi-sysroot/usr/include/eigen3 -isystem /home/orange/rpi-sysroot/usr/local/include -g -O3 -march=armv8-a -Wall -Wextra -std=gnu++17 -o CMakeFiles/dart.dir/src/capture.cpp.o -c /home/orange/pi-workspace/DartControl/lib/src/capture.cpp",
+  "file": "/home/orange/pi-workspace/DartControl/lib/src/capture.cpp"
+},
+{
+  "directory": "/home/orange/pi-workspace/DartControl/build/lib",
+  "command": "/usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/orange/rpi-sysroot  -I/home/orange/pi-workspace/DartControl/lib/include -I/home/orange/pi-workspace/DartControl/config -I/home/orange/rpi-sysroot/usr/include/libcamera -I/home/orange/rpi-sysroot/usr/include/opencv4 -isystem /home/orange/rpi-sysroot/usr/include/eigen3 -isystem /home/orange/rpi-sysroot/usr/local/include -g -O3 -march=armv8-a -Wall -Wextra -std=gnu++17 -o CMakeFiles/dart.dir/src/detector.cpp.o -c /home/orange/pi-workspace/DartControl/lib/src/detector.cpp",
+  "file": "/home/orange/pi-workspace/DartControl/lib/src/detector.cpp"
+},
+{
+  "directory": "/home/orange/pi-workspace/DartControl/build/lib",
+  "command": "/usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/orange/rpi-sysroot  -I/home/orange/pi-workspace/DartControl/lib/include -I/home/orange/pi-workspace/DartControl/config -I/home/orange/rpi-sysroot/usr/include/libcamera -I/home/orange/rpi-sysroot/usr/include/opencv4 -isystem /home/orange/rpi-sysroot/usr/include/eigen3 -isystem /home/orange/rpi-sysroot/usr/local/include -g -O3 -march=armv8-a -Wall -Wextra -std=gnu++17 -o CMakeFiles/dart.dir/src/image_streamer.cpp.o -c /home/orange/pi-workspace/DartControl/lib/src/image_streamer.cpp",
+  "file": "/home/orange/pi-workspace/DartControl/lib/src/image_streamer.cpp"
+},
+{
+  "directory": "/home/orange/pi-workspace/DartControl/build/lib",
+  "command": "/usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/orange/rpi-sysroot  -I/home/orange/pi-workspace/DartControl/lib/include -I/home/orange/pi-workspace/DartControl/config -I/home/orange/rpi-sysroot/usr/include/libcamera -I/home/orange/rpi-sysroot/usr/include/opencv4 -isystem /home/orange/rpi-sysroot/usr/include/eigen3 -isystem /home/orange/rpi-sysroot/usr/local/include -g -O3 -march=armv8-a -Wall -Wextra -std=gnu++17 -o CMakeFiles/dart.dir/src/recorder.cpp.o -c /home/orange/pi-workspace/DartControl/lib/src/recorder.cpp",
+  "file": "/home/orange/pi-workspace/DartControl/lib/src/recorder.cpp"
+},
+{
+  "directory": "/home/orange/pi-workspace/DartControl/build/lib",
+  "command": "/usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/orange/rpi-sysroot  -I/home/orange/pi-workspace/DartControl/lib/include -I/home/orange/pi-workspace/DartControl/config -I/home/orange/rpi-sysroot/usr/include/libcamera -I/home/orange/rpi-sysroot/usr/include/opencv4 -isystem /home/orange/rpi-sysroot/usr/include/eigen3 -isystem /home/orange/rpi-sysroot/usr/local/include -g -O3 -march=armv8-a -Wall -Wextra -std=gnu++17 -o CMakeFiles/dart.dir/src/spi_bmi055_protocol.cpp.o -c /home/orange/pi-workspace/DartControl/lib/src/spi_bmi055_protocol.cpp",
+  "file": "/home/orange/pi-workspace/DartControl/lib/src/spi_bmi055_protocol.cpp"
+},
+{
+  "directory": "/home/orange/pi-workspace/DartControl/build/app",
+  "command": "/usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/orange/rpi-sysroot  -I/home/orange/pi-workspace/DartControl/app/include -I/home/orange/pi-workspace/DartControl/lib/include -I/home/orange/pi-workspace/DartControl/config -I/home/orange/rpi-sysroot/usr/include/libcamera -I/home/orange/rpi-sysroot/usr/include/opencv4 -isystem /home/orange/rpi-sysroot/usr/include/eigen3 -isystem /home/orange/rpi-sysroot/usr/local/include -g -O3 -march=armv8-a -Wall -Wextra -std=gnu++17 -o CMakeFiles/DartElectricControl.dir/src/main.cpp.o -c /home/orange/pi-workspace/DartControl/app/src/main.cpp",
+  "file": "/home/orange/pi-workspace/DartControl/app/src/main.cpp"
+}
+]

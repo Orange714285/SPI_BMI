@@ -7,6 +7,7 @@
 #include <opencv2/core/mat.hpp>
 #include <opencv2/core/types.hpp>
 
+#include <data_type.hpp>
 #include <config.hpp>
 
 enum class State
@@ -24,6 +25,9 @@ public:
     void detect_and_draw_lights(cv::Mat &frame);
     void set_hsv_params(int h_low, int h_high, int s_low, int s_high, int v_low, int v_high);
 
+public:
+    VisionData m_vision_data;
+
 private:
     // ── HSV 阈值 (OpenCV: H=0..180, S/V=0..255) ──
     int m_h_low  = config::HSV_H_LOW,   m_h_high = config::HSV_H_HIGH;
@@ -33,16 +37,6 @@ private:
     int m_roi_height                  = config::ROI_HEIGHT;
     double m_best_circularity_standard = config::BEST_CIRCULARITY_STANDARD;
 
-    // ── 检测结果 ──
-    class DetectResult
-    {
-    public:
-        int     index      = 0;
-        float   pixel_x    = 0;
-        float   pixel_y    = 0;
-        uint16_t frame_dtMs = 0;
-    };
-    DetectResult m_detect_result;
     State m_state = State::LOST;
 
     cv::Rect m_roi_rect{0, 0, 0, 0};
@@ -52,7 +46,6 @@ private:
     std::chrono::steady_clock::time_point m_last{};
 
     int     m_index    = 0;
-    size_t  m_sum_dtMs = 0;
 
     // ── 可复用的工作缓冲区 ──
     std::vector<std::vector<cv::Point>> m_contours;
