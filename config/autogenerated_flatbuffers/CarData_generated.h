@@ -34,13 +34,9 @@ struct CarData FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
     VT_ROLL = 16,
     VT_YAW = 18,
     VT_PITCH = 20,
-    VT_INDEX = 22,
-    VT_CPU_USAGE = 24,
-    VT_FPS = 26,
-    VT_TARGET_PIXEL_X = 28,
-    VT_TARGET_PIXEL_Y = 30,
-    VT_TARGET_STATUS = 32,
-    VT_FRAME_DT_MS = 34
+    VT_IMU_INDEX = 22,
+    VT_IMU_FPS = 24,
+    VT_CPU_USAGE = 26
   };
   float acc_frd_x_mg() const {
     return GetField<float>(VT_ACC_FRD_X_MG, 0.0f);
@@ -69,26 +65,14 @@ struct CarData FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   float pitch() const {
     return GetField<float>(VT_PITCH, 0.0f);
   }
-  float index() const {
-    return GetField<float>(VT_INDEX, 0.0f);
+  int32_t IMU_index() const {
+    return GetField<int32_t>(VT_IMU_INDEX, 0);
   }
-  double cpu_usage() const {
-    return GetField<double>(VT_CPU_USAGE, 0.0);
+  int32_t IMU_fps() const {
+    return GetField<int32_t>(VT_IMU_FPS, 0);
   }
-  double fps() const {
-    return GetField<double>(VT_FPS, 0.0);
-  }
-  int32_t target_pixel_x() const {
-    return GetField<int32_t>(VT_TARGET_PIXEL_X, 0);
-  }
-  int32_t target_pixel_y() const {
-    return GetField<int32_t>(VT_TARGET_PIXEL_Y, 0);
-  }
-  int32_t target_status() const {
-    return GetField<int32_t>(VT_TARGET_STATUS, 0);
-  }
-  int32_t frame_dt_ms() const {
-    return GetField<int32_t>(VT_FRAME_DT_MS, 0);
+  int32_t cpu_usage() const {
+    return GetField<int32_t>(VT_CPU_USAGE, 0);
   }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
@@ -101,13 +85,9 @@ struct CarData FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
            VerifyField<float>(verifier, VT_ROLL, 4) &&
            VerifyField<float>(verifier, VT_YAW, 4) &&
            VerifyField<float>(verifier, VT_PITCH, 4) &&
-           VerifyField<float>(verifier, VT_INDEX, 4) &&
-           VerifyField<double>(verifier, VT_CPU_USAGE, 8) &&
-           VerifyField<double>(verifier, VT_FPS, 8) &&
-           VerifyField<int32_t>(verifier, VT_TARGET_PIXEL_X, 4) &&
-           VerifyField<int32_t>(verifier, VT_TARGET_PIXEL_Y, 4) &&
-           VerifyField<int32_t>(verifier, VT_TARGET_STATUS, 4) &&
-           VerifyField<int32_t>(verifier, VT_FRAME_DT_MS, 4) &&
+           VerifyField<int32_t>(verifier, VT_IMU_INDEX, 4) &&
+           VerifyField<int32_t>(verifier, VT_IMU_FPS, 4) &&
+           VerifyField<int32_t>(verifier, VT_CPU_USAGE, 4) &&
            verifier.EndTable();
   }
 };
@@ -143,26 +123,14 @@ struct CarDataBuilder {
   void add_pitch(float pitch) {
     fbb_.AddElement<float>(CarData::VT_PITCH, pitch, 0.0f);
   }
-  void add_index(float index) {
-    fbb_.AddElement<float>(CarData::VT_INDEX, index, 0.0f);
+  void add_IMU_index(int32_t IMU_index) {
+    fbb_.AddElement<int32_t>(CarData::VT_IMU_INDEX, IMU_index, 0);
   }
-  void add_cpu_usage(double cpu_usage) {
-    fbb_.AddElement<double>(CarData::VT_CPU_USAGE, cpu_usage, 0.0);
+  void add_IMU_fps(int32_t IMU_fps) {
+    fbb_.AddElement<int32_t>(CarData::VT_IMU_FPS, IMU_fps, 0);
   }
-  void add_fps(double fps) {
-    fbb_.AddElement<double>(CarData::VT_FPS, fps, 0.0);
-  }
-  void add_target_pixel_x(int32_t target_pixel_x) {
-    fbb_.AddElement<int32_t>(CarData::VT_TARGET_PIXEL_X, target_pixel_x, 0);
-  }
-  void add_target_pixel_y(int32_t target_pixel_y) {
-    fbb_.AddElement<int32_t>(CarData::VT_TARGET_PIXEL_Y, target_pixel_y, 0);
-  }
-  void add_target_status(int32_t target_status) {
-    fbb_.AddElement<int32_t>(CarData::VT_TARGET_STATUS, target_status, 0);
-  }
-  void add_frame_dt_ms(int32_t frame_dt_ms) {
-    fbb_.AddElement<int32_t>(CarData::VT_FRAME_DT_MS, frame_dt_ms, 0);
+  void add_cpu_usage(int32_t cpu_usage) {
+    fbb_.AddElement<int32_t>(CarData::VT_CPU_USAGE, cpu_usage, 0);
   }
   explicit CarDataBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
@@ -186,21 +154,13 @@ inline ::flatbuffers::Offset<CarData> CreateCarData(
     float roll = 0.0f,
     float yaw = 0.0f,
     float pitch = 0.0f,
-    float index = 0.0f,
-    double cpu_usage = 0.0,
-    double fps = 0.0,
-    int32_t target_pixel_x = 0,
-    int32_t target_pixel_y = 0,
-    int32_t target_status = 0,
-    int32_t frame_dt_ms = 0) {
+    int32_t IMU_index = 0,
+    int32_t IMU_fps = 0,
+    int32_t cpu_usage = 0) {
   CarDataBuilder builder_(_fbb);
-  builder_.add_fps(fps);
   builder_.add_cpu_usage(cpu_usage);
-  builder_.add_frame_dt_ms(frame_dt_ms);
-  builder_.add_target_status(target_status);
-  builder_.add_target_pixel_y(target_pixel_y);
-  builder_.add_target_pixel_x(target_pixel_x);
-  builder_.add_index(index);
+  builder_.add_IMU_fps(IMU_fps);
+  builder_.add_IMU_index(IMU_index);
   builder_.add_pitch(pitch);
   builder_.add_yaw(yaw);
   builder_.add_roll(roll);

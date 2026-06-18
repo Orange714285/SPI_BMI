@@ -1,0 +1,11 @@
+namespace foxglove;
+
+table Vision
+{
+    target_pixel_x : int;
+    target_pixel_y : int;
+    target_status : int;
+    frame_dt_ms : int;
+    video_fps : int;
+}
+root_type Vision;

@@ -151,8 +151,7 @@ void dart_control(Capturer& capturer)
             gyro_attitude_algorithmer.m_frd_gyro_y,
             gyro_attitude_algorithmer.m_frd_gyro_z,
             roll, pitch, yaw,
-            bmi055.index,CpuMonitor::usage(),FrameCounter::fps());
-        dart_data.vision_update(g_vision_data.load());
+            static_cast<int>(bmi055.index), static_cast<int>(CpuMonitor::usage()), static_cast<int>(FrameCounter::fps()));
         capturer.update_car_data(dart_data);
         
     }
@@ -164,7 +163,6 @@ void dart_vision(Capturer& capturer)
     signal(SIGINT, signal_handler);
     Camera ov5647;
     Detector detector;
-    ImageStreamer image_streamer;
     if (!ov5647.start())
     {
         ov5647.stop();
@@ -176,7 +174,11 @@ void dart_vision(Capturer& capturer)
     {
         cv::Mat frame = ov5647.wait_and_get_latest_frame();
         detector.detect_and_draw_lights(frame);
-        g_vision_data.store(detector.m_vision_data);
+        VideoFrameCounter::tick();  // 每检测一帧 tick
+        VisionData vd = detector.vision_data();
+        vd.m_video_fps = VideoFrameCounter::fps();
+        g_vision_data.store(vd);    // 保留：供 control 线程读取目标坐标
+
         if (!g_running.load())
             break;
         if (frame.empty())
@@ -184,12 +186,14 @@ void dart_vision(Capturer& capturer)
             std::cout << "Frame empty!" << std::endl;
             break;
         }
+        // ── 视觉检测数据写入 MCAP（vision 线程独立写入）──
+        capturer.write_vision_data(vd.m_target_pixel_x, vd.m_target_pixel_y,
+                                   vd.m_target_status, vd.m_frame_dt_ms, vd.m_video_fps);
         // ── 视频帧写入共享的 MCAP 文件 ──
-        image_streamer.send(frame);
         index ++;
-        if (index%2 ==0)
-        {   
-            capturer.write_video_frame(frame, 50);
+        if (index%1 ==0)
+        {
+            // capturer.write_video_frame(frame, 1);
         }
     }
 

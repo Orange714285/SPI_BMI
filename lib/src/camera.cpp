@@ -43,7 +43,7 @@ bool Camera::start()
 
     // Configure the camera
     std::unique_ptr<libcamera::CameraConfiguration> camera_configuration =
-        m_camera->generateConfiguration({libcamera::StreamRole::VideoRecording});
+        m_camera->generateConfiguration({libcamera::StreamRole::Raw});
     libcamera::StreamConfiguration &stream_configuration = camera_configuration->at(0);
     std::cout << "Default viewfinder configuration is: "
               << stream_configuration.toString() << std::endl;
@@ -51,11 +51,12 @@ bool Camera::start()
     // Change and validate the configuration
     stream_configuration.size.width = m_width;
     stream_configuration.size.height = m_height;
-    stream_configuration.pixelFormat = libcamera::formats::RGB888;
+    stream_configuration.pixelFormat = libcamera::formats::SRGGB8;
+    stream_configuration.bufferCount = 4;
+    camera_configuration->validate();
     m_stride = stream_configuration.stride;
 
-    camera_configuration->validate();
-    std::cout << "Validated viewfinder configuration is: "
+    std::cout << "Validated viewfinder configuration is: "  
               << stream_configuration.toString() << std::endl;
 
     m_camera->configure(camera_configuration.get());
@@ -98,10 +99,10 @@ bool Camera::start()
         request->controls().set(libcamera::controls::FrameDurationLimits,
             libcamera::Span<const int64_t, 2>({fd_us, fd_us}));
 
-        if (get_crop())
-        {
-            request->controls().set(libcamera::controls::ScalerCrop, m_center_crop);
-        }
+        // if (get_crop())
+        // {
+        //     request->controls().set(libcamera::controls::ScalerCrop, m_center_crop);
+        // }
         const std::unique_ptr<libcamera::FrameBuffer> &buffer = buffers[i];
         int ret = request->addBuffer(m_stream, buffer.get());
         if (ret < 0)
@@ -228,6 +229,7 @@ void Camera::request_complete(libcamera::Request *request)
         std::cout << std::endl;
     }
 
+    // ── 只存 Plane 元数据，mmap/clone 移至主线程 ──
     const std::map<const libcamera::Stream *, libcamera::FrameBuffer *> &buffers = request->buffers();
     for (auto bufferPair : buffers) 
     {
@@ -241,14 +243,11 @@ void Camera::request_complete(libcamera::Request *request)
             m_latest_frame.stride = m_stride;
             m_latest_frame.sequence = buffer->metadata().sequence;
             m_latest_frame.valid = true;
-            m_rgb_frame = plane_to_rgb_mat(m_latest_frame);
 
             {
                 std::lock_guard<std::mutex> lock(m_mtx);
-                m_frame_slot = m_rgb_frame.clone();
                 m_frame_ready = true;
             }
-
             m_plane_condition_variable.notify_one();
         }
     }
@@ -259,17 +258,21 @@ void Camera::request_complete(libcamera::Request *request)
 }
 
 cv::Mat Camera::wait_and_get_latest_frame()
-{   
-
+{
     std::unique_lock<std::mutex> lock(m_mtx);
     m_plane_condition_variable.wait(lock, [this]{
         return m_frame_ready || m_stopped;
     });
     if (m_stopped) return {};
 
-    cv::Mat frame = std::move(m_frame_slot);
+    FrameData data = m_latest_frame;
     m_frame_ready = false;
-    return frame;
+    lock.unlock();
+
+    // 主线程中完成 mmap + clone，减轻 callback 线程负担
+    cv::Mat bayer = plane_to_rgb_mat(data);
+    if (bayer.empty()) return {};
+    return bayer.clone();
 }
 
 cv::Mat Camera::plane_to_rgb_mat(const FrameData& frame)
@@ -305,13 +308,8 @@ cv::Mat Camera::plane_to_rgb_mat(const FrameData& frame)
     }
     uint8_t* data = static_cast<uint8_t*>(it->second.addr) + frame.plane.offset;
 
-    return cv::Mat(
-        frame.height,
-        frame.width,
-        CV_8UC3,
-        data,
-        frame.stride
-    );
+    cv::Mat bayer(frame.height, frame.width, CV_8UC1, data, frame.stride);
+    return bayer;
 }
 
 void Camera::stop()

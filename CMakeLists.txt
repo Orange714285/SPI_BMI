@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(DartElectricControl)
+project(Dart)
 
 # 全局编译选项
 set(CMAKE_CXX_STANDARD 17)

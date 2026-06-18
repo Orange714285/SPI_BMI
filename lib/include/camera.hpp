@@ -70,12 +70,10 @@ private:
     bool m_stopped = false;
 
     // ── 帧缓冲（单槽覆盖，始终取最新帧，保证强实时性） ──
-    cv::Mat   m_frame_slot;
     bool      m_frame_ready = false;
     std::unordered_map<int, MappedPlane>       m_mapped_planes;
 
     FrameData m_latest_frame;
-    cv::Mat   m_rgb_frame;
 
     cv::Mat plane_to_rgb_mat(const FrameData& frame);
 };

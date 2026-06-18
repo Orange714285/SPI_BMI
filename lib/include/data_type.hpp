@@ -10,6 +10,7 @@ struct VisionData
     int m_target_pixel_y{0};
     int m_target_status{0};
     int m_frame_dt_ms{0};
+    int m_video_fps{0};
 };
 
 struct FrameData
@@ -36,18 +37,13 @@ public:
     float roll;
     float yaw;
     float pitch;
-    float index;
-    double m_cpu_usage;
-    double m_fps;
-
-    int m_target_pixel_x;
-    int m_target_pixel_y;
-    int m_target_status;
-    int  m_frame_dt_ms;
+    int IMU_index;
+    int IMU_fps;
+    int m_cpu_usage;
 
     void data_update(float acc_x, float acc_y, float acc_z,
                    float gyro_x, float gyro_y, float gyro_z,
-                   float r, float p, float y, float idx,double cpu_usage,double fps)
+                   float r, float p, float y, int idx, int cpu_usage, int imu_fps)
     {
         acc_frd_x_mg  = acc_x;
         acc_frd_y_mg  = acc_y;
@@ -58,17 +54,9 @@ public:
         roll  = r;
         pitch = p;
         yaw   = y;
-        index = idx;
+        IMU_index = idx;
         m_cpu_usage = cpu_usage;
-        m_fps = fps;
-    }
-
-    void vision_update(const VisionData& v)
-    {
-        m_target_pixel_x = v.m_target_pixel_x;
-        m_target_pixel_y = v.m_target_pixel_y;
-        m_target_status  = v.m_target_status;
-        m_frame_dt_ms    = v.m_frame_dt_ms;
+        IMU_fps = imu_fps;
     }
 
     void print(std::string_view state_label) const
@@ -86,7 +74,7 @@ public:
         std::cout << "[INFO] roll:  " << roll  << std::endl;
         std::cout << "[INFO] pitch: " << pitch << std::endl;
         std::cout << "[INFO] yaw:   " << yaw   << std::endl;
-        std::cout << "[INFO] index: " << index << std::endl;
+        std::cout << "[INFO] index: " << IMU_index << std::endl;
         std::cout << "============================" << std::endl;
         std::cout << std::flush;
     }

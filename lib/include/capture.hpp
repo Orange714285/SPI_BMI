@@ -21,6 +21,10 @@ public:
     /// @brief 写入一帧 JPEG 压缩视频帧到 mcap（线程安全）
     bool write_video_frame(const cv::Mat& frame, int jpeg_quality = 70);
 
+    /// @brief 写入一帧视觉检测数据到 mcap（线程安全）
+    bool write_vision_data(int target_pixel_x, int target_pixel_y,
+                           int target_status, int frame_dt_ms, int video_fps);
+
     void finish();
 
 private:
@@ -45,6 +49,15 @@ private:
     uint32_t m_video_sequence = 0;
     std::vector<uint8_t> m_jpeg_buf;     // JPEG 压缩缓冲区（复用）
     std::vector<uint8_t> m_pb_buf;       // protobuf 序列化缓冲区（复用）
+
+    // ── 视觉检测 channel ──
+    std::string m_vision_schema_name = "foxglove.Vision";
+    std::string m_vision_schema_data;
+    std::unique_ptr<mcap::Schema> m_vision_schema;
+    std::string m_vision_topic_name = "vision/detect";
+    std::unique_ptr<mcap::Channel> m_vision_channel;
+    uint32_t m_vision_sequence = 0;
+    flatbuffers::FlatBufferBuilder m_vision_builder;
 
     // ── 状态 ──
     bool m_opened = false;

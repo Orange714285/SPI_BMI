@@ -11,12 +11,8 @@ table CarData
     roll : float;
     yaw : float;
     pitch : float;
-    index : float;
-    cpu_usage : double;
-    fps : double;
-    target_pixel_x : int;
-    target_pixel_y : int;
-    target_status : int;
-    frame_dt_ms : int;
+    IMU_index : int;
+    IMU_fps : int;
+    cpu_usage : int;
 }
 root_type CarData;

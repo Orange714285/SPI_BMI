@@ -86,3 +86,45 @@ private:
     inline static double      s_window_sec   = 1.0;
     inline static std::string s_filename;
 };
+
+/**
+ * @brief 视觉内录帧率统计（0.5 秒滑动窗口，全静态方法）
+ *
+ * 用法：
+ *   capturer.write_video_frame(frame);
+ *   VideoFrameCounter::tick();
+ *   float vfps = VideoFrameCounter::fps();
+ */
+class VideoFrameCounter
+{
+public:
+    using Clock = std::chrono::steady_clock;
+
+    /** @brief 每成功写入一帧视频调用一次 */
+    static void tick()
+    {
+        s_total++;
+        s_window_count++;
+
+        auto now = Clock::now();
+        double elapsed = std::chrono::duration<double>(now - s_window_start).count();
+        if (elapsed >= 0.5)
+        {
+            s_fps = static_cast<int>(s_window_count / elapsed);
+            s_window_count = 0;
+            s_window_start = now;
+        }
+    }
+
+    /** @brief 当前视频录制 FPS（基于最近 0.5 秒窗口） */
+    static int fps() { return s_fps; }
+
+    /** @brief 自启动以来总写入帧数 */
+    static size_t total() { return s_total; }
+
+private:
+    inline static size_t      s_total        = 0;
+    inline static size_t      s_window_count = 0;
+    inline static int         s_fps          = 0;
+    inline static Clock::time_point s_window_start = Clock::now();
+};
