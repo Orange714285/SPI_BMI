@@ -173,7 +173,13 @@ void dart_vision(Capturer& capturer)
     while (g_running.load())
     {
         cv::Mat frame = ov5647.wait_and_get_latest_frame();
+        index ++;
+        if (index%2 ==0)
+        {
+            capturer.write_video_frame(frame, 100);
+        }
         detector.detect_and_draw_lights(frame);
+
         VideoFrameCounter::tick();  // 每检测一帧 tick
         VisionData vd = detector.vision_data();
         vd.m_video_fps = VideoFrameCounter::fps();
@@ -189,12 +195,7 @@ void dart_vision(Capturer& capturer)
         // ── 视觉检测数据写入 MCAP（vision 线程独立写入）──
         capturer.write_vision_data(vd.m_target_pixel_x, vd.m_target_pixel_y,
                                    vd.m_target_status, vd.m_frame_dt_ms, vd.m_video_fps);
-        // ── 视频帧写入共享的 MCAP 文件 ──
-        index ++;
-        if (index%1 ==0)
-        {
-            // capturer.write_video_frame(frame, 1);
-        }
+
     }
 
     ov5647.stop();

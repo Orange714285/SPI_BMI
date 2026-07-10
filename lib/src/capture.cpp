@@ -26,9 +26,7 @@ Capturer::Capturer()
 
 Capturer::~Capturer()
 {
-    if (m_opened) {
-        m_mcap_writer.close();
-    }
+    finish();  // 确保后台线程停止后再析构
 }
 
 bool Capturer::init()
@@ -76,6 +74,10 @@ bool Capturer::init()
     m_vision_channel = std::make_unique<mcap::Channel>(
         m_vision_topic_name, "flatbuffer", m_vision_schema.get()->id);
     m_mcap_writer.addChannel(*m_vision_channel.get());
+
+    // ── 启动后台视频写入线程 ──
+    m_writer_running.store(true);
+    m_writer_thread = std::thread(&Capturer::writer_thread_loop, this);
 
     m_opened = true;
     return true;
@@ -132,43 +134,34 @@ bool Capturer::write_video_frame(const cv::Mat& frame, int jpeg_quality)
     if (!m_opened || frame.empty())
         return false;
 
-    // 1. JPEG 压缩（锁外完成，避免阻塞电控数据写入）
-    m_jpeg_buf.clear();
-    std::vector<int> params = {cv::IMWRITE_JPEG_QUALITY, jpeg_quality};
-    if (!cv::imencode(".jpg", frame, m_jpeg_buf, params))
-    {
-        std::cerr << "[ERROR] JPEG encode failed!" << std::endl;
-        return false;
-    }
+    // 1. 深拷贝原始帧（轻量 memcpy ~300KB，不做任何编码）
+    cv::Mat cloned = frame.clone();
 
     // 2. 时间戳
     auto now = std::chrono::system_clock::now();
     auto ns  = std::chrono::duration_cast<std::chrono::nanoseconds>(
                   now.time_since_epoch()
               ).count();
-    int64_t seconds = ns / 1'000'000'000;
-    int32_t nanos   = static_cast<int32_t>(ns % 1'000'000'000);
 
-    // 3. 手工 protobuf 序列化
-    m_pb_buf = foxglove::serialize_compressed_image(
-        seconds, nanos, "camera", m_jpeg_buf.data(), m_jpeg_buf.size(), "jpeg");
+    // 3. 构造帧并入队（非阻塞，后台线程负责编码+序列化+磁盘写入）
+    EncodedFrame ef;
+    ef.raw_frame    = std::move(cloned);
+    ef.jpeg_quality = jpeg_quality;
+    ef.channel_id   = m_video_channel->id;
+    ef.sequence     = m_video_sequence++;
+    ef.log_time     = ns;
+    ef.publish_time = ns;
 
-    // 4. 写入 MCAP（需要加锁，和电控 channel 共享同一个 McapWriter）
-    mcap::Message msg;
-    msg.channelId   = m_video_channel->id;
-    msg.sequence    = m_video_sequence++;
-    msg.logTime     = ns;
-    msg.publishTime = ns;
-    msg.data        = reinterpret_cast<std::byte*>(m_pb_buf.data());
-    msg.dataSize    = m_pb_buf.size();
-
-    std::lock_guard<std::mutex> lock(m_writer_mutex);
-    auto status = m_mcap_writer.write(msg);
-    if (!status.ok())
     {
-        std::cerr << "[ERROR] mcap video write failed: " << status.message << std::endl;
-        return false;
+        std::lock_guard<std::mutex> lock(m_queue_mutex);
+        // 队列满则丢弃最旧帧（背压策略）
+        if (m_write_queue.size() >= kMaxQueueSize)
+        {
+            m_write_queue.pop_front();
+        }
+        m_write_queue.push_back(std::move(ef));
     }
+    m_queue_cv.notify_one();
     return true;
 }
 
@@ -260,6 +253,121 @@ std::string Capturer::get_file_Contents(std::string_view path)
     return result;
 }
 void Capturer::finish() {
-    this->m_mcap_writer.close();
-    m_opened = false;
+    // 1. 通知后台线程停止并等待其排空队列
+    if (m_writer_running.load())
+    {
+        m_writer_running.store(false);
+        m_queue_cv.notify_one();
+        if (m_writer_thread.joinable())
+        {
+            m_writer_thread.join();
+        }
+    }
+    // 2. 关闭 MCAP writer
+    if (m_opened)
+    {
+        this->m_mcap_writer.close();
+        m_opened = false;
+    }
+}
+
+void Capturer::writer_thread_loop()
+{
+    while (m_writer_running.load())
+    {
+        EncodedFrame ef;
+        {
+            std::unique_lock<std::mutex> lock(m_queue_mutex);
+            m_queue_cv.wait(lock, [this] {
+                return !m_write_queue.empty() || !m_writer_running.load();
+            });
+
+            if (!m_writer_running.load() && m_write_queue.empty())
+                break;
+
+            if (!m_write_queue.empty())
+            {
+                ef = std::move(m_write_queue.front());
+                m_write_queue.pop_front();
+            }
+        } // 释放队列锁，让 producer 可以继续入队
+
+        // ── JPEG 编码（仅后台线程使用 m_jpeg_buf，无线程竞争）──
+        m_jpeg_buf.clear();
+        std::vector<int> params = {cv::IMWRITE_JPEG_QUALITY, ef.jpeg_quality};
+        if (!cv::imencode(".jpg", ef.raw_frame, m_jpeg_buf, params))
+        {
+            std::cerr << "[ERROR] JPEG encode failed in writer thread!" << std::endl;
+            continue;
+        }
+
+        // ── protobuf 序列化 ──
+        int64_t seconds = static_cast<int64_t>(ef.log_time / 1'000'000'000ULL);
+        int32_t nanos   = static_cast<int32_t>(ef.log_time % 1'000'000'000ULL);
+        m_pb_buf = foxglove::serialize_compressed_image(
+            seconds, nanos, "camera", m_jpeg_buf.data(), m_jpeg_buf.size(), "jpeg");
+
+        // ── 构造 mcap::Message 并写入磁盘 ──
+        mcap::Message msg;
+        msg.channelId   = ef.channel_id;
+        msg.sequence    = ef.sequence;
+        msg.logTime     = ef.log_time;
+        msg.publishTime = ef.publish_time;
+        msg.data        = reinterpret_cast<std::byte*>(m_pb_buf.data());
+        msg.dataSize    = m_pb_buf.size();
+
+        {
+            std::lock_guard<std::mutex> lock(m_writer_mutex);
+            auto status = m_mcap_writer.write(msg);
+            if (!status.ok())
+            {
+                std::cerr << "[ERROR] mcap video write failed: "
+                          << status.message << std::endl;
+            }
+        }
+    }
+
+    // 退出前排空队列中剩余的帧
+    while (true)
+    {
+        EncodedFrame ef;
+        {
+            std::lock_guard<std::mutex> lock(m_queue_mutex);
+            if (m_write_queue.empty())
+                break;
+            ef = std::move(m_write_queue.front());
+            m_write_queue.pop_front();
+        }
+
+        m_jpeg_buf.clear();
+        std::vector<int> params = {cv::IMWRITE_JPEG_QUALITY, ef.jpeg_quality};
+        if (!cv::imencode(".jpg", ef.raw_frame, m_jpeg_buf, params))
+        {
+            std::cerr << "[ERROR] JPEG encode failed in drain!" << std::endl;
+            continue;
+        }
+
+        int64_t seconds = static_cast<int64_t>(ef.log_time / 1'000'000'000ULL);
+        int32_t nanos   = static_cast<int32_t>(ef.log_time % 1'000'000'000ULL);
+        m_pb_buf = foxglove::serialize_compressed_image(
+            seconds, nanos, "camera", m_jpeg_buf.data(), m_jpeg_buf.size(), "jpeg");
+
+        mcap::Message msg;
+        msg.channelId   = ef.channel_id;
+        msg.sequence    = ef.sequence;
+        msg.logTime     = ef.log_time;
+        msg.publishTime = ef.publish_time;
+        msg.data        = reinterpret_cast<std::byte*>(m_pb_buf.data());
+        msg.dataSize    = m_pb_buf.size();
+
+        {
+            std::lock_guard<std::mutex> lock(m_writer_mutex);
+            auto status = m_mcap_writer.write(msg);
+            if (!status.ok())
+            {
+                std::cerr << "[ERROR] mcap video write failed (drain): "
+                          << status.message << std::endl;
+            }
+        }
+    }
 }

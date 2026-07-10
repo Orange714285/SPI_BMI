@@ -8,11 +8,13 @@
 
 bool BMI055::BMI055_init()
 {
+    // spi 初始化
     if (!m_spi.spi_init())
     {
         std::cerr << "[ERROR] SPI init failed!" << std::endl;
         return false;
     }
+    // 加速度计 陀螺仪自检
     if (!acc_self_test())
 	{
 		std::cerr << "[ERROR] BMI055 acc self test failed!" << std::endl;
@@ -23,6 +25,8 @@ bool BMI055::BMI055_init()
         std::cerr << "[ERROR] BMI055 gyro self test failed!" << std::endl;
         return false;
     }
+
+    // 配置加速度计
     if (!acc_set_data_output_unfiltered())
     {
         std::cerr << "[ERROR] Set acc data output unfiltered failed!" << std::endl;
@@ -33,6 +37,8 @@ bool BMI055::BMI055_init()
         std::cerr << "[ERROR] Config acc drdy failed!" << std::endl;
         return false;
     }
+    
+    // 配置陀螺仪
     if (!gyr_set_data_output_unfiltered())
     {
         std::cerr << "[ERROR] Set gyr data output unfiltered failed!" << std::endl;

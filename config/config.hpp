@@ -24,7 +24,7 @@ inline constexpr int    HSV_V_HIGH                    = 255;
 inline constexpr int    ROI_WIDTH                     = 200;
 inline constexpr int    ROI_HEIGHT                    = 200;
 inline constexpr double BEST_CIRCULARITY_STANDARD     = 0.60;
-inline constexpr int DIFF_THRESHOLD = 120;
+inline constexpr int DIFF_THRESHOLD = 80;
 
 // 图像流传输参数
 inline constexpr const char* STREAM_HOST        = "192.168.44.29";

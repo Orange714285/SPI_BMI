@@ -9,8 +9,12 @@ class BMI055
 
     bool BMI055_init();
     bool BMI055_stop();
+    
     bool acc_config_drdy();
     bool gyr_config_drdy();
+
+    bool acc_set_data_refresh_frequency();
+    bool gyr_set_data_refresh_frequency();
 
     bool acc_read_chip_id(uint8_t &acc_chip_id);
     bool acc_self_test();    

@@ -36,20 +36,25 @@ void Detector::detect_and_draw_lights(cv::Mat &bayer_frame)
     const int roi_w  = m_roi_rect.width;
     const int roi_h  = m_roi_rect.height;
 
-    const int margin   = 2;
-    const int min_area = 4;
+    const int margin   = 1;
+    const int min_area = 1;
 
     int  min_x = roi_w, min_y = roi_h, max_x = 0, max_y = 0;
     long area  = 0;
     long sum_x = 0, sum_y = 0;
 
-    // 对每个 2x2 RGGB 块: 计算绿光差异 → 写回棋盘格 → 同时统计 ROI 内白像素
-    for (int row = 0; row < h; row += 2)
+    // 对 ROI 覆盖的 2x2 RGGB 块: 计算绿光差异 → 写回棋盘格 → 同时统计 ROI 内白像素
+    int row_start = roi_y0 & ~1;
+    int row_end   = std::min(h, roi_y1);
+    int col_start = roi_x0 & ~1;
+    int col_end   = std::min(w, roi_x1);
+
+    for (int row = row_start; row < row_end; row += 2)
     {
         uint8_t* dst0 = bayer_frame.ptr<uint8_t>(row);
         uint8_t* dst1 = bayer_frame.ptr<uint8_t>(row + 1);
 
-        for (int col = 0; col < w; col += 2)
+        for (int col = col_start; col < col_end; col += 2)
         {
             uint8_t r  = dst0[col];
             uint8_t g0 = dst0[col + 1];
@@ -58,7 +63,7 @@ void Detector::detect_and_draw_lights(cv::Mat &bayer_frame)
 
             int g_sum  = g0 + g1;
             int rb_sum = r + b + 1;
-            int ratio  = (g_sum << 8) / (rb_sum * 2);
+            int ratio  = (g_sum << 8) / (rb_sum*2);
             int diff   = ratio - 128;
             uint8_t val = (diff > m_diff_threshold) ? 255 : 0;
 
@@ -115,6 +120,10 @@ void Detector::detect_and_draw_lights(cv::Mat &bayer_frame)
 
         m_vision_data.m_target_pixel_x = static_cast<int>(sum_x / area) + roi_x0;
         m_vision_data.m_target_pixel_y = static_cast<int>(sum_y / area) + roi_y0;
+        if (m_vision_data.m_target_status == 0)
+        {
+            std::cout << "[INFO] Found target!" << std::endl;
+        }
         m_vision_data.m_target_status = 1;
 
         cv::rectangle(bayer_frame, best_bbox_on_frame, cv::Scalar(255, 255, 0), 1);
@@ -124,6 +133,10 @@ void Detector::detect_and_draw_lights(cv::Mat &bayer_frame)
     {
         m_vision_data.m_target_pixel_x = 0;
         m_vision_data.m_target_pixel_y = 0;
+        if (m_vision_data.m_target_status == 1)
+        {
+            std::cout << "[INFO] Lost target!" << std::endl;
+        }
         m_vision_data.m_target_status = 0;
         m_state = State::LOST;
     }
