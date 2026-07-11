@@ -32,7 +32,9 @@ Capturer::~Capturer()
 bool Capturer::init()
 {
     Capturer::try_to_create_target_file(m_mcap_path);
-    auto status = m_mcap_writer.open(m_mcap_path,mcap::McapWriterOptions("flatbuffer"));
+    mcap::McapWriterOptions options("flatbuffer");
+    options.compression = mcap::Compression::None;
+    auto status = m_mcap_writer.open(m_mcap_path, options);
     if (!status.ok())
     {
         std::cerr << "[ERROR]<"<<m_mcap_path<<"> Failed to open MCAP file for writing: "  << status.message << std::endl;
