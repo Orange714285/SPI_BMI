@@ -4,9 +4,10 @@
 #include "attitude_algorithm.hpp"
 #include "capture.hpp"
 #include "data_type.hpp"
-#include <camera.hpp>
-#include <detector.hpp>
-#include <image_streamer.hpp>
+#include "camera.hpp"
+#include "detector.hpp"
+#include "image_streamer.hpp"
+#include "pid_control.hpp"
 
 #include <chrono>
 #include <thread>
@@ -130,9 +131,10 @@ void dart_control(Capturer& capturer)
         }
 
         // ==================== 状态切换 ====================
-        if (state == PRE_FLIGHT && acc_attitude_algorithmer.m_frd_acc_x < -900)
+        if (state == PRE_FLIGHT && acc_attitude_algorithmer.m_frd_acc_x < -1900)
         {
             state = FLIGHT;
+            std::cout << "I am flying!" << std::endl;
         }
 
         // ==================== 统一输出 ====================

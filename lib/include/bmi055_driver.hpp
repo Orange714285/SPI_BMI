@@ -15,17 +15,18 @@ class BMI055
 
     bool acc_set_data_refresh_frequency();
     bool gyr_set_data_refresh_frequency();
-
+    
+    bool acc_set_measuring_range();
     bool acc_read_chip_id(uint8_t &acc_chip_id);
     bool acc_self_test();    
     bool acc_wait_for_new_info();
     bool gyr_wait_for_new_info();
     bool acc_set_data_output_unfiltered();
     float acc_get_mg(uint8_t lsb, uint8_t msb);
-    bool acc_get_accd_x_mg(); // 将读数转化单位为mg后直接写入accd_x_mg
-    bool acc_get_accd_y_mg(); // 将读数转化单位为mg后直接写入accd_x_mg
-    bool acc_get_accd_z_mg(); // 将读数转化单位为mg后直接写入accd_x_mg
-    bool acc_get_accd_all_mg(); // 将读数转化单位为mg后直接写入accd_x_mg
+    bool acc_get_accd_x_mg(); 
+    bool acc_get_accd_y_mg(); 
+    bool acc_get_accd_z_mg(); 
+    bool acc_get_accd_all_mg(); 
     float m_acc_imu_accd_x_mg,m_acc_imu_accd_y_mg,m_acc_imu_accd_z_mg;
     float m_gyr_rate_x_raw_dps,m_gyr_rate_y_raw_dps,m_gyr_rate_z_raw_dps;
     float m_gyr_rate_x_dps,m_gyr_rate_y_dps,m_gyr_rate_z_dps;

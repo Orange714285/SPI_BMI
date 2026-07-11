@@ -37,7 +37,14 @@ bool BMI055::BMI055_init()
         std::cerr << "[ERROR] Config acc drdy failed!" << std::endl;
         return false;
     }
-    
+    if (!acc_set_measuring_range())
+    {
+        std::cerr << "[ERROR] set_measuring_range failed!" << std::endl;
+    }
+    if (!acc_set_data_refresh_frequency())
+    {
+        std::cerr << "[ERROR] set acc data refresh frequency failed!" << std::endl;
+    }
     // 配置陀螺仪
     if (!gyr_set_data_output_unfiltered())
     {
@@ -53,6 +60,10 @@ bool BMI055::BMI055_init()
     {
         std::cerr << "[ERROR] BMI055 gyr measure zero bias failed!" << std::endl;
         return false;
+    }
+    if (!gyr_set_data_refresh_frequency())
+    {
+        std::cerr << "[ERROR] set gyr data refresh frequency failed!" << std::endl;
     }
 
     return true;
@@ -263,6 +274,87 @@ bool BMI055::gyr_wait_for_new_info()
         std::cerr << "[ERROR] Unknown error! Failed to get new gyr_info " << std::endl;
         return false;
     }
+}
+
+bool BMI055::acc_set_data_refresh_frequency()
+{
+    if (!m_spi.spi_accel_start())
+    {
+        std::cerr << "[ERROR] Set acc data refresh frequency failed! spi start failed!" << std::endl;
+        return false;
+    }
+    
+    uint8_t dummy = ACC_DUMMY_BYTE;
+    if (!m_spi.spi_swap_byte(ACC_PMU_BW,dummy))
+    {
+        std::cerr << "[ERROR] Set acc data refresh frequency failed! spi swap byte failed! (ACC_PMU_BW)" <<std::endl;
+        return false;
+    }
+    if (!m_spi.spi_swap_byte(0x0F,dummy))
+    {
+        std::cerr << "[ERROR] Set acc data refresh frequency failed! spi swap byte failed! (ACC_PMU_BW)" <<std::endl;
+        return false;
+    }
+    if (!m_spi.spi_stop())
+    {
+        std::cerr << "[ERROR] Set acc data refresh frequency failed! spi stop failed!" <<std::endl;
+        return false;
+    }
+    return true;
+}
+
+bool BMI055::gyr_set_data_refresh_frequency()
+{
+    if (!m_spi.spi_accel_start())
+    {
+        std::cerr << "[ERROR] Set acc data refresh frequency failed! spi start failed!" << std::endl;
+        return false;
+    }
+    
+    uint8_t dummy = ACC_DUMMY_BYTE;
+    if (!m_spi.spi_swap_byte(GYR_BW,dummy))
+    {
+        std::cerr << "[ERROR] Set acc data refresh frequency failed! spi swap byte failed! (ACC_PMU_BW)" <<std::endl;
+        return false;
+    }
+    if (!m_spi.spi_swap_byte(0x80,dummy))
+    {
+        std::cerr << "[ERROR] Set acc data refresh frequency failed! spi swap byte failed! (ACC_PMU_BW)" <<std::endl;
+        return false;
+    }
+    if (!m_spi.spi_stop())
+    {
+        std::cerr << "[ERROR] Set acc data refresh frequency failed! spi stop failed!" <<std::endl;
+        return false;
+    }
+    return true;
+}
+
+bool BMI055::acc_set_measuring_range()
+{
+    if (!m_spi.spi_accel_start())
+    {
+        std::cerr << "[ERROR] Set acc measuring range failed! spi start failed!" << std::endl;
+        return false;
+    }
+    
+    uint8_t dummy = ACC_DUMMY_BYTE;
+    if (!m_spi.spi_swap_byte(ACC_ACCD_HBW,dummy))
+    {
+        std::cerr << "[ERROR] Set acc unfiltered data failed! spi swap byte failed! (ACC_ACCD_HBW)" <<std::endl;
+        return false;
+    }
+    if (!m_spi.spi_swap_byte(0x05,dummy))
+    {
+        std::cerr << "[ERROR] Set acc unfiltered data failed! spi swap byte failed! (ACC_ACCD_HBW)" <<std::endl;
+        return false;
+    }
+    if (!m_spi.spi_stop())
+    {
+        std::cerr << "[ERROR] Set acc unfiltered data failed! spi stop failed!" <<std::endl;
+        return false;
+    }
+    return true;
 }
 
 bool BMI055::acc_set_data_output_unfiltered()
@@ -492,7 +584,7 @@ float BMI055::acc_get_mg(uint8_t lsb, uint8_t msb)
         acc_raw = (int16_t)(raw_12bit - 4096);
     else
         acc_raw = (int16_t)raw_12bit;
-    float acc_mg = acc_raw * 0.98f;
+    float acc_mg = acc_raw * 1.96f;
     return acc_mg;
 }
 
