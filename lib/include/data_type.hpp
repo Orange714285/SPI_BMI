@@ -40,10 +40,12 @@ public:
     int IMU_index;
     int IMU_fps;
     int m_cpu_usage;
+    int m_state;
 
     void data_update(float acc_x, float acc_y, float acc_z,
                    float gyro_x, float gyro_y, float gyro_z,
-                   float r, float p, float y, int idx, int cpu_usage, int imu_fps)
+                   float r, float p, float y, int idx, int cpu_usage, int imu_fps,
+                   int state)
     {
         acc_frd_x_mg  = acc_x;
         acc_frd_y_mg  = acc_y;
@@ -57,6 +59,7 @@ public:
         IMU_index = idx;
         m_cpu_usage = cpu_usage;
         IMU_fps = imu_fps;
+        m_state = state;
     }
 
     void print(std::string_view state_label) const

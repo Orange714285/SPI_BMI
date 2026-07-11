@@ -243,7 +243,6 @@ void Camera::request_complete(libcamera::Request *request)
             m_latest_frame.stride = m_stride;
             m_latest_frame.sequence = buffer->metadata().sequence;
             m_latest_frame.valid = true;
-
             {
                 std::lock_guard<std::mutex> lock(m_mtx);
                 m_frame_ready = true;

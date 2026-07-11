@@ -99,7 +99,8 @@ bool Capturer::update_car_data(CarData& car_data)
         car_data.pitch,
         car_data.IMU_index,
         car_data.IMU_fps,
-        car_data.m_cpu_usage
+        car_data.m_cpu_usage,
+        car_data.m_state
     );
     m_builder.Finish(foxglove_car_data);
 

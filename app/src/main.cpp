@@ -132,7 +132,6 @@ void dart_control(Capturer& capturer)
         // ==================== 状态切换 ====================
         if (state == PRE_FLIGHT && acc_attitude_algorithmer.m_frd_acc_x < -900)
         {
-            std::cout << "[INFO] I have been Shooted! I am flying!" << std::endl;
             state = FLIGHT;
         }
 
@@ -151,9 +150,9 @@ void dart_control(Capturer& capturer)
             gyro_attitude_algorithmer.m_frd_gyro_y,
             gyro_attitude_algorithmer.m_frd_gyro_z,
             roll, pitch, yaw,
-            static_cast<int>(bmi055.index), static_cast<int>(CpuMonitor::usage()), static_cast<int>(FrameCounter::fps()));
+            static_cast<int>(bmi055.index), static_cast<int>(CpuMonitor::usage()), static_cast<int>(FrameCounter::fps()), 
+            static_cast<int>(state));
         capturer.update_car_data(dart_data);
-        
     }
     std::cout << "[INFO] dart_control thread received SIGINT, exiting cleanly." << std::endl;
     return ;
@@ -176,7 +175,7 @@ void dart_vision(Capturer& capturer)
         index ++;
         if (index%2 ==0)
         {
-            capturer.write_video_frame(frame, 100);
+            // capturer.write_video_frame(frame, 100);
         }
         detector.detect_and_draw_lights(frame);
 
@@ -195,7 +194,6 @@ void dart_vision(Capturer& capturer)
         // ── 视觉检测数据写入 MCAP（vision 线程独立写入）──
         capturer.write_vision_data(vd.m_target_pixel_x, vd.m_target_pixel_y,
                                    vd.m_target_status, vd.m_frame_dt_ms, vd.m_video_fps);
-
     }
 
     ov5647.stop();

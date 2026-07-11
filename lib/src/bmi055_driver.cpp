@@ -442,7 +442,7 @@ bool BMI055::acc_get_accd_all_mg()
     if (!m_spi.spi_swap_byte(ACC_DUMMY_BYTE, acc_accd_x_lsb))
     {
         std::cerr << "[ERROR] Read accd_all failed! spi swap byte failed! (read accd_x_lsb)" << std::endl;
-        return false;
+        return false;       
     }
     if (!m_spi.spi_swap_byte(ACC_DUMMY_BYTE, acc_accd_x_msb))
     {

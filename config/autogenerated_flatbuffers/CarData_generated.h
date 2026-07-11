@@ -25,36 +25,37 @@ struct CarData FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef CarDataBuilder Builder;
   typedef foxglove::CarDataBinarySchema BinarySchema;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
-    VT_ACC_FRD_X_MG = 4,
-    VT_ACC_FRD_Y_MG = 6,
-    VT_ACC_FRD_Z_MG = 8,
-    VT_GYRO_FRD_X_DPS = 10,
-    VT_GYRO_FRD_Y_DPS = 12,
-    VT_GYRO_FRD_Z_DPS = 14,
+    VT_ACCFRDXMG = 4,
+    VT_ACCFRDYMG = 6,
+    VT_ACCFRDZMG = 8,
+    VT_GYROFRDXDPS = 10,
+    VT_GYROFRDYDPS = 12,
+    VT_GYROFRDZDPS = 14,
     VT_ROLL = 16,
     VT_YAW = 18,
     VT_PITCH = 20,
-    VT_IMU_INDEX = 22,
-    VT_IMU_FPS = 24,
-    VT_CPU_USAGE = 26
+    VT_IMUINDEX = 22,
+    VT_IMUFPS = 24,
+    VT_CPUUSAGE = 26,
+    VT_STATE = 28
   };
-  float acc_frd_x_mg() const {
-    return GetField<float>(VT_ACC_FRD_X_MG, 0.0f);
+  float accFrdXMg() const {
+    return GetField<float>(VT_ACCFRDXMG, 0.0f);
   }
-  float acc_frd_y_mg() const {
-    return GetField<float>(VT_ACC_FRD_Y_MG, 0.0f);
+  float accFrdYMg() const {
+    return GetField<float>(VT_ACCFRDYMG, 0.0f);
   }
-  float acc_frd_z_mg() const {
-    return GetField<float>(VT_ACC_FRD_Z_MG, 0.0f);
+  float accFrdZMg() const {
+    return GetField<float>(VT_ACCFRDZMG, 0.0f);
   }
-  float gyro_frd_x_dps() const {
-    return GetField<float>(VT_GYRO_FRD_X_DPS, 0.0f);
+  float gyroFrdXDps() const {
+    return GetField<float>(VT_GYROFRDXDPS, 0.0f);
   }
-  float gyro_frd_y_dps() const {
-    return GetField<float>(VT_GYRO_FRD_Y_DPS, 0.0f);
+  float gyroFrdYDps() const {
+    return GetField<float>(VT_GYROFRDYDPS, 0.0f);
   }
-  float gyro_frd_z_dps() const {
-    return GetField<float>(VT_GYRO_FRD_Z_DPS, 0.0f);
+  float gyroFrdZDps() const {
+    return GetField<float>(VT_GYROFRDZDPS, 0.0f);
   }
   float roll() const {
     return GetField<float>(VT_ROLL, 0.0f);
@@ -65,29 +66,33 @@ struct CarData FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   float pitch() const {
     return GetField<float>(VT_PITCH, 0.0f);
   }
-  int32_t IMU_index() const {
-    return GetField<int32_t>(VT_IMU_INDEX, 0);
+  int32_t iMUIndex() const {
+    return GetField<int32_t>(VT_IMUINDEX, 0);
   }
-  int32_t IMU_fps() const {
-    return GetField<int32_t>(VT_IMU_FPS, 0);
+  int32_t iMUFps() const {
+    return GetField<int32_t>(VT_IMUFPS, 0);
   }
-  int32_t cpu_usage() const {
-    return GetField<int32_t>(VT_CPU_USAGE, 0);
+  int32_t cpuUsage() const {
+    return GetField<int32_t>(VT_CPUUSAGE, 0);
+  }
+  int32_t state() const {
+    return GetField<int32_t>(VT_STATE, 0);
   }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
-           VerifyField<float>(verifier, VT_ACC_FRD_X_MG, 4) &&
-           VerifyField<float>(verifier, VT_ACC_FRD_Y_MG, 4) &&
-           VerifyField<float>(verifier, VT_ACC_FRD_Z_MG, 4) &&
-           VerifyField<float>(verifier, VT_GYRO_FRD_X_DPS, 4) &&
-           VerifyField<float>(verifier, VT_GYRO_FRD_Y_DPS, 4) &&
-           VerifyField<float>(verifier, VT_GYRO_FRD_Z_DPS, 4) &&
+           VerifyField<float>(verifier, VT_ACCFRDXMG, 4) &&
+           VerifyField<float>(verifier, VT_ACCFRDYMG, 4) &&
+           VerifyField<float>(verifier, VT_ACCFRDZMG, 4) &&
+           VerifyField<float>(verifier, VT_GYROFRDXDPS, 4) &&
+           VerifyField<float>(verifier, VT_GYROFRDYDPS, 4) &&
+           VerifyField<float>(verifier, VT_GYROFRDZDPS, 4) &&
            VerifyField<float>(verifier, VT_ROLL, 4) &&
            VerifyField<float>(verifier, VT_YAW, 4) &&
            VerifyField<float>(verifier, VT_PITCH, 4) &&
-           VerifyField<int32_t>(verifier, VT_IMU_INDEX, 4) &&
-           VerifyField<int32_t>(verifier, VT_IMU_FPS, 4) &&
-           VerifyField<int32_t>(verifier, VT_CPU_USAGE, 4) &&
+           VerifyField<int32_t>(verifier, VT_IMUINDEX, 4) &&
+           VerifyField<int32_t>(verifier, VT_IMUFPS, 4) &&
+           VerifyField<int32_t>(verifier, VT_CPUUSAGE, 4) &&
+           VerifyField<int32_t>(verifier, VT_STATE, 4) &&
            verifier.EndTable();
   }
 };
@@ -96,23 +101,23 @@ struct CarDataBuilder {
   typedef CarData Table;
   ::flatbuffers::FlatBufferBuilder &fbb_;
   ::flatbuffers::uoffset_t start_;
-  void add_acc_frd_x_mg(float acc_frd_x_mg) {
-    fbb_.AddElement<float>(CarData::VT_ACC_FRD_X_MG, acc_frd_x_mg, 0.0f);
+  void add_accFrdXMg(float accFrdXMg) {
+    fbb_.AddElement<float>(CarData::VT_ACCFRDXMG, accFrdXMg, 0.0f);
   }
-  void add_acc_frd_y_mg(float acc_frd_y_mg) {
-    fbb_.AddElement<float>(CarData::VT_ACC_FRD_Y_MG, acc_frd_y_mg, 0.0f);
+  void add_accFrdYMg(float accFrdYMg) {
+    fbb_.AddElement<float>(CarData::VT_ACCFRDYMG, accFrdYMg, 0.0f);
   }
-  void add_acc_frd_z_mg(float acc_frd_z_mg) {
-    fbb_.AddElement<float>(CarData::VT_ACC_FRD_Z_MG, acc_frd_z_mg, 0.0f);
+  void add_accFrdZMg(float accFrdZMg) {
+    fbb_.AddElement<float>(CarData::VT_ACCFRDZMG, accFrdZMg, 0.0f);
   }
-  void add_gyro_frd_x_dps(float gyro_frd_x_dps) {
-    fbb_.AddElement<float>(CarData::VT_GYRO_FRD_X_DPS, gyro_frd_x_dps, 0.0f);
+  void add_gyroFrdXDps(float gyroFrdXDps) {
+    fbb_.AddElement<float>(CarData::VT_GYROFRDXDPS, gyroFrdXDps, 0.0f);
   }
-  void add_gyro_frd_y_dps(float gyro_frd_y_dps) {
-    fbb_.AddElement<float>(CarData::VT_GYRO_FRD_Y_DPS, gyro_frd_y_dps, 0.0f);
+  void add_gyroFrdYDps(float gyroFrdYDps) {
+    fbb_.AddElement<float>(CarData::VT_GYROFRDYDPS, gyroFrdYDps, 0.0f);
   }
-  void add_gyro_frd_z_dps(float gyro_frd_z_dps) {
-    fbb_.AddElement<float>(CarData::VT_GYRO_FRD_Z_DPS, gyro_frd_z_dps, 0.0f);
+  void add_gyroFrdZDps(float gyroFrdZDps) {
+    fbb_.AddElement<float>(CarData::VT_GYROFRDZDPS, gyroFrdZDps, 0.0f);
   }
   void add_roll(float roll) {
     fbb_.AddElement<float>(CarData::VT_ROLL, roll, 0.0f);
@@ -123,14 +128,17 @@ struct CarDataBuilder {
   void add_pitch(float pitch) {
     fbb_.AddElement<float>(CarData::VT_PITCH, pitch, 0.0f);
   }
-  void add_IMU_index(int32_t IMU_index) {
-    fbb_.AddElement<int32_t>(CarData::VT_IMU_INDEX, IMU_index, 0);
+  void add_iMUIndex(int32_t iMUIndex) {
+    fbb_.AddElement<int32_t>(CarData::VT_IMUINDEX, iMUIndex, 0);
   }
-  void add_IMU_fps(int32_t IMU_fps) {
-    fbb_.AddElement<int32_t>(CarData::VT_IMU_FPS, IMU_fps, 0);
+  void add_iMUFps(int32_t iMUFps) {
+    fbb_.AddElement<int32_t>(CarData::VT_IMUFPS, iMUFps, 0);
   }
-  void add_cpu_usage(int32_t cpu_usage) {
-    fbb_.AddElement<int32_t>(CarData::VT_CPU_USAGE, cpu_usage, 0);
+  void add_cpuUsage(int32_t cpuUsage) {
+    fbb_.AddElement<int32_t>(CarData::VT_CPUUSAGE, cpuUsage, 0);
+  }
+  void add_state(int32_t state) {
+    fbb_.AddElement<int32_t>(CarData::VT_STATE, state, 0);
   }
   explicit CarDataBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
@@ -145,31 +153,33 @@ struct CarDataBuilder {
 
 inline ::flatbuffers::Offset<CarData> CreateCarData(
     ::flatbuffers::FlatBufferBuilder &_fbb,
-    float acc_frd_x_mg = 0.0f,
-    float acc_frd_y_mg = 0.0f,
-    float acc_frd_z_mg = 0.0f,
-    float gyro_frd_x_dps = 0.0f,
-    float gyro_frd_y_dps = 0.0f,
-    float gyro_frd_z_dps = 0.0f,
+    float accFrdXMg = 0.0f,
+    float accFrdYMg = 0.0f,
+    float accFrdZMg = 0.0f,
+    float gyroFrdXDps = 0.0f,
+    float gyroFrdYDps = 0.0f,
+    float gyroFrdZDps = 0.0f,
     float roll = 0.0f,
     float yaw = 0.0f,
     float pitch = 0.0f,
-    int32_t IMU_index = 0,
-    int32_t IMU_fps = 0,
-    int32_t cpu_usage = 0) {
+    int32_t iMUIndex = 0,
+    int32_t iMUFps = 0,
+    int32_t cpuUsage = 0,
+    int32_t state = 0) {
   CarDataBuilder builder_(_fbb);
-  builder_.add_cpu_usage(cpu_usage);
-  builder_.add_IMU_fps(IMU_fps);
-  builder_.add_IMU_index(IMU_index);
+  builder_.add_state(state);
+  builder_.add_cpuUsage(cpuUsage);
+  builder_.add_iMUFps(iMUFps);
+  builder_.add_iMUIndex(iMUIndex);
   builder_.add_pitch(pitch);
   builder_.add_yaw(yaw);
   builder_.add_roll(roll);
-  builder_.add_gyro_frd_z_dps(gyro_frd_z_dps);
-  builder_.add_gyro_frd_y_dps(gyro_frd_y_dps);
-  builder_.add_gyro_frd_x_dps(gyro_frd_x_dps);
-  builder_.add_acc_frd_z_mg(acc_frd_z_mg);
-  builder_.add_acc_frd_y_mg(acc_frd_y_mg);
-  builder_.add_acc_frd_x_mg(acc_frd_x_mg);
+  builder_.add_gyroFrdZDps(gyroFrdZDps);
+  builder_.add_gyroFrdYDps(gyroFrdYDps);
+  builder_.add_gyroFrdXDps(gyroFrdXDps);
+  builder_.add_accFrdZMg(accFrdZMg);
+  builder_.add_accFrdYMg(accFrdYMg);
+  builder_.add_accFrdXMg(accFrdXMg);
   return builder_.Finish();
 }
 

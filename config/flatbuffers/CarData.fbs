@@ -14,5 +14,6 @@ table CarData
     IMU_index : int;
     IMU_fps : int;
     cpu_usage : int;
+    state : int;
 }
 root_type CarData;
