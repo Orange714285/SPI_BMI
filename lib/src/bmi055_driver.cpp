@@ -56,11 +56,11 @@ bool BMI055::BMI055_init()
         std::cerr << "[ERROR] Config gyr drdy failed!" << std::endl;
         return false;
     }
-    if (!gyr_measure_zero_bias())
-    {
-        std::cerr << "[ERROR] BMI055 gyr measure zero bias failed!" << std::endl;
-        return false;
-    }
+    // if (!gyr_measure_zero_bias())
+    // {
+    //     std::cerr << "[ERROR] BMI055 gyr measure zero bias failed!" << std::endl;
+    //     return false;
+    // }
     if (!gyr_set_data_refresh_frequency())
     {
         std::cerr << "[ERROR] set gyr data refresh frequency failed!" << std::endl;
@@ -341,17 +341,17 @@ bool BMI055::acc_set_measuring_range()
     uint8_t dummy = ACC_DUMMY_BYTE;
     if (!m_spi.spi_swap_byte(ACC_ACCD_HBW,dummy))
     {
-        std::cerr << "[ERROR] Set acc unfiltered data failed! spi swap byte failed! (ACC_ACCD_HBW)" <<std::endl;
+        std::cerr << "[ERROR] Set acc measuring range failed! spi swap byte failed! (ACC_ACCD_HBW)" <<std::endl;
         return false;
     }
-    if (!m_spi.spi_swap_byte(0x05,dummy))
+    if (!m_spi.spi_swap_byte(0x03,dummy))
     {
-        std::cerr << "[ERROR] Set acc unfiltered data failed! spi swap byte failed! (ACC_ACCD_HBW)" <<std::endl;
+        std::cerr << "[ERROR] Set acc measuring range failed! spi swap byte failed! (ACC_ACCD_HBW)" <<std::endl;
         return false;
     }
     if (!m_spi.spi_stop())
     {
-        std::cerr << "[ERROR] Set acc unfiltered data failed! spi stop failed!" <<std::endl;
+        std::cerr << "[ERROR] Set acc measuring range failed! spi stop failed!" <<std::endl;
         return false;
     }
     return true;
@@ -584,7 +584,7 @@ float BMI055::acc_get_mg(uint8_t lsb, uint8_t msb)
         acc_raw = (int16_t)(raw_12bit - 4096);
     else
         acc_raw = (int16_t)raw_12bit;
-    float acc_mg = acc_raw * 1.96f;
+    float acc_mg = acc_raw * 0.98f;
     return acc_mg;
 }
 
@@ -766,14 +766,18 @@ bool BMI055::gyr_self_test()
 
 bool BMI055::gyr_measure_zero_bias()
 {
-    const int sample_count = 100;
+    const int sample_count = 500;
     float sum_x = 0.0f, sum_y = 0.0f, sum_z = 0.0f;
+    float sum_sq_x = 0.0f, sum_sq_y = 0.0f, sum_sq_z = 0.0f;
+    float min_x = 0.0f, max_x = 0.0f;
+    float min_y = 0.0f, max_y = 0.0f;
+    float min_z = 0.0f, max_z = 0.0f;
 
     m_gyr_bias_x_dps = 0.0f;
     m_gyr_bias_y_dps = 0.0f;
     m_gyr_bias_z_dps = 0.0f;
 
-    std::cout << "[INFO] gyr_measure_zero_bias: collecting " << sample_count
+    std::cerr << "[INFO] gyr_measure_zero_bias: collecting " << sample_count
               << " samples, please keep device stationary..." << std::endl;
 
     for (int i = 0; i < sample_count; i++)
@@ -790,19 +794,47 @@ bool BMI055::gyr_measure_zero_bias()
                       << i << "!" << std::endl;
             return false;
         }
-        sum_x += m_gyr_rate_x_dps;
-        sum_y += m_gyr_rate_y_dps;
-        sum_z += m_gyr_rate_z_dps;
+
+        float rx = m_gyr_rate_x_dps;
+        float ry = m_gyr_rate_y_dps;
+        float rz = m_gyr_rate_z_dps;
+
+        sum_x += rx;
+        sum_y += ry;
+        sum_z += rz;
+        sum_sq_x += rx * rx;
+        sum_sq_y += ry * ry;
+        sum_sq_z += rz * rz;
+
+        if (i == 0) {
+            min_x = max_x = rx;
+            min_y = max_y = ry;
+            min_z = max_z = rz;
+        } else {
+            if (rx < min_x) min_x = rx;  if (rx > max_x) max_x = rx;
+            if (ry < min_y) min_y = ry;  if (ry > max_y) max_y = ry;
+            if (rz < min_z) min_z = rz;  if (rz > max_z) max_z = rz;
+        }
     }
 
     m_gyr_bias_x_dps = sum_x / sample_count;
     m_gyr_bias_y_dps = sum_y / sample_count;
     m_gyr_bias_z_dps = sum_z / sample_count;
 
-    std::cout << "[INFO] gyr zero bias measured (dps): "
-              << "X=" << m_gyr_bias_x_dps
-              << " Y=" << m_gyr_bias_y_dps
-              << " Z=" << m_gyr_bias_z_dps << std::endl;
+    float std_x = std::sqrt(sum_sq_x / sample_count - m_gyr_bias_x_dps * m_gyr_bias_x_dps);
+    float std_y = std::sqrt(sum_sq_y / sample_count - m_gyr_bias_y_dps * m_gyr_bias_y_dps);
+    float std_z = std::sqrt(sum_sq_z / sample_count - m_gyr_bias_z_dps * m_gyr_bias_z_dps);
+
+    std::cerr << "[INFO] gyr zero bias measured (dps):" << std::endl;
+    std::cerr << "      bias:    X=" << m_gyr_bias_x_dps
+              << "  Y=" << m_gyr_bias_y_dps
+              << "  Z=" << m_gyr_bias_z_dps << std::endl;
+    std::cerr << "      std:     X=" << std_x
+              << "  Y=" << std_y
+              << "  Z=" << std_z << std::endl;
+    std::cerr << "      max-min: X=[" << min_x << ", " << max_x << "]"
+              << "  Y=[" << min_y << ", " << max_y << "]"
+              << "  Z=[" << min_z << ", " << max_z << "]" << std::endl;
     return true;
 }
 

@@ -17,11 +17,13 @@
 #include <tools/frame_counter.hpp>
 
 std::atomic<bool> g_running{true};
-int dart_state = 0;
 
 std::atomic<VisionData> g_vision_data;
 
-void signal_handler(int )
+// 飞行状态：0=PRE_FLIGHT, 1=FLIGHT；control 线程写入，vision 线程读取
+std::atomic<int> g_flying_state{0};
+
+void signal_handler(int)
 {
     g_running.store(false);
 }
@@ -62,15 +64,15 @@ void dart_control(Capturer& capturer)
 
     signal(SIGINT, signal_handler);
 
-    enum State { PRE_FLIGHT, FLIGHT };
-    State state = PRE_FLIGHT;
+    // 使用全局 g_flying_state (0=PRE_FLIGHT, 1=FLIGHT)，供 vision 线程可见
+    g_flying_state.store(1);  // 初始为 PRE_FLIGHT
     CpuMonitor::sample();   // 建立基准
     while (g_running)
     {
         bmi055.index++;
 
         // ==================== 数据采集 ====================
-        if (state == PRE_FLIGHT)
+        if (g_flying_state.load() == 0)  // PRE_FLIGHT
         {
             // 着陆态：以加速度计为时钟源
             if (!bmi055.acc_wait_for_new_info())
@@ -114,12 +116,12 @@ void dart_control(Capturer& capturer)
                 bmi055.m_acc_imu_accd_x_mg,
                 bmi055.m_acc_imu_accd_y_mg,
                 bmi055.m_acc_imu_accd_z_mg);
-        gyro_attitude_algorithmer.transform_coordinate(
+        gyro_attitude_algorithmer.transform_coordinate_and_kalman_filter(
                 bmi055.m_gyr_rate_x_dps,
                 bmi055.m_gyr_rate_y_dps,
                 bmi055.m_gyr_rate_z_dps);
 			// ==================== 姿态解算 ====================
-        if (state == PRE_FLIGHT)
+        if (g_flying_state.load() == 0)  // PRE_FLIGHT
         {
             acc_attitude_algorithmer.algorithmer();
         }
@@ -131,16 +133,20 @@ void dart_control(Capturer& capturer)
         }
 
         // ==================== 状态切换 ====================
-        if (state == PRE_FLIGHT && acc_attitude_algorithmer.m_frd_acc_x < -1900)
+        if (g_flying_state.load() == 0 && acc_attitude_algorithmer.m_frd_acc_x < -1900)
         {
-            state = FLIGHT;
+            gyro_attitude_algorithmer.algorithm(
+                acc_attitude_algorithmer.m_roll,
+                acc_attitude_algorithmer.m_pitch);
+            g_flying_state.store(1);  // → FLIGHT
             std::cout << "I am flying!" << std::endl;
         }
 
         // ==================== 统一输出 ====================
-        float roll  = (state == PRE_FLIGHT) ? acc_attitude_algorithmer.m_roll  : gyro_attitude_algorithmer.m_roll;
-        float pitch = (state == PRE_FLIGHT) ? acc_attitude_algorithmer.m_pitch : gyro_attitude_algorithmer.m_pitch;
-        float yaw   = (state == PRE_FLIGHT) ? 0.0f : gyro_attitude_algorithmer.m_yaw;
+        int flying_state = g_flying_state.load();
+        float roll  = (flying_state == 0) ? acc_attitude_algorithmer.m_roll  : gyro_attitude_algorithmer.m_roll;
+        float pitch = (flying_state == 0) ? acc_attitude_algorithmer.m_pitch : gyro_attitude_algorithmer.m_pitch;
+        float yaw   = (flying_state == 0) ? 0.0f : gyro_attitude_algorithmer.m_yaw;
 
         CpuMonitor::sample();
         FrameCounter::tick();
@@ -148,13 +154,35 @@ void dart_control(Capturer& capturer)
             acc_attitude_algorithmer.m_frd_acc_x,
             acc_attitude_algorithmer.m_frd_acc_y,
             acc_attitude_algorithmer.m_frd_acc_z,
-            gyro_attitude_algorithmer.m_frd_gyro_x,
+            gyro_attitude_algorithmer.m_frd_gyro_x,       // 滤波后 (Kalman 输出)
             gyro_attitude_algorithmer.m_frd_gyro_y,
             gyro_attitude_algorithmer.m_frd_gyro_z,
-            roll, pitch, yaw,
+            gyro_attitude_algorithmer.raw_frd_gyro_x(),   // 原始测量 (Kalman 输入)
+            gyro_attitude_algorithmer.raw_frd_gyro_y(),
+            gyro_attitude_algorithmer.raw_frd_gyro_z(),
+            gyro_attitude_algorithmer.m_Euler_roll,           // 伪测量积分欧拉角
+            gyro_attitude_algorithmer.m_Euler_pitch,
+            gyro_attitude_algorithmer.m_Euler_yaw,
+            roll, pitch, yaw,                              // 滤波后积分欧拉角
+            gyro_attitude_algorithmer.m_diff_roll,          // 差值 (滤波后 - 原始)
+            gyro_attitude_algorithmer.m_diff_pitch,
+            gyro_attitude_algorithmer.m_diff_yaw,
+            gyro_attitude_algorithmer.m_quat_roll,           // 四元数积分欧拉角
+            gyro_attitude_algorithmer.m_quat_pitch,
+            gyro_attitude_algorithmer.m_quat_yaw,
             static_cast<int>(bmi055.index), static_cast<int>(CpuMonitor::usage()), static_cast<int>(FrameCounter::fps()), 
-            static_cast<int>(state));
-        capturer.update_car_data(dart_data);
+            flying_state);
+        
+        if (flying_state == 1)  // FLIGHT
+        {
+            capturer.update_car_data(dart_data);
+            gyro_attitude_algorithmer.print_attitude_comparison();
+        }    
+        else 
+        {
+            acc_attitude_algorithmer.print_attitude_comparison();
+        }
+
     }
     std::cout << "[INFO] dart_control thread received SIGINT, exiting cleanly." << std::endl;
     return ;

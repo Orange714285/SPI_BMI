@@ -30,7 +30,7 @@ class BMI055
     float m_acc_imu_accd_x_mg,m_acc_imu_accd_y_mg,m_acc_imu_accd_z_mg;
     float m_gyr_rate_x_raw_dps,m_gyr_rate_y_raw_dps,m_gyr_rate_z_raw_dps;
     float m_gyr_rate_x_dps,m_gyr_rate_y_dps,m_gyr_rate_z_dps;
-    float m_gyr_bias_x_dps,m_gyr_bias_y_dps,m_gyr_bias_z_dps;
+    float m_gyr_bias_x_dps = 0,m_gyr_bias_y_dps = 0,m_gyr_bias_z_dps = 0;
 
     bool gyr_measure_zero_bias();
     bool gyr_self_test();

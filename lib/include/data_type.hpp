@@ -31,20 +31,37 @@ public:
     float acc_frd_x_mg;
     float acc_frd_y_mg;
     float acc_frd_z_mg;
-    float gyro_frd_x_dps;
+    float gyro_frd_x_dps;         // 滤波后的角速度 (Kalman 输出)
     float gyro_frd_y_dps;
     float gyro_frd_z_dps;
-    float roll;
-    float yaw;
-    float pitch;
-    int IMU_index;
+    float gyro_raw_frd_x_dps;     // 原始角速度 (Kalman 输入，FRD 机体系)
+    float gyro_raw_frd_y_dps;
+    float gyro_raw_frd_z_dps;
+    float euler_roll;
+    float euler_yaw;
+    float euler_pitch;
+    float roll_raw;       // 原始测量值积分得到的欧拉角
+    float pitch_raw;
+    float yaw_raw;
+    float diff_roll;      // 差值 = 滤波后 - 原始
+    float diff_pitch;
+    float diff_yaw;
+    float quat_roll;          // 四元数积分提取的欧拉角 (内旋 roll-yaw-pitch)
+    float quat_yaw;
+    float quat_pitch;
+    int IMU_data_index;
     int IMU_fps;
     int m_cpu_usage;
     int m_state;
 
     void data_update(float acc_x, float acc_y, float acc_z,
                    float gyro_x, float gyro_y, float gyro_z,
-                   float r, float p, float y, int idx, int cpu_usage, int imu_fps,
+                   float gyro_raw_x, float gyro_raw_y, float gyro_raw_z,
+                   float r, float p, float y,
+                   float r_raw, float p_raw, float y_raw,
+                   float r_diff, float p_diff, float y_diff,
+                   float r_q, float p_q, float y_q,
+                   int idx, int cpu_usage, int imu_fps,
                    int state)
     {
         acc_frd_x_mg  = acc_x;
@@ -53,10 +70,22 @@ public:
         gyro_frd_x_dps = gyro_x;
         gyro_frd_y_dps = gyro_y;
         gyro_frd_z_dps = gyro_z;
-        roll  = r;
-        pitch = p;
-        yaw   = y;
-        IMU_index = idx;
+        gyro_raw_frd_x_dps = gyro_raw_x;
+        gyro_raw_frd_y_dps = gyro_raw_y;
+        gyro_raw_frd_z_dps = gyro_raw_z;
+        euler_roll  = r;
+        euler_pitch = p;
+        euler_yaw   = y;
+        roll_raw   = r_raw;
+        pitch_raw  = p_raw;
+        yaw_raw    = y_raw;
+        diff_roll  = r_diff;
+        diff_pitch = p_diff;
+        diff_yaw   = y_diff;
+        quat_roll  = r_q;
+        quat_pitch = p_q;
+        quat_yaw   = y_q;
+        IMU_data_index = idx;
         m_cpu_usage = cpu_usage;
         IMU_fps = imu_fps;
         m_state = state;
@@ -74,10 +103,10 @@ public:
         std::cout << "[INFO] gyr_frd_x_dps: " << gyro_frd_x_dps << std::endl;
         std::cout << "[INFO] gyr_frd_y_dps: " << gyro_frd_y_dps << std::endl;
         std::cout << "[INFO] gyr_frd_z_dps: " << gyro_frd_z_dps << std::endl;
-        std::cout << "[INFO] roll:  " << roll  << std::endl;
-        std::cout << "[INFO] pitch: " << pitch << std::endl;
-        std::cout << "[INFO] yaw:   " << yaw   << std::endl;
-        std::cout << "[INFO] index: " << IMU_index << std::endl;
+        std::cout << "[INFO] euler_roll:  " << euler_roll  << std::endl;
+        std::cout << "[INFO] euler_pitch: " << euler_pitch << std::endl;
+        std::cout << "[INFO] euler_yaw:   " << euler_yaw   << std::endl;
+        std::cout << "[INFO] index: " << IMU_data_index << std::endl;
         std::cout << "============================" << std::endl;
         std::cout << std::flush;
     }
