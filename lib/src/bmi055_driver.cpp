@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <chrono>
 #include <thread>
 #include <cmath>
@@ -56,11 +57,11 @@ bool BMI055::BMI055_init()
         std::cerr << "[ERROR] Config gyr drdy failed!" << std::endl;
         return false;
     }
-    // if (!gyr_measure_zero_bias())
-    // {
-    //     std::cerr << "[ERROR] BMI055 gyr measure zero bias failed!" << std::endl;
-    //     return false;
-    // }
+    if (!gyr_measure_zero_bias())
+    {
+        std::cerr << "[ERROR] BMI055 gyr measure zero bias failed!" << std::endl;
+        return false;
+    }
     if (!gyr_set_data_refresh_frequency())
     {
         std::cerr << "[ERROR] set gyr data refresh frequency failed!" << std::endl;
@@ -305,26 +306,26 @@ bool BMI055::acc_set_data_refresh_frequency()
 
 bool BMI055::gyr_set_data_refresh_frequency()
 {
-    if (!m_spi.spi_accel_start())
+    if (!m_spi.spi_gyro_start())
     {
-        std::cerr << "[ERROR] Set acc data refresh frequency failed! spi start failed!" << std::endl;
+        std::cerr << "[ERROR] Set gyr data refresh frequency failed! spi start failed!" << std::endl;
         return false;
     }
     
-    uint8_t dummy = ACC_DUMMY_BYTE;
+    uint8_t dummy = GYR_DUMMY_BYTE;
     if (!m_spi.spi_swap_byte(GYR_BW,dummy))
     {
-        std::cerr << "[ERROR] Set acc data refresh frequency failed! spi swap byte failed! (ACC_PMU_BW)" <<std::endl;
+        std::cerr << "[ERROR] Set gyr data refresh frequency failed! spi swap byte failed! (GYR_BW)" <<std::endl;
         return false;
     }
     if (!m_spi.spi_swap_byte(0x80,dummy))
     {
-        std::cerr << "[ERROR] Set acc data refresh frequency failed! spi swap byte failed! (ACC_PMU_BW)" <<std::endl;
+        std::cerr << "[ERROR] Set gyr data refresh frequency failed! spi swap byte failed! (GYR_BW)" <<std::endl;
         return false;
     }
     if (!m_spi.spi_stop())
     {
-        std::cerr << "[ERROR] Set acc data refresh frequency failed! spi stop failed!" <<std::endl;
+        std::cerr << "[ERROR] Set gyr data refresh frequency failed! spi stop failed!" <<std::endl;
         return false;
     }
     return true;
@@ -835,6 +836,27 @@ bool BMI055::gyr_measure_zero_bias()
     std::cerr << "      max-min: X=[" << min_x << ", " << max_x << "]"
               << "  Y=[" << min_y << ", " << max_y << "]"
               << "  Z=[" << min_z << ", " << max_z << "]" << std::endl;
+
+    // 同时保存到文件，避免被终端清屏覆盖
+    {
+        std::ofstream bias_file("/home/orange/pi-workspace/DartControl/bag/gyro_zero_bias.txt", std::ios::trunc);
+        if (bias_file.is_open())
+        {
+            bias_file << "gyr_zero_bias (dps):" << std::endl;
+            bias_file << "  bias:  X=" << m_gyr_bias_x_dps
+                      << "  Y=" << m_gyr_bias_y_dps
+                      << "  Z=" << m_gyr_bias_z_dps << std::endl;
+            bias_file << "  std:   X=" << std_x
+                      << "  Y=" << std_y
+                      << "  Z=" << std_z << std::endl;
+            bias_file << "  max-min: X=[" << min_x << ", " << max_x << "]"
+                      << "  Y=[" << min_y << ", " << max_y << "]"
+                      << "  Z=[" << min_z << ", " << max_z << "]" << std::endl;
+            bias_file.close();
+            std::cerr << "[INFO] Zero bias data saved to bag/gyro_zero_bias.txt" << std::endl;
+        }
+    }
+
     return true;
 }
 

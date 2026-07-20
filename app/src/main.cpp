@@ -116,7 +116,7 @@ void dart_control(Capturer& capturer)
                 bmi055.m_acc_imu_accd_x_mg,
                 bmi055.m_acc_imu_accd_y_mg,
                 bmi055.m_acc_imu_accd_z_mg);
-        gyro_attitude_algorithmer.transform_coordinate_and_kalman_filter(
+        gyro_attitude_algorithmer.transform_coordinate(
                 bmi055.m_gyr_rate_x_dps,
                 bmi055.m_gyr_rate_y_dps,
                 bmi055.m_gyr_rate_z_dps);

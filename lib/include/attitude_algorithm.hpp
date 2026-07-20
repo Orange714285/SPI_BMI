@@ -26,14 +26,14 @@ class GyroAttitudeAlgorithmer
 public:
     GyroAttitudeAlgorithmer() ;
     ~GyroAttitudeAlgorithmer() = default;
-    void transform_coordinate_and_kalman_filter(float gyro_x, float gyro_y, float gyro_z);
+    void transform_coordinate(float gyro_x, float gyro_y, float gyro_z);
     void algorithm(float roll, float pitch);
     void print_attitude_comparison();
 
     // 获取 Kalman 滤波器的原始测量值（FRD 机体系，未经 Kalman 滤波）
-    float raw_frd_gyro_x() const { return m_FRD_gyro_vec_measure[0]; }
-    float raw_frd_gyro_y() const { return m_FRD_gyro_vec_measure[1]; }
-    float raw_frd_gyro_z() const { return m_FRD_gyro_vec_measure[2]; }
+    float raw_frd_gyro_x() const { return m_measure_angular_rate_vec[0]; }
+    float raw_frd_gyro_y() const { return m_measure_angular_rate_vec[1]; }
+    float raw_frd_gyro_z() const { return m_measure_angular_rate_vec[2]; }
 
 private:
     Eigen::Matrix3f m_IMU_to_FRD_matrix; // 该矩阵旧系下描述新系的坐标；左乘动向量，逆左乘动系
@@ -52,10 +52,6 @@ public:
     std::chrono::microseconds m_dt_us;                          // 当前积分步长 (us)
     float m_dt_s = 0;
 private: 
-
-    void get_process_noise_covariance_mat(float k, float k_dt);
-    void get_measure_noise_covariance_mat(float k);
-
     // ---- 坐标系转换 ----
     Eigen::Matrix3f m_IMU_to_FRD_matrix_inv;    // 预计算的 IMU→FRD 旋转矩阵的逆
 
@@ -66,17 +62,33 @@ private:
     Eigen::Matrix<float, 6, 6> m_state_covariance_mat_pos;
     Eigen::Matrix<float, 6, 6> m_identify = Eigen::Matrix<float, 6, 6>::Identity();
 
-    Eigen::Vector3f m_FRD_gyro_vec_measure;
+    Eigen::Vector3f m_measure_angular_rate_vec;
     Eigen::Matrix<float, 6, 1> m_FRD_gyro_vec_pos;
     Eigen::Matrix<float, 6, 1> m_FRD_gyro_vec_pri;
 
-    float m_Q_coefficient;
-    float m_R_coefficient;
-    Eigen::Matrix3f m_measure_noise_covariance_mat;
-    Eigen::Matrix<float, 3, 6> m_control_mat;
-    Eigen::Matrix<float, 6, 3> m_kalman_gain;
+
 
     // ---- 四元数姿态（体轴 → 惯性系）----
-    Eigen::Quaternionf m_q;       // 内旋更新，体轴角速度右乘
+    Eigen::Quaternionf m_mekf_q_attitude_pri;       // 内旋更新，体轴角速度右乘
+    Eigen::Quaternionf m_mekf_q_attitude_pos;
+    Eigen::Quaternionf m_mekf_q_attitude_last_pos;
+    // ---- MEKF
+    Eigen::Matrix<float, 7, 1> m_mekf_normal_state;
+    Eigen::Matrix<float, 6, 1> m_mekf_error_state_pri;
+    Eigen::Matrix<float, 6, 1> m_mekf_error_state_pos;
 
+    Eigen::Matrix<float, 6, 6> m_mekf_covariance_matrix_pri;
+    Eigen::Matrix<float, 6, 6> m_mekf_covariance_matrix_pos;
+    Eigen::Matrix<float, 6, 6> m_mekf_covariance_matrix_pos_last;
+    
+    
+    Eigen::Matrix<float, 6, 6> m_mekf_process_noise_covariance_matrix;
+    Eigen::Matrix<float, 3, 3> m_mekf_measurement_noise_covariance_matrix;
+    float m_mekf_theta_temp;
+    Eigen::Vector3f m_mekf_estimated_angular_rate_vec;
+    Eigen::Vector3f m_mekf_measure_angular_rate_vec;
+    Eigen::Matrix<float, 3, 3> m_mekf_angular_rate_cross_matrix;
+    Eigen::Matrix<float, 6, 6> m_mekf_state_transition_matrix;
+    Eigen::Matrix<float, 3, 6> m_mekf_observation_matrix;   
+    Eigen::Matrix<float, 6, 3> m_mekf_kalman_gain;
 };
