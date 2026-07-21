@@ -1,6 +1,38 @@
 #pragma once
 namespace config {
 
+// 外环输出 deg/s，内环输出舵机脉宽增量 us。
+inline constexpr float ROLL_ANGLE_KP = 3.0f;
+inline constexpr float ROLL_ANGLE_KI = 0.0f;
+inline constexpr float ROLL_ANGLE_KD = 0.0f;
+inline constexpr float YAW_ANGLE_KP = 2.0f;
+inline constexpr float YAW_ANGLE_KI = 0.0f;
+inline constexpr float YAW_ANGLE_KD = 0.0f;
+inline constexpr float X_RATE_KP = 0.5f;
+inline constexpr float X_RATE_KI = 0.0f;
+inline constexpr float X_RATE_KD = 0.0f;
+inline constexpr float Z_RATE_KP = 0.5f;
+inline constexpr float Z_RATE_KI = 0.0f;
+inline constexpr float Z_RATE_KD = 0.0f;
+inline constexpr float SERVO_MAX_DELTA_US = 200.0f;
+
+// 发射检测与发射前姿态锁存周期。
+inline constexpr float LAUNCH_ACCEL_X_MG = -1900.0f;
+inline constexpr int PREFLIGHT_ATTITUDE_LATCH_INTERVAL_MS = 300;
+
+// 第一控制阶段：发射后 0~1200 ms。
+inline constexpr int STAGE_ONE_END_MS = 1200;
+inline constexpr float STAGE_ONE_TARGET_X_RATE = 0.0f;
+inline constexpr float STAGE_ONE_TARGET_Z_RATE = 0.0f;
+inline constexpr float STAGE_ONE_TARGET_ROLL = 0.0f;
+inline constexpr float STAGE_ONE_TARGET_YAW = 0.0f;
+
+// 第二控制阶段：发射 1200 ms 后。
+inline constexpr float STAGE_TWO_TARGET_X_RATE = 0.0f;
+inline constexpr float STAGE_TWO_TARGET_Z_RATE = 0.0f;
+inline constexpr float STAGE_TWO_TARGET_ROLL = 0.0f;
+inline constexpr float STAGE_TWO_TARGET_YAW = 0.0f;
+
 
 // 相机参数 (OV5647)
 inline constexpr int   CAM_WIDTH             = 640;

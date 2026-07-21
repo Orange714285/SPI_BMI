@@ -7,6 +7,8 @@
 #include "camera.hpp"
 #include "detector.hpp"
 #include "image_streamer.hpp"
+#include "pid_control.hpp"
+#include "config.hpp"
 #include "tools/buzzer.hpp"
 
 #include <chrono>
@@ -57,6 +59,10 @@ void dart_control(Capturer& capturer)
     AccAttitudeAlgorithmer acc_attitude_algorithmer;
     GyroAttitudeAlgorithmer gyro_attitude_algorithmer;
     CarData dart_data;
+    CascadedPIDController attitude_controller;
+    float launch_roll = 0.0f;
+    float launch_pitch = 0.0f;
+    auto last_attitude_latch_timer = std::chrono::steady_clock::now();
 
     if (!bmi055.BMI055_init())
     {
@@ -65,11 +71,19 @@ void dart_control(Capturer& capturer)
     }
     std::cerr << "[INFO] BMI055 init successed!" << std::endl;
 
+    // 初始化四个舵机并归中。
+    if (!attitude_controller.initialize_servos(1500, 1500, 1500, 1500)) {
+        std::cerr << "[ERROR] servo initialization failed!" << std::endl;
+        return;
+    }
+
     signal(SIGINT, signal_handler);
 
     // 使用全局 g_flying_state (0=PRE_FLIGHT, 1=FLIGHT)，供 vision 线程可见
-    g_flying_state.store(1);  // 初始为 PRE_FLIGHT
+    g_flying_state.store(0);  // 初始为 PRE_FLIGHT
     CpuMonitor::sample();   // 建立基准
+
+    auto flying_start_timer = std::chrono::steady_clock::now();
     while (g_running)
     {
         bmi055.index++;
@@ -123,33 +137,74 @@ void dart_control(Capturer& capturer)
                 bmi055.m_gyr_rate_x_dps,
                 bmi055.m_gyr_rate_y_dps,
                 bmi055.m_gyr_rate_z_dps);
-			// ==================== 姿态解算 ====================
+        // ==================== 姿态解算与状态切换 ====================
         if (g_flying_state.load() == 0)  // PRE_FLIGHT
         {
-            acc_attitude_algorithmer.algorithmer();
+            if (acc_attitude_algorithmer.m_frd_acc_x < config::LAUNCH_ACCEL_X_MG)
+            {
+                // 发射帧使用最后保存的姿态初始化陀螺仪积分。
+                gyro_attitude_algorithmer.algorithm(launch_roll, launch_pitch);
+                flying_start_timer = std::chrono::steady_clock::now();
+                g_flying_state.store(1);
+                std::cout << "I am flying!" << std::endl;
+            }
+            else
+            {
+                // 发射前每隔 300 ms 保存一次加速度计姿态。
+                acc_attitude_algorithmer.algorithmer();
+                const auto now = std::chrono::steady_clock::now();
+                if (now - last_attitude_latch_timer
+                    >= std::chrono::milliseconds(
+                        config::PREFLIGHT_ATTITUDE_LATCH_INTERVAL_MS))
+                {
+                    launch_roll = acc_attitude_algorithmer.m_roll;
+                    launch_pitch = acc_attitude_algorithmer.m_pitch;
+                    last_attitude_latch_timer = now;
+                }
+            }
         }
         else
         {
-                gyro_attitude_algorithmer.algorithm(
-                    acc_attitude_algorithmer.m_roll,
-                    acc_attitude_algorithmer.m_pitch);
-        }
-
-        // ==================== 状态切换 ====================
-        if (g_flying_state.load() == 0 && acc_attitude_algorithmer.m_frd_acc_x < -1900)
-        {
+            // 每个陀螺仪周期更新飞行姿态。
             gyro_attitude_algorithmer.algorithm(
-                acc_attitude_algorithmer.m_roll,
-                acc_attitude_algorithmer.m_pitch);
-            g_flying_state.store(1);  // → FLIGHT
-            std::cout << "I am flying!" << std::endl;
+                launch_roll,
+                launch_pitch);
         }
 
-        // ==================== 统一输出 ====================
+        // ==================== 统一姿态 ====================
         int flying_state = g_flying_state.load();
         float roll  = (flying_state == 0) ? acc_attitude_algorithmer.m_roll  : gyro_attitude_algorithmer.m_roll;
         float pitch = (flying_state == 0) ? acc_attitude_algorithmer.m_pitch : gyro_attitude_algorithmer.m_pitch;
         float yaw   = (flying_state == 0) ? 0.0f : gyro_attitude_algorithmer.m_yaw;
+
+        if (flying_state == 1)
+        {
+            // 输入目标和实测姿态，执行一次双环 PID 控制。
+            auto flying_process_timer = std::chrono::steady_clock::now();
+            auto flying_duration_ms = std::chrono::duration_cast<std::chrono::milliseconds>(flying_process_timer - flying_start_timer);
+            const bool stage_one =
+                flying_duration_ms.count() < config::STAGE_ONE_END_MS;
+            const float target_x_rate = stage_one
+                ? config::STAGE_ONE_TARGET_X_RATE : config::STAGE_TWO_TARGET_X_RATE;
+            const float target_z_rate = stage_one
+                ? config::STAGE_ONE_TARGET_Z_RATE : config::STAGE_TWO_TARGET_Z_RATE;
+            const float target_roll = stage_one
+                ? config::STAGE_ONE_TARGET_ROLL : config::STAGE_TWO_TARGET_ROLL;
+            const float target_yaw = stage_one
+                ? config::STAGE_ONE_TARGET_YAW : config::STAGE_TWO_TARGET_YAW;
+
+            attitude_controller.control(
+                target_x_rate,
+                target_z_rate,
+                target_roll,
+                target_yaw,
+                gyro_attitude_algorithmer.m_frd_gyro_x,
+                gyro_attitude_algorithmer.m_frd_gyro_z,
+                roll,
+                yaw,
+                gyro_attitude_algorithmer.m_dt_s);
+
+        }
 
         CpuMonitor::sample();
         FrameCounter::tick();
@@ -183,7 +238,14 @@ void dart_control(Capturer& capturer)
         }    
         else 
         {
+            capturer.update_car_data(dart_data);
             // acc_attitude_algorithmer.print_attitude_comparison();
+        }
+
+        if (acc_attitude_algorithmer.m_frd_acc_x > 1900 && flying_state == 1)
+        {
+            g_running.store(0);
+            std::cerr << "[INFO] Flying Ending " << std::endl;
         }
 
     }
