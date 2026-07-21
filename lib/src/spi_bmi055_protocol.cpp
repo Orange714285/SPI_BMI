@@ -127,9 +127,26 @@ bool SPI_BMI055_Protocol::spi_init()
         goto error;
     }
 
+    // 持久化事件缓冲区，避免每帧分配/释放内存。
+    // 容量 64 足以分批排空默认大小的内核事件队列。
+    m_acc_event_buffer = gpiod_edge_event_buffer_new(64);
+    m_gyr_event_buffer = gpiod_edge_event_buffer_new(64);
+    if (!m_acc_event_buffer || !m_gyr_event_buffer) {
+        std::cerr << "[ERROR] Failed to allocate GPIO edge event buffers!" << std::endl;
+        goto error;
+    }
+
     return true;
 
 error:
+    if (m_acc_event_buffer) {
+        gpiod_edge_event_buffer_free(m_acc_event_buffer);
+        m_acc_event_buffer = nullptr;
+    }
+    if (m_gyr_event_buffer) {
+        gpiod_edge_event_buffer_free(m_gyr_event_buffer);
+        m_gyr_event_buffer = nullptr;
+    }
     if (m_fd_acc >= 0) { close(m_fd_acc); m_fd_acc = -1; }
     if (m_fd_gyr >= 0) { close(m_fd_gyr); m_fd_gyr = -1; }
 
@@ -165,6 +182,72 @@ error:
         m_chip = nullptr;
     }
     return false;
+}
+
+bool SPI_BMI055_Protocol::wait_and_drain_edge_events(
+    struct gpiod_line_request *request,
+    struct gpiod_edge_event_buffer *buffer,
+    const char *sensor_name,
+    int64_t timeout_ns)
+{
+    if (!request || !buffer) {
+        std::cerr << "[ERROR] " << sensor_name
+                  << " DRDY request or event buffer is null!" << std::endl;
+        return false;
+    }
+
+    int pending = gpiod_line_request_wait_edge_events(request, timeout_ns);
+    if (pending == 0) {
+        std::cerr << "[WARNING] Time out waiting for " << sensor_name
+                  << " DRDY event!" << std::endl;
+        return false;
+    }
+    if (pending < 0) {
+        std::cerr << "[ERROR] Failed to wait for " << sensor_name
+                  << " DRDY event!" << std::endl;
+        return false;
+    }
+
+    // 策略 B：至少等到一个 DRDY 后，排空当前所有积压事件。
+    // BMI055 当前没有使用 FIFO，所以业务层只应读取一次最新寄存器数据，
+    // 不能为积压的历史边沿重复读取同一份最新数据。
+    constexpr size_t kBatchSize = 64;
+    do {
+        const int event_count = gpiod_line_request_read_edge_events(
+            request, buffer, kBatchSize);
+        if (event_count <= 0) {
+            std::cerr << "[ERROR] Failed to consume " << sensor_name
+                      << " DRDY event!" << std::endl;
+            return false;
+        }
+
+        pending = gpiod_line_request_wait_edge_events(request, 0);
+        if (pending < 0) {
+            std::cerr << "[ERROR] Failed while draining " << sensor_name
+                      << " DRDY events!" << std::endl;
+            return false;
+        }
+    } while (pending == 1);
+
+    return true;
+}
+
+bool SPI_BMI055_Protocol::wait_for_acc_drdy(int64_t timeout_ns)
+{
+    return wait_and_drain_edge_events(
+        m_line_request_acc_interrupt_BMI055,
+        m_acc_event_buffer,
+        "accelerometer",
+        timeout_ns);
+}
+
+bool SPI_BMI055_Protocol::wait_for_gyr_drdy(int64_t timeout_ns)
+{
+    return wait_and_drain_edge_events(
+        m_line_request_gyr_interrupt_BMI055,
+        m_gyr_event_buffer,
+        "gyroscope",
+        timeout_ns);
 }
 
 bool SPI_BMI055_Protocol::spi_write_cs_gyro(int) { return true; }
@@ -254,6 +337,15 @@ bool SPI_BMI055_Protocol::spi_stop(void) {
 
 SPI_BMI055_Protocol::~SPI_BMI055_Protocol()
 {
+    if (m_acc_event_buffer) {
+        gpiod_edge_event_buffer_free(m_acc_event_buffer);
+        m_acc_event_buffer = nullptr;
+    }
+    if (m_gyr_event_buffer) {
+        gpiod_edge_event_buffer_free(m_gyr_event_buffer);
+        m_gyr_event_buffer = nullptr;
+    }
+
     if (m_fd_acc >= 0) {
         close(m_fd_acc);
         m_fd_acc = -1;

@@ -1,94 +1,104 @@
+#pragma once
+
 #include <Eigen/Core>
-#include <Eigen/Dense>  
-#include <Eigen/Geometry> 
+#include <Eigen/Dense>
+#include <Eigen/Geometry>
 #include <chrono>
 
+// 加速度计仅用于发射前的 roll/pitch 初始姿态估计。
 class AccAttitudeAlgorithmer
 {
 public:
     AccAttitudeAlgorithmer();
     ~AccAttitudeAlgorithmer() = default;
+
     void transform_coordinate(float acc_x, float acc_y, float acc_z);
     void algorithmer();
-private:
-    float m_imu_acc_x,m_imu_acc_y,m_imu_acc_z,m_acc_g;
-    Eigen::Matrix3f m_IMU_to_FRD_matrix; // 该矩阵旧系下描述新系的坐标；左乘动向量，逆左乘动系
-    Eigen::Vector3f m_IMU_acc_vec;
-    Eigen::Vector3f m_FRD_acc_vec;
-public:
-    float m_frd_acc_x,m_frd_acc_y,m_frd_acc_z;
-    float m_pitch=0.0f,m_roll=0.0f;
     void print_attitude_comparison();
+
+    float m_frd_acc_x = 0.0f;
+    float m_frd_acc_y = 0.0f;
+    float m_frd_acc_z = 0.0f;
+    float m_pitch = 0.0f;
+    float m_roll = 0.0f;
+
+private:
+    Eigen::Matrix3f m_frd_from_imu;
+    Eigen::Vector3f m_imu_acc;
+    Eigen::Vector3f m_frd_acc;
+    float m_acc_magnitude = 0.0f;
 };
 
+// 方案 B：三维角速度 Kalman 滤波 + 四元数梯形积分。
+// 内部角速度单位为 rad/s，对外输入和输出单位为 deg/s。
 class GyroAttitudeAlgorithmer
 {
 public:
-    GyroAttitudeAlgorithmer() ;
+    GyroAttitudeAlgorithmer();
     ~GyroAttitudeAlgorithmer() = default;
+
     void transform_coordinate(float gyro_x, float gyro_y, float gyro_z);
     void algorithm(float roll, float pitch);
     void print_attitude_comparison();
 
-    // 获取 Kalman 滤波器的原始测量值（FRD 机体系，未经 Kalman 滤波）
-    float raw_frd_gyro_x() const { return m_measure_angular_rate_vec[0]; }
-    float raw_frd_gyro_y() const { return m_measure_angular_rate_vec[1]; }
-    float raw_frd_gyro_z() const { return m_measure_angular_rate_vec[2]; }
+    float raw_frd_gyro_x() const { return m_measure_angular_rate_vec.x(); }
+    float raw_frd_gyro_y() const { return m_measure_angular_rate_vec.y(); }
+    float raw_frd_gyro_z() const { return m_measure_angular_rate_vec.z(); }
+
+    float m_imu_gyro_x = 0.0f;
+    float m_imu_gyro_y = 0.0f;
+    float m_imu_gyro_z = 0.0f;
+
+    float m_frd_gyro_x = 0.0f;
+    float m_frd_gyro_y = 0.0f;
+    float m_frd_gyro_z = 0.0f;
+
+    float m_roll = 0.0f;
+    float m_pitch = 0.0f;
+    float m_yaw = 0.0f;
+
+    // KF 前原始角速度通过独立四元数积分得到的 ZYX 姿态。
+    float m_Euler_roll = 0.0f;
+    float m_Euler_pitch = 0.0f;
+    float m_Euler_yaw = 0.0f;
+    float m_diff_roll = 0.0f;
+    float m_diff_pitch = 0.0f;
+    float m_diff_yaw = 0.0f;
+    float m_quat_roll = 0.0f;
+    float m_quat_pitch = 0.0f;
+    float m_quat_yaw = 0.0f;
+
+    std::chrono::microseconds m_dt_us{0};
+    float m_dt_s = 0.0f;
 
 private:
-    Eigen::Matrix3f m_IMU_to_FRD_matrix; // 该矩阵旧系下描述新系的坐标；左乘动向量，逆左乘动系
-    Eigen::Vector3f m_IMU_gyro_vec;
+    void initialize_attitude(float roll_deg, float pitch_deg);
+    void update_euler_outputs();
+    void quaternion_to_euler(
+        const Eigen::Quaternionf& attitude,
+        float& roll_deg,
+        float& pitch_deg,
+        float& yaw_deg) const;
+    Eigen::Quaternionf quaternion_from_rotation_vector(
+        const Eigen::Vector3f& rotation_vector) const;
 
-    bool m_initialized;                
-    std::chrono::steady_clock::time_point m_gyro_data_time; // 最近一次陀螺数据的时间戳 (transform_coordinate 时更新)
-    std::chrono::steady_clock::time_point m_last_time;      // 上一次积分的时间戳
-public:
-    float m_imu_gyro_x = 0, m_imu_gyro_y = 0 , m_imu_gyro_z = 0;
-    float m_frd_gyro_x = 0, m_frd_gyro_y = 0 , m_frd_gyro_z = 0;
-    float m_pitch = 0, m_roll = 0, m_yaw = 0;
-    float m_Euler_roll = 0, m_Euler_pitch = 0, m_Euler_yaw = 0;     // 原始测量值积分得到的欧拉角
-    float m_diff_roll  = 0, m_diff_pitch  = 0, m_diff_yaw  = 0;  // 差值 = 滤波后积分 - 原始积分
-    float m_quat_roll  = 0, m_quat_pitch  = 0, m_quat_yaw  = 0;  // 四元数积分提取的欧拉角 (内旋 roll-yaw-pitch)
-    std::chrono::microseconds m_dt_us;                          // 当前积分步长 (us)
-    float m_dt_s = 0;
-private: 
-    // ---- 坐标系转换 ----
-    Eigen::Matrix3f m_IMU_to_FRD_matrix_inv;    // 预计算的 IMU→FRD 旋转矩阵的逆
+    Eigen::Matrix3f m_frd_from_imu;
+    Eigen::Vector3f m_imu_gyro;
+    Eigen::Vector3f m_measure_angular_rate_vec; // FRD, deg/s
 
-    // ---- 6 维状态: [rate_x, rate_y, rate_z, α_x, α_y, α_z]^T ----
-    Eigen::Matrix<float, 6, 6> m_state_transition_mat;
-    Eigen::Matrix<float, 6, 6> m_process_noise_covariance_mat;
-    Eigen::Matrix<float, 6, 6> m_state_covariance_mat_pri;
-    Eigen::Matrix<float, 6, 6> m_state_covariance_mat_pos;
-    Eigen::Matrix<float, 6, 6> m_identify = Eigen::Matrix<float, 6, 6>::Identity();
+    bool m_initialized = false;
+    std::chrono::steady_clock::time_point m_gyro_data_time{};
+    std::chrono::steady_clock::time_point m_last_time{};
 
-    Eigen::Vector3f m_measure_angular_rate_vec;
-    Eigen::Matrix<float, 6, 1> m_FRD_gyro_vec_pos;
-    Eigen::Matrix<float, 6, 1> m_FRD_gyro_vec_pri;
+    Eigen::Quaternionf m_filtered_attitude;
+    Eigen::Quaternionf m_raw_attitude;
 
-
-
-    // ---- 四元数姿态（体轴 → 惯性系）----
-    Eigen::Quaternionf m_mekf_q_attitude_pri;       // 内旋更新，体轴角速度右乘
-    Eigen::Quaternionf m_mekf_q_attitude_pos;
-    Eigen::Quaternionf m_mekf_q_attitude_last_pos;
-    // ---- MEKF
-    Eigen::Matrix<float, 7, 1> m_mekf_normal_state;
-    Eigen::Matrix<float, 6, 1> m_mekf_error_state_pri;
-    Eigen::Matrix<float, 6, 1> m_mekf_error_state_pos;
-
-    Eigen::Matrix<float, 6, 6> m_mekf_covariance_matrix_pri;
-    Eigen::Matrix<float, 6, 6> m_mekf_covariance_matrix_pos;
-    Eigen::Matrix<float, 6, 6> m_mekf_covariance_matrix_pos_last;
-    
-    
-    Eigen::Matrix<float, 6, 6> m_mekf_process_noise_covariance_matrix;
-    Eigen::Matrix<float, 3, 3> m_mekf_measurement_noise_covariance_matrix;
-    float m_mekf_theta_temp;
-    Eigen::Vector3f m_mekf_estimated_angular_rate_vec;
-    Eigen::Vector3f m_mekf_measure_angular_rate_vec;
-    Eigen::Matrix<float, 3, 3> m_mekf_angular_rate_cross_matrix;
-    Eigen::Matrix<float, 6, 6> m_mekf_state_transition_matrix;
-    Eigen::Matrix<float, 3, 6> m_mekf_observation_matrix;   
-    Eigen::Matrix<float, 6, 3> m_mekf_kalman_gain;
+    // 三维角速度 Kalman 状态，单位 rad/s。
+    Eigen::Vector3f m_rate_estimate;
+    Eigen::Vector3f m_previous_rate_estimate;
+    Eigen::Vector3f m_previous_raw_rate;
+    Eigen::Matrix3f m_rate_covariance;
+    Eigen::Matrix3f m_rate_process_noise;
+    Eigen::Matrix3f m_rate_measurement_noise;
+    Eigen::Matrix3f m_rate_kalman_gain;
 };

@@ -11,12 +11,15 @@ table CarData
     gyro_raw_frd_x_dps : float;
     gyro_raw_frd_y_dps : float;
     gyro_raw_frd_z_dps : float;
+    // KF 后角速度通过四元数积分得到的 ZYX 姿态
     euler_roll : float;
     euler_yaw : float;
     euler_pitch : float;
+    // KF 前原始角速度通过独立四元数积分得到的 ZYX 姿态
     roll_raw : float;
     pitch_raw : float;
     yaw_raw : float;
+    // KF 后姿态 - KF 前姿态，差值环绕到 [-180, 180] deg
     roll_diff : float;
     pitch_diff : float;
     yaw_diff : float;

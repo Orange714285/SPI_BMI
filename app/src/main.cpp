@@ -7,7 +7,7 @@
 #include "camera.hpp"
 #include "detector.hpp"
 #include "image_streamer.hpp"
-#include "pid_control.hpp"
+#include "tools/buzzer.hpp"
 
 #include <chrono>
 #include <thread>
@@ -31,6 +31,8 @@ void dart_control(Capturer& capturer);
 void dart_vision(Capturer& capturer);
 int main() 
 {
+    Buzzer buzzer;
+    buzzer.start(10);
     // 创建唯一 Capturer，电控和视频写入同一个 .mcap 文件
     Capturer capturer;
     if (!capturer.init())
@@ -49,7 +51,8 @@ int main()
 }
 
 void dart_control(Capturer& capturer)
-{
+{   
+    Buzzer buzzer;
     BMI055 bmi055;
     AccAttitudeAlgorithmer acc_attitude_algorithmer;
     GyroAttitudeAlgorithmer gyro_attitude_algorithmer;
@@ -127,9 +130,9 @@ void dart_control(Capturer& capturer)
         }
         else
         {
-            gyro_attitude_algorithmer.algorithm(
-                acc_attitude_algorithmer.m_roll,
-                acc_attitude_algorithmer.m_pitch);
+                gyro_attitude_algorithmer.algorithm(
+                    acc_attitude_algorithmer.m_roll,
+                    acc_attitude_algorithmer.m_pitch);
         }
 
         // ==================== 状态切换 ====================
@@ -160,10 +163,10 @@ void dart_control(Capturer& capturer)
             gyro_attitude_algorithmer.raw_frd_gyro_x(),   // 原始测量 (Kalman 输入)
             gyro_attitude_algorithmer.raw_frd_gyro_y(),
             gyro_attitude_algorithmer.raw_frd_gyro_z(),
-            gyro_attitude_algorithmer.m_Euler_roll,           // 伪测量积分欧拉角
+            roll, pitch, yaw,                              // 方案B：KF角速度+四元数姿态
+            gyro_attitude_algorithmer.m_Euler_roll,        // KF前角速度的四元数姿态
             gyro_attitude_algorithmer.m_Euler_pitch,
             gyro_attitude_algorithmer.m_Euler_yaw,
-            roll, pitch, yaw,                              // 滤波后积分欧拉角
             gyro_attitude_algorithmer.m_diff_roll,          // 差值 (滤波后 - 原始)
             gyro_attitude_algorithmer.m_diff_pitch,
             gyro_attitude_algorithmer.m_diff_yaw,
@@ -176,11 +179,11 @@ void dart_control(Capturer& capturer)
         if (flying_state == 1)  // FLIGHT
         {
             capturer.update_car_data(dart_data);
-            gyro_attitude_algorithmer.print_attitude_comparison();
+            // gyro_attitude_algorithmer.print_attitude_comparison();
         }    
         else 
         {
-            acc_attitude_algorithmer.print_attitude_comparison();
+            // acc_attitude_algorithmer.print_attitude_comparison();
         }
 
     }

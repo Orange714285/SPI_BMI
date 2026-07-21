@@ -4,6 +4,7 @@
 #include <thread>
 #include <cmath>
 
+#include "tools/buzzer.hpp"
 #include "bmi055_driver.hpp"
 #include "bmi055_driver_def.hpp"
 
@@ -231,50 +232,14 @@ bool BMI055::gyr_config_drdy()
 
 bool BMI055::acc_wait_for_new_info()
 {
-    int nRet = gpiod_line_request_wait_edge_events(m_spi.m_line_request_acc_interrupt_BMI055,1000000000);
-    if(nRet == 0)
-    {
-        std::cerr << "[WARNING] Time out! Failed to get new acc_info " << std::endl; 
-        return false;
-    }
-    else if (nRet==-1)
-    {
-        std::cerr << "[ERROR] Error occurred! Failed to get new acc_info " << std::endl;
-        return false;
-    }
-    else if (nRet == 1)
-    {
-        return true;
-    }
-    else 
-    {
-        std::cerr << "[ERROR] Unknown error! Failed to get new acc_info " << std::endl;
-        return false;
-    }
+    constexpr int64_t kDrdyTimeoutNs = 1000000000LL;
+    return m_spi.wait_for_acc_drdy(kDrdyTimeoutNs);
 }
 
 bool BMI055::gyr_wait_for_new_info()
 {
-    int nRet = gpiod_line_request_wait_edge_events(m_spi.m_line_request_gyr_interrupt_BMI055, 1000000000);
-    if (nRet == 0)
-    {
-        std::cerr << "[WARNING] Time out! Failed to get new gyr_info " << std::endl;
-        return false;
-    }
-    else if (nRet == -1)
-    {
-        std::cerr << "[ERROR] Error occurred! Failed to get new gyr_info " << std::endl;
-        return false;
-    }
-    else if (nRet == 1)
-    {
-        return true;
-    }
-    else
-    {
-        std::cerr << "[ERROR] Unknown error! Failed to get new gyr_info " << std::endl;
-        return false;
-    }
+    constexpr int64_t kDrdyTimeoutNs = 1000000000LL;
+    return m_spi.wait_for_gyr_drdy(kDrdyTimeoutNs);
 }
 
 bool BMI055::acc_set_data_refresh_frequency()
@@ -767,7 +732,7 @@ bool BMI055::gyr_self_test()
 
 bool BMI055::gyr_measure_zero_bias()
 {
-    const int sample_count = 500;
+    const int sample_count = 5000;
     float sum_x = 0.0f, sum_y = 0.0f, sum_z = 0.0f;
     float sum_sq_x = 0.0f, sum_sq_y = 0.0f, sum_sq_z = 0.0f;
     float min_x = 0.0f, max_x = 0.0f;
@@ -781,6 +746,8 @@ bool BMI055::gyr_measure_zero_bias()
     std::cerr << "[INFO] gyr_measure_zero_bias: collecting " << sample_count
               << " samples, please keep device stationary..." << std::endl;
 
+    Buzzer buzzer;
+    buzzer.beep(30, 200);
     for (int i = 0; i < sample_count; i++)
     {
         if (!gyr_wait_for_new_info())
@@ -812,12 +779,15 @@ bool BMI055::gyr_measure_zero_bias()
             min_y = max_y = ry;
             min_z = max_z = rz;
         } else {
-            if (rx < min_x) min_x = rx;  if (rx > max_x) max_x = rx;
-            if (ry < min_y) min_y = ry;  if (ry > max_y) max_y = ry;
-            if (rz < min_z) min_z = rz;  if (rz > max_z) max_z = rz;
+            if (rx < min_x) min_x = rx;
+            if (rx > max_x) max_x = rx;
+            if (ry < min_y) min_y = ry;
+            if (ry > max_y) max_y = ry;
+            if (rz < min_z) min_z = rz;
+            if (rz > max_z) max_z = rz;
         }
     }
-
+    buzzer.beep(30, 200);
     m_gyr_bias_x_dps = sum_x / sample_count;
     m_gyr_bias_y_dps = sum_y / sample_count;
     m_gyr_bias_z_dps = sum_z / sample_count;

@@ -24,6 +24,15 @@ class SPI_BMI055_Protocol {
     struct gpiod_line_config *m_line_config_acc_interrupt_BMI055 = nullptr;
     struct gpiod_line_config *m_line_config_gyr_interrupt_BMI055 = nullptr;
 
+    struct gpiod_edge_event_buffer *m_acc_event_buffer = nullptr;
+    struct gpiod_edge_event_buffer *m_gyr_event_buffer = nullptr;
+
+    bool wait_and_drain_edge_events(
+        struct gpiod_line_request *request,
+        struct gpiod_edge_event_buffer *buffer,
+        const char *sensor_name,
+        int64_t timeout_ns);
+
   public:
     struct gpiod_line_request *m_line_request_acc_interrupt_BMI055 = nullptr;
     struct gpiod_line_request *m_line_request_gyr_interrupt_BMI055 = nullptr;
@@ -35,6 +44,8 @@ class SPI_BMI055_Protocol {
     SPI_BMI055_Protocol() = default;
     ~SPI_BMI055_Protocol();
     bool spi_init();
+    bool wait_for_acc_drdy(int64_t timeout_ns);
+    bool wait_for_gyr_drdy(int64_t timeout_ns);
 
     // 保持兼容的接口声明，但内部实现将精简
     bool spi_write_cs_gyro(int line_value);

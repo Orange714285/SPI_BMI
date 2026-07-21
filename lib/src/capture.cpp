@@ -87,7 +87,15 @@ bool Capturer::init()
 
 bool Capturer::update_car_data(CarData& car_data)
 {
+    if (!m_opened || !m_CarData_channel) {
+        return false;
+    }
+
     m_builder.Clear();
+    // CarData.fbs 中的姿态字段顺序是 roll、yaw、pitch；这里显式按
+    // schema 顺序写入。euler_* 表示 KF 后角速度的四元数姿态，
+    // roll_raw/pitch_raw/yaw_raw 表示 KF 前角速度的四元数姿态。
+    // *_diff 表示“KF 后姿态 - KF 前姿态”的 [-180°, 180°] 环绕差值。
     auto foxglove_car_data = foxglove::CreateCarData(
         this -> m_builder,
         car_data.acc_frd_x_mg,

@@ -37,10 +37,10 @@ public:
     float gyro_raw_frd_x_dps;     // 原始角速度 (Kalman 输入，FRD 机体系)
     float gyro_raw_frd_y_dps;
     float gyro_raw_frd_z_dps;
-    float euler_roll;
+    float euler_roll;     // 方案B输出的四元数 ZYX 欧拉角
     float euler_yaw;
     float euler_pitch;
-    float roll_raw;       // 原始测量值积分得到的欧拉角
+    float roll_raw;       // KF 前原始角速度的四元数积分姿态
     float pitch_raw;
     float yaw_raw;
     float diff_roll;      // 差值 = 滤波后 - 原始
