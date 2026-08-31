@@ -2,33 +2,36 @@ namespace foxglove;
 
 table CarData
 {
-    acc_frd_x_mg : float;
-    acc_frd_y_mg : float;
-    acc_frd_z_mg : float;
-    gyro_frd_x_dps : float;
-    gyro_frd_y_dps : float;
-    gyro_frd_z_dps : float;
+    state : int;
+    imu_fps : int;
+
+    acc_raw_frd_x_mg : float;
+    acc_raw_frd_y_mg : float;
+    acc_raw_frd_z_mg : float;
+
+    acc_filtered_frd_x_mg : float;
+    acc_filtered_frd_y_mg : float;
+    acc_filtered_frd_z_mg : float;
+
     gyro_raw_frd_x_dps : float;
     gyro_raw_frd_y_dps : float;
     gyro_raw_frd_z_dps : float;
-    // KF 后角速度通过四元数积分得到的 ZYX 姿态
-    euler_roll : float;
-    euler_yaw : float;
-    euler_pitch : float;
-    // KF 前原始角速度通过独立四元数积分得到的 ZYX 姿态
-    roll_raw : float;
-    pitch_raw : float;
-    yaw_raw : float;
-    // KF 后姿态 - KF 前姿态，差值环绕到 [-180, 180] deg
-    roll_diff : float;
-    pitch_diff : float;
-    yaw_diff : float;
-    quat_roll : float;
-    quat_pitch : float;
-    quat_yaw : float;
-    IMU_index : int;
-    IMU_fps : int;
-    m_cpu_usage : int;
-    m_state : int;
+
+    gyro_filtered_frd_x_dps : float;
+    gyro_filtered_frd_y_dps : float;
+    gyro_filtered_frd_z_dps : float;
+
+    attitude_roll_deg : float;
+    attitude_yaw_deg : float;
+    attitude_pitch_deg : float;
+
+    attitude_unfiltered_roll_deg : float;
+    attitude_unfiltered_yaw_deg : float;
+    attitude_unfiltered_pitch_deg : float;
+
+    attitude_direct_integral_roll_deg : float;
+    attitude_direct_integral_yaw_deg : float;
+    attitude_direct_integral_pitch_deg : float;
 }
+
 root_type CarData;

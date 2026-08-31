@@ -92,37 +92,32 @@ bool Capturer::update_car_data(CarData& car_data)
     }
 
     m_builder.Clear();
-    // CarData.fbs 中的姿态字段顺序是 roll、yaw、pitch；这里显式按
-    // schema 顺序写入。euler_* 表示 KF 后角速度的四元数姿态，
-    // roll_raw/pitch_raw/yaw_raw 表示 KF 前角速度的四元数姿态。
-    // *_diff 表示“KF 后姿态 - KF 前姿态”的 [-180°, 180°] 环绕差值。
+    // 按 CarData.fbs 中的字段顺序写入 Dart 话题。
     auto foxglove_car_data = foxglove::CreateCarData(
         this -> m_builder,
-        car_data.acc_frd_x_mg,
-        car_data.acc_frd_y_mg,
-        car_data.acc_frd_z_mg,
-        car_data.gyro_frd_x_dps,
-        car_data.gyro_frd_y_dps,
-        car_data.gyro_frd_z_dps,
+        car_data.state,
+        car_data.imu_fps,
+        car_data.acc_raw_frd_x_mg,
+        car_data.acc_raw_frd_y_mg,
+        car_data.acc_raw_frd_z_mg,
+        car_data.acc_filtered_frd_x_mg,
+        car_data.acc_filtered_frd_y_mg,
+        car_data.acc_filtered_frd_z_mg,
         car_data.gyro_raw_frd_x_dps,
         car_data.gyro_raw_frd_y_dps,
         car_data.gyro_raw_frd_z_dps,
-        car_data.euler_roll,
-        car_data.euler_yaw,
-        car_data.euler_pitch,
-        car_data.roll_raw,
-        car_data.pitch_raw,
-        car_data.yaw_raw,
-        car_data.diff_roll,
-        car_data.diff_pitch,
-        car_data.diff_yaw,
-        car_data.quat_roll,
-        car_data.quat_yaw,
-        car_data.quat_pitch,
-        car_data.IMU_data_index,
-        car_data.IMU_fps,
-        car_data.m_cpu_usage,
-        car_data.m_state
+        car_data.gyro_filtered_frd_x_dps,
+        car_data.gyro_filtered_frd_y_dps,
+        car_data.gyro_filtered_frd_z_dps,
+        car_data.attitude_roll_deg,
+        car_data.attitude_yaw_deg,
+        car_data.attitude_pitch_deg,
+        car_data.attitude_unfiltered_roll_deg,
+        car_data.attitude_unfiltered_yaw_deg,
+        car_data.attitude_unfiltered_pitch_deg,
+        car_data.attitude_direct_integral_roll_deg,
+        car_data.attitude_direct_integral_yaw_deg,
+        car_data.attitude_direct_integral_pitch_deg
     );
     m_builder.Finish(foxglove_car_data);
 
@@ -296,7 +291,7 @@ void Capturer::finish() {
 
 void Capturer::writer_thread_loop()
 {
-    while (m_writer_running.load())
+    while (true)
     {
         EncodedFrame ef;
         {

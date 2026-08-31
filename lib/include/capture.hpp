@@ -42,6 +42,9 @@ public:
 
     void finish();
 
+    // 返回本次运行生成的 MCAP 文件路径。
+    const std::string& mcap_path() const { return m_mcap_path; }
+
 private:
     static constexpr size_t kMaxQueueSize = 3;  // 队列上限（满则丢旧帧）
 

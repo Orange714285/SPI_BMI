@@ -1,6 +1,9 @@
 #pragma once
 
 #include <array>
+#include <atomic>
+#include <mutex>
+#include <thread>
 
 class PigpioServoDriver {
 public:
@@ -16,5 +19,12 @@ public:
     bool write_pulsewidths(const std::array<int, 4>& pulsewidth_us);
 
 private:
+    void pwm_loop();
+
     bool ready_ = false;
+    std::atomic<bool> running_{false};
+    std::atomic<bool> has_command_{false};
+    std::array<int, 4> latest_pulsewidth_us_{{1500, 1500, 1500, 1500}};
+    std::mutex pulsewidth_mutex_;
+    std::thread pwm_thread_;
 };

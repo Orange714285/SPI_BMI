@@ -25,335 +25,309 @@ class CarData(object):
         self._tab = flatbuffers.table.Table(buf, pos)
 
     # CarData
-    def AccFrdXMg(self):
+    def State(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(4))
-        if o != 0:
-            return self._tab.Get(flatbuffers.number_types.Float32Flags, o + self._tab.Pos)
-        return 0.0
-
-    # CarData
-    def AccFrdYMg(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(6))
-        if o != 0:
-            return self._tab.Get(flatbuffers.number_types.Float32Flags, o + self._tab.Pos)
-        return 0.0
-
-    # CarData
-    def AccFrdZMg(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(8))
-        if o != 0:
-            return self._tab.Get(flatbuffers.number_types.Float32Flags, o + self._tab.Pos)
-        return 0.0
-
-    # CarData
-    def GyroFrdXDps(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(10))
-        if o != 0:
-            return self._tab.Get(flatbuffers.number_types.Float32Flags, o + self._tab.Pos)
-        return 0.0
-
-    # CarData
-    def GyroFrdYDps(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(12))
-        if o != 0:
-            return self._tab.Get(flatbuffers.number_types.Float32Flags, o + self._tab.Pos)
-        return 0.0
-
-    # CarData
-    def GyroFrdZDps(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(14))
-        if o != 0:
-            return self._tab.Get(flatbuffers.number_types.Float32Flags, o + self._tab.Pos)
-        return 0.0
-
-    # CarData
-    def GyroRawFrdXDps(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(16))
-        if o != 0:
-            return self._tab.Get(flatbuffers.number_types.Float32Flags, o + self._tab.Pos)
-        return 0.0
-
-    # CarData
-    def GyroRawFrdYDps(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(18))
-        if o != 0:
-            return self._tab.Get(flatbuffers.number_types.Float32Flags, o + self._tab.Pos)
-        return 0.0
-
-    # CarData
-    def GyroRawFrdZDps(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(20))
-        if o != 0:
-            return self._tab.Get(flatbuffers.number_types.Float32Flags, o + self._tab.Pos)
-        return 0.0
-
-    # CarData
-    def Roll(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(22))
-        if o != 0:
-            return self._tab.Get(flatbuffers.number_types.Float32Flags, o + self._tab.Pos)
-        return 0.0
-
-    # CarData
-    def Yaw(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(24))
-        if o != 0:
-            return self._tab.Get(flatbuffers.number_types.Float32Flags, o + self._tab.Pos)
-        return 0.0
-
-    # CarData
-    def Pitch(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(26))
-        if o != 0:
-            return self._tab.Get(flatbuffers.number_types.Float32Flags, o + self._tab.Pos)
-        return 0.0
-
-    # CarData
-    def RollRaw(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(28))
-        if o != 0:
-            return self._tab.Get(flatbuffers.number_types.Float32Flags, o + self._tab.Pos)
-        return 0.0
-
-    # CarData
-    def PitchRaw(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(30))
-        if o != 0:
-            return self._tab.Get(flatbuffers.number_types.Float32Flags, o + self._tab.Pos)
-        return 0.0
-
-    # CarData
-    def YawRaw(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(32))
-        if o != 0:
-            return self._tab.Get(flatbuffers.number_types.Float32Flags, o + self._tab.Pos)
-        return 0.0
-
-    # CarData
-    def RollDiff(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(34))
-        if o != 0:
-            return self._tab.Get(flatbuffers.number_types.Float32Flags, o + self._tab.Pos)
-        return 0.0
-
-    # CarData
-    def PitchDiff(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(36))
-        if o != 0:
-            return self._tab.Get(flatbuffers.number_types.Float32Flags, o + self._tab.Pos)
-        return 0.0
-
-    # CarData
-    def YawDiff(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(38))
-        if o != 0:
-            return self._tab.Get(flatbuffers.number_types.Float32Flags, o + self._tab.Pos)
-        return 0.0
-
-    # CarData
-    def RollQ(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(40))
-        if o != 0:
-            return self._tab.Get(flatbuffers.number_types.Float32Flags, o + self._tab.Pos)
-        return 0.0
-
-    # CarData
-    def PitchQ(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(42))
-        if o != 0:
-            return self._tab.Get(flatbuffers.number_types.Float32Flags, o + self._tab.Pos)
-        return 0.0
-
-    # CarData
-    def YawQ(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(44))
-        if o != 0:
-            return self._tab.Get(flatbuffers.number_types.Float32Flags, o + self._tab.Pos)
-        return 0.0
-
-    # CarData
-    def ImuIndex(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(46))
         if o != 0:
             return self._tab.Get(flatbuffers.number_types.Int32Flags, o + self._tab.Pos)
         return 0
 
     # CarData
     def ImuFps(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(6))
+        if o != 0:
+            return self._tab.Get(flatbuffers.number_types.Int32Flags, o + self._tab.Pos)
+        return 0
+
+    # CarData
+    def AccRawFrdXMg(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(8))
+        if o != 0:
+            return self._tab.Get(flatbuffers.number_types.Float32Flags, o + self._tab.Pos)
+        return 0.0
+
+    # CarData
+    def AccRawFrdYMg(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(10))
+        if o != 0:
+            return self._tab.Get(flatbuffers.number_types.Float32Flags, o + self._tab.Pos)
+        return 0.0
+
+    # CarData
+    def AccRawFrdZMg(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(12))
+        if o != 0:
+            return self._tab.Get(flatbuffers.number_types.Float32Flags, o + self._tab.Pos)
+        return 0.0
+
+    # CarData
+    def AccFilteredFrdXMg(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(14))
+        if o != 0:
+            return self._tab.Get(flatbuffers.number_types.Float32Flags, o + self._tab.Pos)
+        return 0.0
+
+    # CarData
+    def AccFilteredFrdYMg(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(16))
+        if o != 0:
+            return self._tab.Get(flatbuffers.number_types.Float32Flags, o + self._tab.Pos)
+        return 0.0
+
+    # CarData
+    def AccFilteredFrdZMg(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(18))
+        if o != 0:
+            return self._tab.Get(flatbuffers.number_types.Float32Flags, o + self._tab.Pos)
+        return 0.0
+
+    # CarData
+    def GyroRawFrdXDps(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(20))
+        if o != 0:
+            return self._tab.Get(flatbuffers.number_types.Float32Flags, o + self._tab.Pos)
+        return 0.0
+
+    # CarData
+    def GyroRawFrdYDps(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(22))
+        if o != 0:
+            return self._tab.Get(flatbuffers.number_types.Float32Flags, o + self._tab.Pos)
+        return 0.0
+
+    # CarData
+    def GyroRawFrdZDps(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(24))
+        if o != 0:
+            return self._tab.Get(flatbuffers.number_types.Float32Flags, o + self._tab.Pos)
+        return 0.0
+
+    # CarData
+    def GyroFilteredFrdXDps(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(26))
+        if o != 0:
+            return self._tab.Get(flatbuffers.number_types.Float32Flags, o + self._tab.Pos)
+        return 0.0
+
+    # CarData
+    def GyroFilteredFrdYDps(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(28))
+        if o != 0:
+            return self._tab.Get(flatbuffers.number_types.Float32Flags, o + self._tab.Pos)
+        return 0.0
+
+    # CarData
+    def GyroFilteredFrdZDps(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(30))
+        if o != 0:
+            return self._tab.Get(flatbuffers.number_types.Float32Flags, o + self._tab.Pos)
+        return 0.0
+
+    # CarData
+    def AttitudeRollDeg(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(32))
+        if o != 0:
+            return self._tab.Get(flatbuffers.number_types.Float32Flags, o + self._tab.Pos)
+        return 0.0
+
+    # CarData
+    def AttitudeYawDeg(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(34))
+        if o != 0:
+            return self._tab.Get(flatbuffers.number_types.Float32Flags, o + self._tab.Pos)
+        return 0.0
+
+    # CarData
+    def AttitudePitchDeg(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(36))
+        if o != 0:
+            return self._tab.Get(flatbuffers.number_types.Float32Flags, o + self._tab.Pos)
+        return 0.0
+
+    # CarData
+    def AttitudeUnfilteredRollDeg(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(38))
+        if o != 0:
+            return self._tab.Get(flatbuffers.number_types.Float32Flags, o + self._tab.Pos)
+        return 0.0
+
+    # CarData
+    def AttitudeUnfilteredYawDeg(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(40))
+        if o != 0:
+            return self._tab.Get(flatbuffers.number_types.Float32Flags, o + self._tab.Pos)
+        return 0.0
+
+    # CarData
+    def AttitudeUnfilteredPitchDeg(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(42))
+        if o != 0:
+            return self._tab.Get(flatbuffers.number_types.Float32Flags, o + self._tab.Pos)
+        return 0.0
+
+    # CarData
+    def AttitudeDirectIntegralRollDeg(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(44))
+        if o != 0:
+            return self._tab.Get(flatbuffers.number_types.Float32Flags, o + self._tab.Pos)
+        return 0.0
+
+    # CarData
+    def AttitudeDirectIntegralYawDeg(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(46))
+        if o != 0:
+            return self._tab.Get(flatbuffers.number_types.Float32Flags, o + self._tab.Pos)
+        return 0.0
+
+    # CarData
+    def AttitudeDirectIntegralPitchDeg(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(48))
         if o != 0:
-            return self._tab.Get(flatbuffers.number_types.Int32Flags, o + self._tab.Pos)
-        return 0
-
-    # CarData
-    def MCpuUsage(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(50))
-        if o != 0:
-            return self._tab.Get(flatbuffers.number_types.Int32Flags, o + self._tab.Pos)
-        return 0
-
-    # CarData
-    def MState(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(52))
-        if o != 0:
-            return self._tab.Get(flatbuffers.number_types.Int32Flags, o + self._tab.Pos)
-        return 0
+            return self._tab.Get(flatbuffers.number_types.Float32Flags, o + self._tab.Pos)
+        return 0.0
 
 def CarDataStart(builder):
-    builder.StartObject(25)
+    builder.StartObject(23)
 
 def Start(builder):
     CarDataStart(builder)
 
-def CarDataAddAccFrdXMg(builder, accFrdXMg):
-    builder.PrependFloat32Slot(0, accFrdXMg, 0.0)
+def CarDataAddState(builder, state):
+    builder.PrependInt32Slot(0, state, 0)
 
-def AddAccFrdXMg(builder, accFrdXMg):
-    CarDataAddAccFrdXMg(builder, accFrdXMg)
+def AddState(builder, state):
+    CarDataAddState(builder, state)
 
-def CarDataAddAccFrdYMg(builder, accFrdYMg):
-    builder.PrependFloat32Slot(1, accFrdYMg, 0.0)
+def CarDataAddImuFps(builder, imuFps):
+    builder.PrependInt32Slot(1, imuFps, 0)
 
-def AddAccFrdYMg(builder, accFrdYMg):
-    CarDataAddAccFrdYMg(builder, accFrdYMg)
+def AddImuFps(builder, imuFps):
+    CarDataAddImuFps(builder, imuFps)
 
-def CarDataAddAccFrdZMg(builder, accFrdZMg):
-    builder.PrependFloat32Slot(2, accFrdZMg, 0.0)
+def CarDataAddAccRawFrdXMg(builder, accRawFrdXMg):
+    builder.PrependFloat32Slot(2, accRawFrdXMg, 0.0)
 
-def AddAccFrdZMg(builder, accFrdZMg):
-    CarDataAddAccFrdZMg(builder, accFrdZMg)
+def AddAccRawFrdXMg(builder, accRawFrdXMg):
+    CarDataAddAccRawFrdXMg(builder, accRawFrdXMg)
 
-def CarDataAddGyroFrdXDps(builder, gyroFrdXDps):
-    builder.PrependFloat32Slot(3, gyroFrdXDps, 0.0)
+def CarDataAddAccRawFrdYMg(builder, accRawFrdYMg):
+    builder.PrependFloat32Slot(3, accRawFrdYMg, 0.0)
 
-def AddGyroFrdXDps(builder, gyroFrdXDps):
-    CarDataAddGyroFrdXDps(builder, gyroFrdXDps)
+def AddAccRawFrdYMg(builder, accRawFrdYMg):
+    CarDataAddAccRawFrdYMg(builder, accRawFrdYMg)
 
-def CarDataAddGyroFrdYDps(builder, gyroFrdYDps):
-    builder.PrependFloat32Slot(4, gyroFrdYDps, 0.0)
+def CarDataAddAccRawFrdZMg(builder, accRawFrdZMg):
+    builder.PrependFloat32Slot(4, accRawFrdZMg, 0.0)
 
-def AddGyroFrdYDps(builder, gyroFrdYDps):
-    CarDataAddGyroFrdYDps(builder, gyroFrdYDps)
+def AddAccRawFrdZMg(builder, accRawFrdZMg):
+    CarDataAddAccRawFrdZMg(builder, accRawFrdZMg)
 
-def CarDataAddGyroFrdZDps(builder, gyroFrdZDps):
-    builder.PrependFloat32Slot(5, gyroFrdZDps, 0.0)
+def CarDataAddAccFilteredFrdXMg(builder, accFilteredFrdXMg):
+    builder.PrependFloat32Slot(5, accFilteredFrdXMg, 0.0)
 
-def AddGyroFrdZDps(builder, gyroFrdZDps):
-    CarDataAddGyroFrdZDps(builder, gyroFrdZDps)
+def AddAccFilteredFrdXMg(builder, accFilteredFrdXMg):
+    CarDataAddAccFilteredFrdXMg(builder, accFilteredFrdXMg)
+
+def CarDataAddAccFilteredFrdYMg(builder, accFilteredFrdYMg):
+    builder.PrependFloat32Slot(6, accFilteredFrdYMg, 0.0)
+
+def AddAccFilteredFrdYMg(builder, accFilteredFrdYMg):
+    CarDataAddAccFilteredFrdYMg(builder, accFilteredFrdYMg)
+
+def CarDataAddAccFilteredFrdZMg(builder, accFilteredFrdZMg):
+    builder.PrependFloat32Slot(7, accFilteredFrdZMg, 0.0)
+
+def AddAccFilteredFrdZMg(builder, accFilteredFrdZMg):
+    CarDataAddAccFilteredFrdZMg(builder, accFilteredFrdZMg)
 
 def CarDataAddGyroRawFrdXDps(builder, gyroRawFrdXDps):
-    builder.PrependFloat32Slot(6, gyroRawFrdXDps, 0.0)
+    builder.PrependFloat32Slot(8, gyroRawFrdXDps, 0.0)
 
 def AddGyroRawFrdXDps(builder, gyroRawFrdXDps):
     CarDataAddGyroRawFrdXDps(builder, gyroRawFrdXDps)
 
 def CarDataAddGyroRawFrdYDps(builder, gyroRawFrdYDps):
-    builder.PrependFloat32Slot(7, gyroRawFrdYDps, 0.0)
+    builder.PrependFloat32Slot(9, gyroRawFrdYDps, 0.0)
 
 def AddGyroRawFrdYDps(builder, gyroRawFrdYDps):
     CarDataAddGyroRawFrdYDps(builder, gyroRawFrdYDps)
 
 def CarDataAddGyroRawFrdZDps(builder, gyroRawFrdZDps):
-    builder.PrependFloat32Slot(8, gyroRawFrdZDps, 0.0)
+    builder.PrependFloat32Slot(10, gyroRawFrdZDps, 0.0)
 
 def AddGyroRawFrdZDps(builder, gyroRawFrdZDps):
     CarDataAddGyroRawFrdZDps(builder, gyroRawFrdZDps)
 
-def CarDataAddRoll(builder, roll):
-    builder.PrependFloat32Slot(9, roll, 0.0)
+def CarDataAddGyroFilteredFrdXDps(builder, gyroFilteredFrdXDps):
+    builder.PrependFloat32Slot(11, gyroFilteredFrdXDps, 0.0)
 
-def AddRoll(builder, roll):
-    CarDataAddRoll(builder, roll)
+def AddGyroFilteredFrdXDps(builder, gyroFilteredFrdXDps):
+    CarDataAddGyroFilteredFrdXDps(builder, gyroFilteredFrdXDps)
 
-def CarDataAddYaw(builder, yaw):
-    builder.PrependFloat32Slot(10, yaw, 0.0)
+def CarDataAddGyroFilteredFrdYDps(builder, gyroFilteredFrdYDps):
+    builder.PrependFloat32Slot(12, gyroFilteredFrdYDps, 0.0)
 
-def AddYaw(builder, yaw):
-    CarDataAddYaw(builder, yaw)
+def AddGyroFilteredFrdYDps(builder, gyroFilteredFrdYDps):
+    CarDataAddGyroFilteredFrdYDps(builder, gyroFilteredFrdYDps)
 
-def CarDataAddPitch(builder, pitch):
-    builder.PrependFloat32Slot(11, pitch, 0.0)
+def CarDataAddGyroFilteredFrdZDps(builder, gyroFilteredFrdZDps):
+    builder.PrependFloat32Slot(13, gyroFilteredFrdZDps, 0.0)
 
-def AddPitch(builder, pitch):
-    CarDataAddPitch(builder, pitch)
+def AddGyroFilteredFrdZDps(builder, gyroFilteredFrdZDps):
+    CarDataAddGyroFilteredFrdZDps(builder, gyroFilteredFrdZDps)
 
-def CarDataAddRollRaw(builder, rollRaw):
-    builder.PrependFloat32Slot(12, rollRaw, 0.0)
+def CarDataAddAttitudeRollDeg(builder, attitudeRollDeg):
+    builder.PrependFloat32Slot(14, attitudeRollDeg, 0.0)
 
-def AddRollRaw(builder, rollRaw):
-    CarDataAddRollRaw(builder, rollRaw)
+def AddAttitudeRollDeg(builder, attitudeRollDeg):
+    CarDataAddAttitudeRollDeg(builder, attitudeRollDeg)
 
-def CarDataAddPitchRaw(builder, pitchRaw):
-    builder.PrependFloat32Slot(13, pitchRaw, 0.0)
+def CarDataAddAttitudeYawDeg(builder, attitudeYawDeg):
+    builder.PrependFloat32Slot(15, attitudeYawDeg, 0.0)
 
-def AddPitchRaw(builder, pitchRaw):
-    CarDataAddPitchRaw(builder, pitchRaw)
+def AddAttitudeYawDeg(builder, attitudeYawDeg):
+    CarDataAddAttitudeYawDeg(builder, attitudeYawDeg)
 
-def CarDataAddYawRaw(builder, yawRaw):
-    builder.PrependFloat32Slot(14, yawRaw, 0.0)
+def CarDataAddAttitudePitchDeg(builder, attitudePitchDeg):
+    builder.PrependFloat32Slot(16, attitudePitchDeg, 0.0)
 
-def AddYawRaw(builder, yawRaw):
-    CarDataAddYawRaw(builder, yawRaw)
+def AddAttitudePitchDeg(builder, attitudePitchDeg):
+    CarDataAddAttitudePitchDeg(builder, attitudePitchDeg)
 
-def CarDataAddRollDiff(builder, rollDiff):
-    builder.PrependFloat32Slot(15, rollDiff, 0.0)
+def CarDataAddAttitudeUnfilteredRollDeg(builder, attitudeUnfilteredRollDeg):
+    builder.PrependFloat32Slot(17, attitudeUnfilteredRollDeg, 0.0)
 
-def AddRollDiff(builder, rollDiff):
-    CarDataAddRollDiff(builder, rollDiff)
+def AddAttitudeUnfilteredRollDeg(builder, attitudeUnfilteredRollDeg):
+    CarDataAddAttitudeUnfilteredRollDeg(builder, attitudeUnfilteredRollDeg)
 
-def CarDataAddPitchDiff(builder, pitchDiff):
-    builder.PrependFloat32Slot(16, pitchDiff, 0.0)
+def CarDataAddAttitudeUnfilteredYawDeg(builder, attitudeUnfilteredYawDeg):
+    builder.PrependFloat32Slot(18, attitudeUnfilteredYawDeg, 0.0)
 
-def AddPitchDiff(builder, pitchDiff):
-    CarDataAddPitchDiff(builder, pitchDiff)
+def AddAttitudeUnfilteredYawDeg(builder, attitudeUnfilteredYawDeg):
+    CarDataAddAttitudeUnfilteredYawDeg(builder, attitudeUnfilteredYawDeg)
 
-def CarDataAddYawDiff(builder, yawDiff):
-    builder.PrependFloat32Slot(17, yawDiff, 0.0)
+def CarDataAddAttitudeUnfilteredPitchDeg(builder, attitudeUnfilteredPitchDeg):
+    builder.PrependFloat32Slot(19, attitudeUnfilteredPitchDeg, 0.0)
 
-def AddYawDiff(builder, yawDiff):
-    CarDataAddYawDiff(builder, yawDiff)
+def AddAttitudeUnfilteredPitchDeg(builder, attitudeUnfilteredPitchDeg):
+    CarDataAddAttitudeUnfilteredPitchDeg(builder, attitudeUnfilteredPitchDeg)
 
-def CarDataAddRollQ(builder, rollQ):
-    builder.PrependFloat32Slot(18, rollQ, 0.0)
+def CarDataAddAttitudeDirectIntegralRollDeg(builder, attitudeDirectIntegralRollDeg):
+    builder.PrependFloat32Slot(20, attitudeDirectIntegralRollDeg, 0.0)
 
-def AddRollQ(builder, rollQ):
-    CarDataAddRollQ(builder, rollQ)
+def AddAttitudeDirectIntegralRollDeg(builder, attitudeDirectIntegralRollDeg):
+    CarDataAddAttitudeDirectIntegralRollDeg(builder, attitudeDirectIntegralRollDeg)
 
-def CarDataAddPitchQ(builder, pitchQ):
-    builder.PrependFloat32Slot(19, pitchQ, 0.0)
+def CarDataAddAttitudeDirectIntegralYawDeg(builder, attitudeDirectIntegralYawDeg):
+    builder.PrependFloat32Slot(21, attitudeDirectIntegralYawDeg, 0.0)
 
-def AddPitchQ(builder, pitchQ):
-    CarDataAddPitchQ(builder, pitchQ)
+def AddAttitudeDirectIntegralYawDeg(builder, attitudeDirectIntegralYawDeg):
+    CarDataAddAttitudeDirectIntegralYawDeg(builder, attitudeDirectIntegralYawDeg)
 
-def CarDataAddYawQ(builder, yawQ):
-    builder.PrependFloat32Slot(20, yawQ, 0.0)
+def CarDataAddAttitudeDirectIntegralPitchDeg(builder, attitudeDirectIntegralPitchDeg):
+    builder.PrependFloat32Slot(22, attitudeDirectIntegralPitchDeg, 0.0)
 
-def AddYawQ(builder, yawQ):
-    CarDataAddYawQ(builder, yawQ)
-
-def CarDataAddImuIndex(builder, imuIndex):
-    builder.PrependInt32Slot(21, imuIndex, 0)
-
-def AddImuIndex(builder, imuIndex):
-    CarDataAddImuIndex(builder, imuIndex)
-
-def CarDataAddImuFps(builder, imuFps):
-    builder.PrependInt32Slot(22, imuFps, 0)
-
-def AddImuFps(builder, imuFps):
-    CarDataAddImuFps(builder, imuFps)
-
-def CarDataAddMCpuUsage(builder, mCpuUsage):
-    builder.PrependInt32Slot(23, mCpuUsage, 0)
-
-def AddMCpuUsage(builder, mCpuUsage):
-    CarDataAddMCpuUsage(builder, mCpuUsage)
-
-def CarDataAddMState(builder, mState):
-    builder.PrependInt32Slot(24, mState, 0)
-
-def AddMState(builder, mState):
-    CarDataAddMState(builder, mState)
+def AddAttitudeDirectIntegralPitchDeg(builder, attitudeDirectIntegralPitchDeg):
+    CarDataAddAttitudeDirectIntegralPitchDeg(builder, attitudeDirectIntegralPitchDeg)
 
 def CarDataEnd(builder):
     return builder.EndObject()

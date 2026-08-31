@@ -2,6 +2,7 @@
 
 #include "config.hpp"
 
+#include <iostream>
 #include <algorithm>
 #include <cmath>
 
@@ -9,14 +10,49 @@ CascadedPIDController::CascadedPIDController() = default;
 
 bool CascadedPIDController::initialize_servos(
     int left_upper_us, int right_upper_us,
-    int left_lower_us, int right_lower_us)
+    int right_lower_us, int left_lower_us)
 {
     // 保存四个舵机中位并立即归中。
     center_us_ = {
-        left_upper_us, right_upper_us, left_lower_us, right_lower_us,
+        left_upper_us, right_upper_us, right_lower_us, left_lower_us,
     };
-    return servo_driver_.write_pulsewidths(center_us_);
-}
+    std::array<int,4UL> left_us , right_us;
+    for (int i = 0 ; i <=  3 ; i++)
+    {
+        left_us[i] = center_us_[i] - 500;
+        right_us[i] = center_us_[i] + 500;
+    }
+
+    if (!servo_driver_.write_pulsewidths(center_us_))
+    {
+        std::cerr << "[Error] Servo Self_test_wrong!" <<std::endl;
+        return false;
+    }
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    if (!servo_driver_.write_pulsewidths(left_us))
+    {
+        std::cerr << "[Error] Servo Self_test_wrong!" <<std::endl;
+        return false;
+    }
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    if (!servo_driver_.write_pulsewidths(right_us))
+    {
+        std::cerr << "[Error] Servo Self_test_wrong!" <<std::endl;
+        return false;
+    }
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    if (!servo_driver_.write_pulsewidths(center_us_))
+    {
+        std::cerr << "[Error] Servo Self_test_wrong!" <<std::endl;
+        return false;
+    }
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    return true;
+}    
+        
+
+    
+
 
 float CascadedPIDController::calculate_pid(
     int index, float error, float dt,
@@ -46,12 +82,9 @@ bool CascadedPIDController::control(
     if (dt <= 0.0f) return false;
 
     // 读取姿态环和角速度环 PID 参数。
-    const std::array<float, 2> angle_kp{{
-        config::ROLL_ANGLE_KP, config::YAW_ANGLE_KP}};
-    const std::array<float, 2> angle_ki{{
-        config::ROLL_ANGLE_KI, config::YAW_ANGLE_KI}};
-    const std::array<float, 2> angle_kd{{
-        config::ROLL_ANGLE_KD, config::YAW_ANGLE_KD}};
+    const std::array<float, 2> angle_kp{{config::ROLL_ANGLE_KP, config::YAW_ANGLE_KP}};
+    const std::array<float, 2> angle_ki{{config::ROLL_ANGLE_KI, config::YAW_ANGLE_KI}};
+    const std::array<float, 2> angle_kd{{config::ROLL_ANGLE_KD, config::YAW_ANGLE_KD}};
     const std::array<float, 2> rate_kp{{config::X_RATE_KP, config::Z_RATE_KP}};
     const std::array<float, 2> rate_ki{{config::X_RATE_KI, config::Z_RATE_KI}};
     const std::array<float, 2> rate_kd{{config::X_RATE_KD, config::Z_RATE_KD}};
@@ -78,9 +111,9 @@ bool CascadedPIDController::control(
 
     // 将三轴控制量混控为四个 X 舵的脉宽增量。
     const std::array<float, 4> servo_delta_us{{
+        roll_output - yaw_output,
+        roll_output - yaw_output,
         roll_output + yaw_output,
-        roll_output - yaw_output,
-        roll_output - yaw_output,
         roll_output + yaw_output,
     }};
 

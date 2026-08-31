@@ -305,12 +305,12 @@ bool BMI055::acc_set_measuring_range()
     }
     
     uint8_t dummy = ACC_DUMMY_BYTE;
-    if (!m_spi.spi_swap_byte(ACC_ACCD_HBW,dummy))
+    if (!m_spi.spi_swap_byte(ACC_PMU_RANGE,dummy))
     {
         std::cerr << "[ERROR] Set acc measuring range failed! spi swap byte failed! (ACC_ACCD_HBW)" <<std::endl;
         return false;
     }
-    if (!m_spi.spi_swap_byte(0x03,dummy))
+    if (!m_spi.spi_swap_byte(0x05,dummy))
     {
         std::cerr << "[ERROR] Set acc measuring range failed! spi swap byte failed! (ACC_ACCD_HBW)" <<std::endl;
         return false;
@@ -550,7 +550,7 @@ float BMI055::acc_get_mg(uint8_t lsb, uint8_t msb)
         acc_raw = (int16_t)(raw_12bit - 4096);
     else
         acc_raw = (int16_t)raw_12bit;
-    float acc_mg = acc_raw * 0.98f;
+    float acc_mg = acc_raw * 1.953125f;
     return acc_mg;
 }
 
