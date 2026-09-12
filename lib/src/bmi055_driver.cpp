@@ -42,10 +42,12 @@ bool BMI055::BMI055_init()
     if (!acc_set_measuring_range())
     {
         std::cerr << "[ERROR] set_measuring_range failed!" << std::endl;
+        return false;
     }
     if (!acc_set_data_refresh_frequency())
     {
         std::cerr << "[ERROR] set acc data refresh frequency failed!" << std::endl;
+        return false;
     }
     // 配置陀螺仪
     if (!gyr_set_data_output_unfiltered())
@@ -66,6 +68,7 @@ bool BMI055::BMI055_init()
     if (!gyr_set_data_refresh_frequency())
     {
         std::cerr << "[ERROR] set gyr data refresh frequency failed!" << std::endl;
+        return false;
     }
 
     return true;

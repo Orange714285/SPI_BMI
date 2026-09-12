@@ -1,5 +1,7 @@
 #include <camera.hpp>
 
+#include <chrono>
+
 Camera::Camera()
 {	
     m_stopped = false;
@@ -229,7 +231,7 @@ void Camera::request_complete(libcamera::Request *request)
         std::cout << std::endl;
     }
 
-    // ── 只存 Plane 元数据，mmap/clone 移至主线程 ──
+    // 在 request/buffer 重新入队前完成深拷贝，确保消费者读取的是独立内存。
     const std::map<const libcamera::Stream *, libcamera::FrameBuffer *> &buffers = request->buffers();
     for (auto bufferPair : buffers) 
     {
@@ -237,14 +239,22 @@ void Camera::request_complete(libcamera::Request *request)
         const libcamera::Span<const libcamera::FrameBuffer::Plane> &planes = buffer->planes();
         if (!planes.empty())
         {
-            m_latest_frame.plane = planes[0];
-            m_latest_frame.width = m_width;
-            m_latest_frame.height = m_height;
-            m_latest_frame.stride = m_stride;
-            m_latest_frame.sequence = buffer->metadata().sequence;
-            m_latest_frame.valid = true;
+            FrameData frame;
+            frame.plane = planes[0];
+            frame.width = m_width;
+            frame.height = m_height;
+            frame.stride = m_stride;
+            frame.sequence = buffer->metadata().sequence;
+            frame.valid = true;
+
+            cv::Mat mapped = plane_to_rgb_mat(frame);
+            if (mapped.empty())
+                continue;
+
+            cv::Mat owned_frame = mapped.clone();
             {
                 std::lock_guard<std::mutex> lock(m_mtx);
+                m_latest_frame = std::move(owned_frame);
                 m_frame_ready = true;
             }
             m_plane_condition_variable.notify_one();
@@ -259,19 +269,15 @@ void Camera::request_complete(libcamera::Request *request)
 cv::Mat Camera::wait_and_get_latest_frame()
 {
     std::unique_lock<std::mutex> lock(m_mtx);
-    m_plane_condition_variable.wait(lock, [this]{
-        return m_frame_ready || m_stopped;
-    });
-    if (m_stopped) return {};
+    const bool awakened = m_plane_condition_variable.wait_for(
+        lock, std::chrono::seconds(1), [this]{
+            return m_frame_ready || m_stopped;
+        });
+    if (!awakened || m_stopped) return {};
 
-    FrameData data = m_latest_frame;
+    cv::Mat frame = std::move(m_latest_frame);
     m_frame_ready = false;
-    lock.unlock();
-
-    // 主线程中完成 mmap + clone，减轻 callback 线程负担
-    cv::Mat bayer = plane_to_rgb_mat(data);
-    if (bayer.empty()) return {};
-    return bayer.clone();
+    return frame;
 }
 
 cv::Mat Camera::plane_to_rgb_mat(const FrameData& frame)

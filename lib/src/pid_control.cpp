@@ -79,7 +79,12 @@ bool CascadedPIDController::control(
     float dt)
 {
     // 检查控制周期。
-    if (dt <= 0.0f) return false;
+    if (dt <= 0.0f) {
+        pid_outer_outputs_.fill(0.0f);
+        pid_inner_outputs_.fill(0.0f);
+        servo_deltas_us_.fill(0.0f);
+        return false;
+    }
 
     // 读取姿态环和角速度环 PID 参数。
     const std::array<float, 2> angle_kp{{config::ROLL_ANGLE_KP, config::YAW_ANGLE_KP}};
@@ -94,12 +99,15 @@ bool CascadedPIDController::control(
     const float yaw_error = std::remainder(target_yaw - yaw, 360.0f);
 
     // 姿态外环输出 x 和 z 轴目标角速度。
-    const float x_rate_command = target_x_rate + calculate_pid(
+    const float roll_outer_output = calculate_pid(
         0, roll_error, dt, angle_kp, angle_ki, angle_kd,
         angle_integral_, angle_last_error_);
-    const float z_rate_command = target_z_rate + calculate_pid(
+    const float yaw_outer_output = calculate_pid(
         1, yaw_error, dt, angle_kp, angle_ki, angle_kd,
         angle_integral_, angle_last_error_);
+    pid_outer_outputs_ = {roll_outer_output, yaw_outer_output};
+    const float x_rate_command = target_x_rate + roll_outer_output;
+    const float z_rate_command = target_z_rate + yaw_outer_output;
 
     // 角速度内环输出 roll 和 yaw 控制量。
     const float roll_output = calculate_pid(
@@ -108,13 +116,14 @@ bool CascadedPIDController::control(
     const float yaw_output = calculate_pid(
         1, z_rate_command - gyro_z, dt, rate_kp, rate_ki, rate_kd,
         rate_integral_, rate_last_error_);
+    pid_inner_outputs_ = {roll_output, yaw_output};
 
     // 将三轴控制量混控为四个 X 舵的脉宽增量。
     const std::array<float, 4> servo_delta_us{{
-        roll_output - yaw_output,
-        roll_output - yaw_output,
-        roll_output + yaw_output,
-        roll_output + yaw_output,
+        - roll_output + yaw_output,
+        - roll_output + yaw_output,
+        - roll_output - yaw_output,
+        - roll_output - yaw_output,
     }};
 
     // 叠加舵机中位并输出四路 PWM。
@@ -123,6 +132,7 @@ bool CascadedPIDController::control(
         const float delta = std::clamp(
             servo_delta_us[i], -config::SERVO_MAX_DELTA_US,
             config::SERVO_MAX_DELTA_US);
+        servo_deltas_us_[i] = delta;
         pulse_us[i] = center_us_[i] + static_cast<int>(std::lround(delta));
     }
     return servo_driver_.write_pulsewidths(pulse_us);

@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <cstdint>
 #include <memory>
 #include <string_view>
 #include <mutex>
@@ -30,8 +31,8 @@ class Capturer
 public:
     Capturer();
     ~Capturer();
-    bool init();
-    bool update_car_data(CarData& car_data);
+    // timestamp_ns 为 0 时使用当前系统时间；预录数据可传入原始采样时间。
+    bool update_car_data(const CarData& car_data, uint64_t timestamp_ns = 0);
 
     /// @brief 异步写入一帧 JPEG 压缩视频帧到 mcap（非阻塞，入队后立即返回）
     bool write_video_frame(const cv::Mat& frame, int jpeg_quality = 70);
@@ -46,10 +47,13 @@ public:
     const std::string& mcap_path() const { return m_mcap_path; }
 
 private:
+    bool init();
+
     static constexpr size_t kMaxQueueSize = 3;  // 队列上限（满则丢旧帧）
 
     // ── 文件路径 ──
     std::string m_mcap_path{};
+    std::string m_config_snapshot_path{};
 
     // ── 电控数据 channel ──
     std::string m_CarData_schema_name = "foxglove.CarData";
@@ -95,6 +99,7 @@ private:
     mcap::McapWriter m_mcap_writer;
 
     void try_to_create_target_file(std::string_view path);
+    bool save_config_snapshot() const;
     std::string get_file_Contents(std::string_view path);
     std::string get_local_time_now();
     void writer_thread_loop();  // 后台写入线程主循环

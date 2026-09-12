@@ -26,34 +26,38 @@ struct CarData FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef foxglove::CarDataBinarySchema BinarySchema;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_STATE = 4,
-    VT_IMU_FPS = 6,
-    VT_ACC_RAW_FRD_X_MG = 8,
-    VT_ACC_RAW_FRD_Y_MG = 10,
-    VT_ACC_RAW_FRD_Z_MG = 12,
-    VT_ACC_FILTERED_FRD_X_MG = 14,
-    VT_ACC_FILTERED_FRD_Y_MG = 16,
-    VT_ACC_FILTERED_FRD_Z_MG = 18,
-    VT_GYRO_RAW_FRD_X_DPS = 20,
-    VT_GYRO_RAW_FRD_Y_DPS = 22,
-    VT_GYRO_RAW_FRD_Z_DPS = 24,
-    VT_GYRO_FILTERED_FRD_X_DPS = 26,
-    VT_GYRO_FILTERED_FRD_Y_DPS = 28,
-    VT_GYRO_FILTERED_FRD_Z_DPS = 30,
-    VT_ATTITUDE_ROLL_DEG = 32,
-    VT_ATTITUDE_YAW_DEG = 34,
-    VT_ATTITUDE_PITCH_DEG = 36,
-    VT_ATTITUDE_UNFILTERED_ROLL_DEG = 38,
-    VT_ATTITUDE_UNFILTERED_YAW_DEG = 40,
-    VT_ATTITUDE_UNFILTERED_PITCH_DEG = 42,
-    VT_ATTITUDE_DIRECT_INTEGRAL_ROLL_DEG = 44,
-    VT_ATTITUDE_DIRECT_INTEGRAL_YAW_DEG = 46,
-    VT_ATTITUDE_DIRECT_INTEGRAL_PITCH_DEG = 48
+    VT_ACC_RAW_FRD_X_MG = 6,
+    VT_ACC_RAW_FRD_Y_MG = 8,
+    VT_ACC_RAW_FRD_Z_MG = 10,
+    VT_ACC_FILTERED_FRD_X_MG = 12,
+    VT_ACC_FILTERED_FRD_Y_MG = 14,
+    VT_ACC_FILTERED_FRD_Z_MG = 16,
+    VT_GYRO_RAW_FRD_X_DPS = 18,
+    VT_GYRO_RAW_FRD_Y_DPS = 20,
+    VT_GYRO_RAW_FRD_Z_DPS = 22,
+    VT_GYRO_FILTERED_FRD_X_DPS = 24,
+    VT_GYRO_FILTERED_FRD_Y_DPS = 26,
+    VT_GYRO_FILTERED_FRD_Z_DPS = 28,
+    VT_ATTITUDE_ROLL_DEG = 30,
+    VT_ATTITUDE_YAW_DEG = 32,
+    VT_ATTITUDE_PITCH_DEG = 34,
+    VT_ATTITUDE_UNFILTERED_ROLL_DEG = 36,
+    VT_ATTITUDE_UNFILTERED_YAW_DEG = 38,
+    VT_ATTITUDE_UNFILTERED_PITCH_DEG = 40,
+    VT_ATTITUDE_DIRECT_INTEGRAL_ROLL_DEG = 42,
+    VT_ATTITUDE_DIRECT_INTEGRAL_YAW_DEG = 44,
+    VT_ATTITUDE_DIRECT_INTEGRAL_PITCH_DEG = 46,
+    VT_PID_OUTER_ROLL = 48,
+    VT_PID_OUTER_YAW = 50,
+    VT_PID_INNER_ROLL = 52,
+    VT_PID_INNER_YAW = 54,
+    VT_SERVO_LEFT_UPPER = 56,
+    VT_SERVO_RIGHT_UPPER = 58,
+    VT_SERVO_RIGHT_LOWER = 60,
+    VT_SERVO_LEFT_LOWER = 62
   };
   int32_t state() const {
     return GetField<int32_t>(VT_STATE, 0);
-  }
-  int32_t imu_fps() const {
-    return GetField<int32_t>(VT_IMU_FPS, 0);
   }
   float acc_raw_frd_x_mg() const {
     return GetField<float>(VT_ACC_RAW_FRD_X_MG, 0.0f);
@@ -118,10 +122,33 @@ struct CarData FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   float attitude_direct_integral_pitch_deg() const {
     return GetField<float>(VT_ATTITUDE_DIRECT_INTEGRAL_PITCH_DEG, 0.0f);
   }
+  float pid_outer_roll() const {
+    return GetField<float>(VT_PID_OUTER_ROLL, 0.0f);
+  }
+  float pid_outer_yaw() const {
+    return GetField<float>(VT_PID_OUTER_YAW, 0.0f);
+  }
+  float pid_inner_roll() const {
+    return GetField<float>(VT_PID_INNER_ROLL, 0.0f);
+  }
+  float pid_inner_yaw() const {
+    return GetField<float>(VT_PID_INNER_YAW, 0.0f);
+  }
+  float servo_left_upper() const {
+    return GetField<float>(VT_SERVO_LEFT_UPPER, 0.0f);
+  }
+  float servo_right_upper() const {
+    return GetField<float>(VT_SERVO_RIGHT_UPPER, 0.0f);
+  }
+  float servo_right_lower() const {
+    return GetField<float>(VT_SERVO_RIGHT_LOWER, 0.0f);
+  }
+  float servo_left_lower() const {
+    return GetField<float>(VT_SERVO_LEFT_LOWER, 0.0f);
+  }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<int32_t>(verifier, VT_STATE, 4) &&
-           VerifyField<int32_t>(verifier, VT_IMU_FPS, 4) &&
            VerifyField<float>(verifier, VT_ACC_RAW_FRD_X_MG, 4) &&
            VerifyField<float>(verifier, VT_ACC_RAW_FRD_Y_MG, 4) &&
            VerifyField<float>(verifier, VT_ACC_RAW_FRD_Z_MG, 4) &&
@@ -143,6 +170,14 @@ struct CarData FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
            VerifyField<float>(verifier, VT_ATTITUDE_DIRECT_INTEGRAL_ROLL_DEG, 4) &&
            VerifyField<float>(verifier, VT_ATTITUDE_DIRECT_INTEGRAL_YAW_DEG, 4) &&
            VerifyField<float>(verifier, VT_ATTITUDE_DIRECT_INTEGRAL_PITCH_DEG, 4) &&
+           VerifyField<float>(verifier, VT_PID_OUTER_ROLL, 4) &&
+           VerifyField<float>(verifier, VT_PID_OUTER_YAW, 4) &&
+           VerifyField<float>(verifier, VT_PID_INNER_ROLL, 4) &&
+           VerifyField<float>(verifier, VT_PID_INNER_YAW, 4) &&
+           VerifyField<float>(verifier, VT_SERVO_LEFT_UPPER, 4) &&
+           VerifyField<float>(verifier, VT_SERVO_RIGHT_UPPER, 4) &&
+           VerifyField<float>(verifier, VT_SERVO_RIGHT_LOWER, 4) &&
+           VerifyField<float>(verifier, VT_SERVO_LEFT_LOWER, 4) &&
            verifier.EndTable();
   }
 };
@@ -153,9 +188,6 @@ struct CarDataBuilder {
   ::flatbuffers::uoffset_t start_;
   void add_state(int32_t state) {
     fbb_.AddElement<int32_t>(CarData::VT_STATE, state, 0);
-  }
-  void add_imu_fps(int32_t imu_fps) {
-    fbb_.AddElement<int32_t>(CarData::VT_IMU_FPS, imu_fps, 0);
   }
   void add_acc_raw_frd_x_mg(float acc_raw_frd_x_mg) {
     fbb_.AddElement<float>(CarData::VT_ACC_RAW_FRD_X_MG, acc_raw_frd_x_mg, 0.0f);
@@ -220,6 +252,30 @@ struct CarDataBuilder {
   void add_attitude_direct_integral_pitch_deg(float attitude_direct_integral_pitch_deg) {
     fbb_.AddElement<float>(CarData::VT_ATTITUDE_DIRECT_INTEGRAL_PITCH_DEG, attitude_direct_integral_pitch_deg, 0.0f);
   }
+  void add_pid_outer_roll(float pid_outer_roll) {
+    fbb_.AddElement<float>(CarData::VT_PID_OUTER_ROLL, pid_outer_roll, 0.0f);
+  }
+  void add_pid_outer_yaw(float pid_outer_yaw) {
+    fbb_.AddElement<float>(CarData::VT_PID_OUTER_YAW, pid_outer_yaw, 0.0f);
+  }
+  void add_pid_inner_roll(float pid_inner_roll) {
+    fbb_.AddElement<float>(CarData::VT_PID_INNER_ROLL, pid_inner_roll, 0.0f);
+  }
+  void add_pid_inner_yaw(float pid_inner_yaw) {
+    fbb_.AddElement<float>(CarData::VT_PID_INNER_YAW, pid_inner_yaw, 0.0f);
+  }
+  void add_servo_left_upper(float servo_left_upper) {
+    fbb_.AddElement<float>(CarData::VT_SERVO_LEFT_UPPER, servo_left_upper, 0.0f);
+  }
+  void add_servo_right_upper(float servo_right_upper) {
+    fbb_.AddElement<float>(CarData::VT_SERVO_RIGHT_UPPER, servo_right_upper, 0.0f);
+  }
+  void add_servo_right_lower(float servo_right_lower) {
+    fbb_.AddElement<float>(CarData::VT_SERVO_RIGHT_LOWER, servo_right_lower, 0.0f);
+  }
+  void add_servo_left_lower(float servo_left_lower) {
+    fbb_.AddElement<float>(CarData::VT_SERVO_LEFT_LOWER, servo_left_lower, 0.0f);
+  }
   explicit CarDataBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
@@ -234,7 +290,6 @@ struct CarDataBuilder {
 inline ::flatbuffers::Offset<CarData> CreateCarData(
     ::flatbuffers::FlatBufferBuilder &_fbb,
     int32_t state = 0,
-    int32_t imu_fps = 0,
     float acc_raw_frd_x_mg = 0.0f,
     float acc_raw_frd_y_mg = 0.0f,
     float acc_raw_frd_z_mg = 0.0f,
@@ -255,8 +310,24 @@ inline ::flatbuffers::Offset<CarData> CreateCarData(
     float attitude_unfiltered_pitch_deg = 0.0f,
     float attitude_direct_integral_roll_deg = 0.0f,
     float attitude_direct_integral_yaw_deg = 0.0f,
-    float attitude_direct_integral_pitch_deg = 0.0f) {
+    float attitude_direct_integral_pitch_deg = 0.0f,
+    float pid_outer_roll = 0.0f,
+    float pid_outer_yaw = 0.0f,
+    float pid_inner_roll = 0.0f,
+    float pid_inner_yaw = 0.0f,
+    float servo_left_upper = 0.0f,
+    float servo_right_upper = 0.0f,
+    float servo_right_lower = 0.0f,
+    float servo_left_lower = 0.0f) {
   CarDataBuilder builder_(_fbb);
+  builder_.add_servo_left_lower(servo_left_lower);
+  builder_.add_servo_right_lower(servo_right_lower);
+  builder_.add_servo_right_upper(servo_right_upper);
+  builder_.add_servo_left_upper(servo_left_upper);
+  builder_.add_pid_inner_yaw(pid_inner_yaw);
+  builder_.add_pid_inner_roll(pid_inner_roll);
+  builder_.add_pid_outer_yaw(pid_outer_yaw);
+  builder_.add_pid_outer_roll(pid_outer_roll);
   builder_.add_attitude_direct_integral_pitch_deg(attitude_direct_integral_pitch_deg);
   builder_.add_attitude_direct_integral_yaw_deg(attitude_direct_integral_yaw_deg);
   builder_.add_attitude_direct_integral_roll_deg(attitude_direct_integral_roll_deg);
@@ -278,7 +349,6 @@ inline ::flatbuffers::Offset<CarData> CreateCarData(
   builder_.add_acc_raw_frd_z_mg(acc_raw_frd_z_mg);
   builder_.add_acc_raw_frd_y_mg(acc_raw_frd_y_mg);
   builder_.add_acc_raw_frd_x_mg(acc_raw_frd_x_mg);
-  builder_.add_imu_fps(imu_fps);
   builder_.add_state(state);
   return builder_.Finish();
 }

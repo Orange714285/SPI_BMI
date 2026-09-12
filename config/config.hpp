@@ -2,40 +2,42 @@
 namespace config {
 
 // 外环输出 deg/s，内环输出舵机脉宽增量 us。
-inline constexpr float ROLL_ANGLE_KP = 2.0f;
+inline constexpr float ROLL_ANGLE_KP = 0.05f;
 inline constexpr float ROLL_ANGLE_KI = 0.0f;
 inline constexpr float ROLL_ANGLE_KD = 0.0f;
-inline constexpr float YAW_ANGLE_KP = 2.0f;
+inline constexpr float YAW_ANGLE_KP = 0.0f;
 inline constexpr float YAW_ANGLE_KI = 0.0f;
 inline constexpr float YAW_ANGLE_KD = 0.0f;
-inline constexpr float X_RATE_KP = 3.0f;
-inline constexpr float X_RATE_KI = 0.0f;
+inline constexpr float X_RATE_KP = 2.0f;
+inline constexpr float X_RATE_KI = 0.2f;
 inline constexpr float X_RATE_KD = 0.0f;
-inline constexpr float Z_RATE_KP = 3.0f;
+inline constexpr float Z_RATE_KP = 0.0f;
 inline constexpr float Z_RATE_KI = 0.0f;
 inline constexpr float Z_RATE_KD = 0.0f;
-inline constexpr float SERVO_MAX_DELTA_US = 200.0f;
+inline constexpr float SERVO_MAX_DELTA_US = 800.0f;
 inline constexpr int SERVO_PWM_FREQUENCY_HZ = 320;
 inline constexpr int SERVO_PWM_PERIOD_US = 3125;
-inline constexpr int SERVO_MIN_PULSE_US = 800;
-inline constexpr int SERVO_MAX_PULSE_US = 2200;
+inline constexpr int SERVO_MIN_PULSE_US = 700;
+inline constexpr int SERVO_MAX_PULSE_US = 2300;
 
 // 舵机中位（μs）：顺序与 initialize_servos 参数一致：左上、右上、右下、左下。
 inline constexpr int SERVO_CENTER_LEFT_UPPER_US = 1500;
-inline constexpr int SERVO_CENTER_RIGHT_UPPER_US = 1550;
-inline constexpr int SERVO_CENTER_RIGHT_LOWER_US = 1500;
+inline constexpr int SERVO_CENTER_RIGHT_UPPER_US = 1515;
+inline constexpr int SERVO_CENTER_RIGHT_LOWER_US = 1570;
 inline constexpr int SERVO_CENTER_LEFT_LOWER_US = 1430;
 
 // 发射检测与发射前姿态锁存周期。
-inline constexpr float LAUNCH_ACCEL_X_MG = -3800.0f;
+inline constexpr float LAUNCH_ACCEL_X_MG = 3800.0f;
 // 发射加速度阈值需持续的时间（毫秒），防瞬间噪声误触发。
 inline constexpr int LAUNCH_ACCEL_CONFIRM_MS = 20;
 inline constexpr int PREFLIGHT_ATTITUDE_LATCH_INTERVAL_MS = 500;
+// 发射确认前保留在内存中的 CarData 时长，发射后写入 MCAP。
+inline constexpr int CAR_DATA_PRE_RECORD_MS = 500;
 
 // 第一控制阶段：发射后 0~1200 ms。
 inline constexpr int STAGE_ONE_END_MS = 1200;
-inline constexpr float STAGE_ONE_TARGET_X_RATE = 5.0f;
-inline constexpr float STAGE_ONE_TARGET_Z_RATE = 5.0f;
+inline constexpr float STAGE_ONE_TARGET_X_RATE = 0.0f;
+inline constexpr float STAGE_ONE_TARGET_Z_RATE = 0.0f;
 inline constexpr float STAGE_ONE_TARGET_ROLL = 0.0f;
 inline constexpr float STAGE_ONE_TARGET_YAW = 0.0f;
 

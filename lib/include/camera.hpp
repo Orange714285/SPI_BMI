@@ -73,7 +73,9 @@ private:
     bool m_frame_ready = false;
     std::unordered_map<int, MappedPlane> m_mapped_planes;
 
-    FrameData m_latest_frame;
+    // 回调在线程安全地发布前完成深拷贝，消费者不再引用已重新入队的
+    // libcamera DMA 缓冲区。
+    cv::Mat m_latest_frame;
 
     cv::Mat plane_to_rgb_mat(const FrameData& frame);
 };

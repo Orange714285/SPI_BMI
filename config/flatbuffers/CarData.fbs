@@ -32,6 +32,16 @@ table CarData
     attitude_direct_integral_roll_deg : float;
     attitude_direct_integral_yaw_deg : float;
     attitude_direct_integral_pitch_deg : float;
+
+    pid_outer_roll : float;
+    pid_outer_yaw : float;
+    pid_inner_roll : float;
+    pid_inner_yaw : float;
+
+    servo_left_upper : float;
+    servo_right_upper : float;
+    servo_right_lower : float;
+    servo_left_lower : float;
 }
 
 root_type CarData;

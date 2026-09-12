@@ -1,5 +1,6 @@
 #pragma once
 
+#include <atomic>
 #include <cstdint>
 #include <cstdio>
 #include <libcamera/libcamera.h>
@@ -11,6 +12,23 @@ struct VisionData
     int m_target_status{0};
     int m_frame_dt_ms{0};
     int m_video_fps{0};
+};
+
+enum class FlyingState : int
+{
+    PRE_FLIGHT = 0,
+    FLIGHT = 1,
+    FLIGHT_END = 2,
+};
+
+// Shared cross-thread state. The instance is owned by main() and passed to
+// components that need access to it; the pointers are therefore non-owning.
+struct SharedState
+{
+    std::atomic<bool> running{true};
+    std::atomic<VisionData> vision_data{};
+    std::atomic<FlyingState> flying_state{FlyingState::PRE_FLIGHT};
+    std::atomic<long long> flight_duration_ms{0};
 };
 
 struct FrameData
@@ -51,6 +69,14 @@ public:
     float attitude_direct_integral_roll_deg = 0.0f;
     float attitude_direct_integral_yaw_deg = 0.0f;
     float attitude_direct_integral_pitch_deg = 0.0f;
+    float pid_outer_roll = 0.0f;
+    float pid_outer_yaw = 0.0f;
+    float pid_inner_roll = 0.0f;
+    float pid_inner_yaw = 0.0f;
+    float servo_left_upper = 0.0f;
+    float servo_right_upper = 0.0f;
+    float servo_right_lower = 0.0f;
+    float servo_left_lower = 0.0f;
 
     void data_update(
         int flying_state, int current_imu_fps,
@@ -60,7 +86,11 @@ public:
         float gyro_filtered_x, float gyro_filtered_y, float gyro_filtered_z,
         float roll, float yaw, float pitch,
         float unfiltered_roll, float unfiltered_yaw, float unfiltered_pitch,
-        float direct_roll, float direct_yaw, float direct_pitch)
+        float direct_roll, float direct_yaw, float direct_pitch,
+        float outer_roll, float outer_yaw,
+        float inner_roll, float inner_yaw,
+        float left_upper, float right_upper,
+        float right_lower, float left_lower)
     {
         state = flying_state;
         imu_fps = current_imu_fps;
@@ -85,6 +115,14 @@ public:
         attitude_direct_integral_roll_deg = direct_roll;
         attitude_direct_integral_yaw_deg = direct_yaw;
         attitude_direct_integral_pitch_deg = direct_pitch;
+        pid_outer_roll = outer_roll;
+        pid_outer_yaw = outer_yaw;
+        pid_inner_roll = inner_roll;
+        pid_inner_yaw = inner_yaw;
+        servo_left_upper = left_upper;
+        servo_right_upper = right_upper;
+        servo_right_lower = right_lower;
+        servo_left_lower = left_lower;
     }
 
     /** @brief 输出当前姿态角 roll / yaw / pitch（单位：度） */

@@ -1,0 +1,9 @@
+#pragma once
+
+#include <cstddef>
+
+namespace embedded_config
+{
+inline constexpr unsigned char data[] = {@CONFIG_HPP_BYTES@};
+inline constexpr std::size_t size = sizeof(data);
+} // namespace embedded_config
