@@ -21,34 +21,31 @@
 #include <tools/cpu_monitor.hpp>
 #include <tools/frame_counter.hpp>
 
-namespace
-{
-SharedState* g_signal_state = nullptr;
-}
+std::atomic<bool> g_running{true};
+std::atomic<VisionData> g_vision_data;
+std::atomic<int> g_flying_state{0};// 飞行状态：0=PRE_FLIGHT，1=FLIGHT，2=FLIGHT_END。
+std::atomic<long long> g_flight_duration_ms{0};// 当前飞行时长（毫秒），由 dart_control 每循环更新，全程序可读；未飞行时为 0。
 
 void signal_handler(int)
 {
-    if (g_signal_state != nullptr)
-        g_signal_state->running.store(false);
+    g_running.store(false);
 }
-void dart_control(Capturer& capturer, SharedState* state);
-void dart_vision(Capturer& capturer, SharedState* state);
+void dart_control(Capturer& capturer);
+void dart_vision(Capturer& caspturer);
 int main() 
 {
-    SharedState shared_state;
-    g_signal_state = &shared_state;
-
     Buzzer buzzer;
-    buzzer.start(1);
+    buzzer.start(10);
 
     try
     {
-        // 构造时完成初始化；电控和视频写入同一个 .mcap 文件。
+        // Capturer 在构造函数中完成初始化。
         Capturer capturer;
-        std::thread dart_control_thread(dart_control, std::ref(capturer), &shared_state);
-        // std::thread dart_vision_thread(dart_vision, std::ref(capturer), &shared_state);
+
+        std::thread dart_control_thread(dart_control, std::ref(capturer));
+        std::thread dart_vision_thread(dart_vision, std::ref(capturer));
         dart_control_thread.join();
-        // dart_vision_thread.join();
+        dart_vision_thread.join();
         capturer.finish();
         upload_mcap(capturer.mcap_path());
     }
@@ -62,14 +59,14 @@ int main()
     return 0;
 }
 
-void dart_control(Capturer& capturer, SharedState* state)
+void dart_control(Capturer& capturer)
 {   
     Buzzer buzzer;
     BMI055 bmi055;
     if (!bmi055.BMI055_init())
     {
         std::cerr << "[ERROR] BMI055 init failed!" << std::endl;
-        state->running.store(false);
+        g_running.store(false);
         return ;
     }
     std::cerr << "[INFO] BMI055 init successed!" << std::endl;
@@ -81,14 +78,15 @@ void dart_control(Capturer& capturer, SharedState* state)
             config::SERVO_CENTER_RIGHT_LOWER_US,
             config::SERVO_CENTER_LEFT_LOWER_US)) {
         std::cerr << "[ERROR] servo initialization failed!" << std::endl;
-        state->running.store(false);
+        g_running.store(false);
         return;
     }
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     std::cout << "[INFO] servo initialization sucessed!" << std::endl;
     signal(SIGINT, signal_handler);
 
-    state->flying_state.store(FlyingState::PRE_FLIGHT);
+    // 使用全局 g_flying_state (0=PRE_FLIGHT, 1=FLIGHT)，供 vision 线程可见
+    g_flying_state.store(0);  // 初始为 PRE_FLIGHT
     CpuMonitor::sample();   // 建立基准
     auto flying_start_timer = std::chrono::steady_clock::now();
 
@@ -111,32 +109,32 @@ void dart_control(Capturer& capturer, SharedState* state)
     AccAttitudeAlgorithmer acc_attitude_algorithmer;
     GyroAttitudeAlgorithmer gyro_attitude_algorithmer;
     CarData dart_data;
-    while (state->running.load())
+    while (g_running)
     {
         bmi055.index++;
         // ======================================================
         // ====================== 数据采集 ====================
         // ======================================================
 
-        if (state->flying_state.load() == FlyingState::PRE_FLIGHT)
+        if (g_flying_state.load() == 0)  // PRE_FLIGHT
         {
             // 着陆态：以加速度计为时钟源
             if (!bmi055.acc_wait_for_new_info())
             {
                 std::cerr << "[ERROR] acc_wait_for_new_info failed!" << std::endl;
-                state->running.store(false);
+                g_running.store(false);
                 return ;
             }
             if (!bmi055.acc_get_accd_all_mg())
             {
                 std::cerr << "[ERROR] acc_get_accd_mg failed!" << std::endl;
-                state->running.store(false);
+                g_running.store(false);
                 return ;
             }
             if (!bmi055.gyr_get_rate_all_dps())
             {
                 std::cerr << "[ERROR] gyro get all rate dps failed!" << std::endl;
-                state->running.store(false);
+                g_running.store(false);
                 return ;
             }
         }
@@ -146,19 +144,19 @@ void dart_control(Capturer& capturer, SharedState* state)
             if (!bmi055.gyr_wait_for_new_info())
             {
                 std::cerr << "[ERROR] gyr_wait_for_new_info failed!" << std::endl;
-                state->running.store(false);
+                g_running.store(false);
                 return ;
             }
             if (!bmi055.gyr_get_rate_all_dps())
             {
                 std::cerr << "[ERROR] gyr_get_rate_all_deg_per_s failed!" << std::endl;
-                state->running.store(false);
+                g_running.store(false);
                 return ;
             }
             if (!bmi055.acc_get_accd_all_mg())
             {
                 std::cerr << "[ERROR] acc_get_accd_mg failed!" << std::endl;
-                state->running.store(false);
+                g_running.store(false);
                 return ;
             }
         }
@@ -167,13 +165,13 @@ void dart_control(Capturer& capturer, SharedState* state)
         // ======================================================
 
         acc_attitude_algorithmer.transform_coordinate(
-                bmi055.m_acc_imu_accd_x_mg,
-                bmi055.m_acc_imu_accd_y_mg,
-                bmi055.m_acc_imu_accd_z_mg);
+                bmi055.m_acc_imu_accd_mg.x(),
+                bmi055.m_acc_imu_accd_mg.y(),
+                bmi055.m_acc_imu_accd_mg.z());
         gyro_attitude_algorithmer.transform_coordinate(
-                bmi055.m_gyr_rate_x_dps,
-                bmi055.m_gyr_rate_y_dps,
-                bmi055.m_gyr_rate_z_dps);
+                bmi055.m_gyr_rate_dps.x(),
+                bmi055.m_gyr_rate_dps.y(),
+                bmi055.m_gyr_rate_dps.z());
         // 每帧同时计算滤波前、后的加速度计姿态用于记录对照。
         acc_attitude_algorithmer.algorithmer();
 
@@ -181,7 +179,7 @@ void dart_control(Capturer& capturer, SharedState* state)
         // =========================== 状态切换 ====================
         // ========================================================
 
-        if (state->flying_state.load() == FlyingState::PRE_FLIGHT)
+        if (g_flying_state.load() == 0)  // PRE_FLIGHT
         {
             if (acc_attitude_algorithmer.m_frd_acc_x > config::LAUNCH_ACCEL_X_MG)
             {
@@ -198,8 +196,8 @@ void dart_control(Capturer& capturer, SharedState* state)
                     // 发射帧使用最后保存的姿态初始化陀螺仪积分。
                     gyro_attitude_algorithmer.initialize(launch_roll, launch_pitch);
                     flying_start_timer = now;
-                    state->flight_duration_ms.store(0);  // 发射瞬间归零计时
-                    state->flying_state.store(FlyingState::FLIGHT);
+                    g_flight_duration_ms.store(0);  // 发射瞬间归零计时
+                    g_flying_state.store(1);
                 }
             }
             else
@@ -225,31 +223,31 @@ void dart_control(Capturer& capturer, SharedState* state)
         }
 
         // ==================== 统一姿态 ====================
-        FlyingState flying_state = state->flying_state.load();
-        float roll  = (flying_state == FlyingState::PRE_FLIGHT) ? acc_attitude_algorithmer.m_roll  : gyro_attitude_algorithmer.m_roll;
-        float pitch = (flying_state == FlyingState::PRE_FLIGHT) ? acc_attitude_algorithmer.m_pitch : gyro_attitude_algorithmer.m_pitch;
-        float yaw   = (flying_state == FlyingState::PRE_FLIGHT) ? 0.0f : gyro_attitude_algorithmer.m_yaw;
-        float unfiltered_roll = (flying_state == FlyingState::PRE_FLIGHT)
+        int flying_state = g_flying_state.load();
+        float roll  = (flying_state == 0) ? acc_attitude_algorithmer.m_roll  : gyro_attitude_algorithmer.m_roll;
+        float pitch = (flying_state == 0) ? acc_attitude_algorithmer.m_pitch : gyro_attitude_algorithmer.m_pitch;
+        float yaw   = (flying_state == 0) ? 0.0f : gyro_attitude_algorithmer.m_yaw;
+        float unfiltered_roll = (flying_state == 0)
             ? acc_attitude_algorithmer.m_raw_roll
             : gyro_attitude_algorithmer.m_unfiltered_roll;
-        float unfiltered_pitch = (flying_state == FlyingState::PRE_FLIGHT)
+        float unfiltered_pitch = (flying_state == 0)
             ? acc_attitude_algorithmer.m_raw_pitch
             : gyro_attitude_algorithmer.m_unfiltered_pitch;
-        float unfiltered_yaw = (flying_state == FlyingState::PRE_FLIGHT)
+        float unfiltered_yaw = (flying_state == 0)
             ? 0.0f : gyro_attitude_algorithmer.m_unfiltered_yaw;
         
 
         //==================================================
         //====================== 控制 =======================
         //==================================================
-        if (flying_state == FlyingState::FLIGHT)
+        if (flying_state == 1)
         {
             // 输入目标和实测姿态，执行一次双环 PID 控制。
             auto flying_process_timer = std::chrono::steady_clock::now();
             auto flying_duration_ms = std::chrono::duration_cast<std::chrono::milliseconds>(flying_process_timer - flying_start_timer);
-            state->flight_duration_ms.store(flying_duration_ms.count());
+            g_flight_duration_ms.store(flying_duration_ms.count());  // 更新全局飞行时长
             const bool stage_one =
-                state->flight_duration_ms.load() < config::STAGE_ONE_END_MS;
+                g_flight_duration_ms.load() < config::STAGE_ONE_END_MS;
             const float target_x_rate = stage_one ? config::STAGE_ONE_TARGET_X_RATE : config::STAGE_TWO_TARGET_X_RATE;
             const float target_z_rate = stage_one ? config::STAGE_ONE_TARGET_Z_RATE : config::STAGE_TWO_TARGET_Z_RATE;
             const float target_roll = stage_one ? config::STAGE_ONE_TARGET_ROLL : config::STAGE_TWO_TARGET_ROLL;
@@ -274,7 +272,7 @@ void dart_control(Capturer& capturer, SharedState* state)
         CpuMonitor::sample();
         FrameCounter::tick();
         dart_data.data_update(
-            static_cast<int>(flying_state),
+            flying_state,
             static_cast<int>(FrameCounter::fps()),
             acc_attitude_algorithmer.raw_frd_acc_x(),
             acc_attitude_algorithmer.raw_frd_acc_y(),
@@ -311,7 +309,7 @@ void dart_control(Capturer& capturer, SharedState* state)
             std::chrono::duration_cast<std::chrono::nanoseconds>(
                 sample_system_time.time_since_epoch()).count());
 
-        if (flying_state == FlyingState::PRE_FLIGHT)
+        if (flying_state == 0)
         {
             // PRE_FLIGHT 阶段只保存在内存中，并持续淘汰 500 ms 以前的数据。
             car_data_pre_record.push_back(
@@ -324,21 +322,21 @@ void dart_control(Capturer& capturer, SharedState* state)
                 car_data_pre_record.pop_front();
             }
         }
-        else if (flying_state == FlyingState::FLIGHT)
+        else if (flying_state == 1)
         {
             // 飞行期间只写当前帧，避免预录回写阻塞实时控制循环。
             capturer.update_car_data(dart_data, sample_timestamp_ns);
         }
 
         // 检测到撞击后切换为结束状态；
-        if (flying_state == FlyingState::FLIGHT
+        if (flying_state == 1
             && acc_attitude_algorithmer.m_frd_acc_x < -config::LAUNCH_ACCEL_X_MG
-            && state->flight_duration_ms.load() > 1000)
+            && g_flight_duration_ms.load()>1000)
         {
             std::array<int, 4> ending_pose{2200,2200,2200,2200};
             attitude_controller.servo_driver_.write_pulsewidths(ending_pose);
-            flying_state = FlyingState::FLIGHT_END;
-            state->flying_state.store(FlyingState::FLIGHT_END);
+            flying_state = 2;
+            g_flying_state.store(2);
             std::cerr << "[INFO] Flying Ending " << std::endl;
             std::this_thread::sleep_for(std::chrono::milliseconds(5000));
             // 控制已经结束，此时再回写发射前 500 ms 数据，不影响飞行实时性。
@@ -348,7 +346,7 @@ void dart_control(Capturer& capturer, SharedState* state)
                 capturer.update_car_data(sample.data, sample.timestamp_ns);
             }
             car_data_pre_record.clear();
-            state->running.store(false);
+            g_running.store(false);
         }
 
 
@@ -356,7 +354,7 @@ void dart_control(Capturer& capturer, SharedState* state)
     std::cout << "[INFO] dart_control thread received SIGINT, exiting cleanly." << std::endl;
     return ;
 }
-void dart_vision(Capturer& capturer, SharedState* state)
+void dart_vision(Capturer& capturer)
 {
     signal(SIGINT, signal_handler);
     Camera ov5647;
@@ -365,17 +363,17 @@ void dart_vision(Capturer& capturer, SharedState* state)
     {
         ov5647.stop();
         std::cerr << "[ERROR] Camera init failed!" << std::endl;
-        state->running.store(false);
+        g_running.store(false);
         return ;
     }
     int index = 0;
-    while (state->running.load())
+    while (g_running.load())
     {
         cv::Mat frame = ov5647.wait_and_get_latest_frame();
         if (frame.empty())
         {
             std::cout << "Frame empty!" << std::endl;
-            state->running.store(false);
+            g_running.store(false);
             break;
         }
         index ++;
@@ -388,9 +386,9 @@ void dart_vision(Capturer& capturer, SharedState* state)
         VideoFrameCounter::tick();  // 每检测一帧 tick
         VisionData vd = detector.vision_data();
         vd.m_video_fps = VideoFrameCounter::fps();
-        state->vision_data.store(vd);
+        g_vision_data.store(vd);    // 保留：供 control 线程读取目标坐标
 
-        if (!state->running.load())
+        if (!g_running.load())
             break;
         // ── 视觉检测数据写入 MCAP（vision 线程独立写入）──
         capturer.write_vision_data(vd.m_target_pixel_x, vd.m_target_pixel_y,

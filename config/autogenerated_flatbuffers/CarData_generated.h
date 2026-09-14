@@ -26,38 +26,42 @@ struct CarData FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef foxglove::CarDataBinarySchema BinarySchema;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_STATE = 4,
-    VT_ACC_RAW_FRD_X_MG = 6,
-    VT_ACC_RAW_FRD_Y_MG = 8,
-    VT_ACC_RAW_FRD_Z_MG = 10,
-    VT_ACC_FILTERED_FRD_X_MG = 12,
-    VT_ACC_FILTERED_FRD_Y_MG = 14,
-    VT_ACC_FILTERED_FRD_Z_MG = 16,
-    VT_GYRO_RAW_FRD_X_DPS = 18,
-    VT_GYRO_RAW_FRD_Y_DPS = 20,
-    VT_GYRO_RAW_FRD_Z_DPS = 22,
-    VT_GYRO_FILTERED_FRD_X_DPS = 24,
-    VT_GYRO_FILTERED_FRD_Y_DPS = 26,
-    VT_GYRO_FILTERED_FRD_Z_DPS = 28,
-    VT_ATTITUDE_ROLL_DEG = 30,
-    VT_ATTITUDE_YAW_DEG = 32,
-    VT_ATTITUDE_PITCH_DEG = 34,
-    VT_ATTITUDE_UNFILTERED_ROLL_DEG = 36,
-    VT_ATTITUDE_UNFILTERED_YAW_DEG = 38,
-    VT_ATTITUDE_UNFILTERED_PITCH_DEG = 40,
-    VT_ATTITUDE_DIRECT_INTEGRAL_ROLL_DEG = 42,
-    VT_ATTITUDE_DIRECT_INTEGRAL_YAW_DEG = 44,
-    VT_ATTITUDE_DIRECT_INTEGRAL_PITCH_DEG = 46,
-    VT_PID_OUTER_ROLL = 48,
-    VT_PID_OUTER_YAW = 50,
-    VT_PID_INNER_ROLL = 52,
-    VT_PID_INNER_YAW = 54,
-    VT_SERVO_LEFT_UPPER = 56,
-    VT_SERVO_RIGHT_UPPER = 58,
-    VT_SERVO_RIGHT_LOWER = 60,
-    VT_SERVO_LEFT_LOWER = 62
+    VT_IMU_FPS = 6,
+    VT_ACC_RAW_FRD_X_MG = 8,
+    VT_ACC_RAW_FRD_Y_MG = 10,
+    VT_ACC_RAW_FRD_Z_MG = 12,
+    VT_ACC_FILTERED_FRD_X_MG = 14,
+    VT_ACC_FILTERED_FRD_Y_MG = 16,
+    VT_ACC_FILTERED_FRD_Z_MG = 18,
+    VT_GYRO_RAW_FRD_X_DPS = 20,
+    VT_GYRO_RAW_FRD_Y_DPS = 22,
+    VT_GYRO_RAW_FRD_Z_DPS = 24,
+    VT_GYRO_FILTERED_FRD_X_DPS = 26,
+    VT_GYRO_FILTERED_FRD_Y_DPS = 28,
+    VT_GYRO_FILTERED_FRD_Z_DPS = 30,
+    VT_ATTITUDE_ROLL_DEG = 32,
+    VT_ATTITUDE_YAW_DEG = 34,
+    VT_ATTITUDE_PITCH_DEG = 36,
+    VT_ATTITUDE_UNFILTERED_ROLL_DEG = 38,
+    VT_ATTITUDE_UNFILTERED_YAW_DEG = 40,
+    VT_ATTITUDE_UNFILTERED_PITCH_DEG = 42,
+    VT_ATTITUDE_DIRECT_INTEGRAL_ROLL_DEG = 44,
+    VT_ATTITUDE_DIRECT_INTEGRAL_YAW_DEG = 46,
+    VT_ATTITUDE_DIRECT_INTEGRAL_PITCH_DEG = 48,
+    VT_PID_OUTER_ROLL = 50,
+    VT_PID_OUTER_YAW = 52,
+    VT_PID_INNER_ROLL = 54,
+    VT_PID_INNER_YAW = 56,
+    VT_SERVO_LEFT_UPPER = 58,
+    VT_SERVO_RIGHT_UPPER = 60,
+    VT_SERVO_RIGHT_LOWER = 62,
+    VT_SERVO_LEFT_LOWER = 64
   };
   int32_t state() const {
     return GetField<int32_t>(VT_STATE, 0);
+  }
+  int32_t imu_fps() const {
+    return GetField<int32_t>(VT_IMU_FPS, 0);
   }
   float acc_raw_frd_x_mg() const {
     return GetField<float>(VT_ACC_RAW_FRD_X_MG, 0.0f);
@@ -149,6 +153,7 @@ struct CarData FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<int32_t>(verifier, VT_STATE, 4) &&
+           VerifyField<int32_t>(verifier, VT_IMU_FPS, 4) &&
            VerifyField<float>(verifier, VT_ACC_RAW_FRD_X_MG, 4) &&
            VerifyField<float>(verifier, VT_ACC_RAW_FRD_Y_MG, 4) &&
            VerifyField<float>(verifier, VT_ACC_RAW_FRD_Z_MG, 4) &&
@@ -188,6 +193,9 @@ struct CarDataBuilder {
   ::flatbuffers::uoffset_t start_;
   void add_state(int32_t state) {
     fbb_.AddElement<int32_t>(CarData::VT_STATE, state, 0);
+  }
+  void add_imu_fps(int32_t imu_fps) {
+    fbb_.AddElement<int32_t>(CarData::VT_IMU_FPS, imu_fps, 0);
   }
   void add_acc_raw_frd_x_mg(float acc_raw_frd_x_mg) {
     fbb_.AddElement<float>(CarData::VT_ACC_RAW_FRD_X_MG, acc_raw_frd_x_mg, 0.0f);
@@ -290,6 +298,7 @@ struct CarDataBuilder {
 inline ::flatbuffers::Offset<CarData> CreateCarData(
     ::flatbuffers::FlatBufferBuilder &_fbb,
     int32_t state = 0,
+    int32_t imu_fps = 0,
     float acc_raw_frd_x_mg = 0.0f,
     float acc_raw_frd_y_mg = 0.0f,
     float acc_raw_frd_z_mg = 0.0f,
@@ -349,6 +358,7 @@ inline ::flatbuffers::Offset<CarData> CreateCarData(
   builder_.add_acc_raw_frd_z_mg(acc_raw_frd_z_mg);
   builder_.add_acc_raw_frd_y_mg(acc_raw_frd_y_mg);
   builder_.add_acc_raw_frd_x_mg(acc_raw_frd_x_mg);
+  builder_.add_imu_fps(imu_fps);
   builder_.add_state(state);
   return builder_.Finish();
 }

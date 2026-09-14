@@ -408,7 +408,7 @@ bool BMI055::acc_get_accd_x_mg()
         std::cerr << "[ERROR] Read accd_x failed! spi stop failed!" <<std::endl;
         return false;
     }
-    m_acc_imu_accd_x_mg = acc_get_mg(acc_accd_x_lsb,acc_accd_x_msb);
+    m_acc_imu_accd_mg.x() = acc_get_mg(acc_accd_x_lsb,acc_accd_x_msb);
     return true;
 }
 
@@ -441,7 +441,7 @@ bool BMI055::acc_get_accd_y_mg()
         std::cerr << "[ERROR] Read accd_y failed! spi stop failed!" <<std::endl;
         return false;
     }
-    m_acc_imu_accd_y_mg = acc_get_mg(acc_accd_y_lsb,acc_accd_y_msb);
+    m_acc_imu_accd_mg.y() = acc_get_mg(acc_accd_y_lsb,acc_accd_y_msb);
     return true;
 }
 
@@ -474,7 +474,7 @@ bool BMI055::acc_get_accd_z_mg()
         std::cerr << "[ERROR] Read accd_z failed! spi stop failed!" <<std::endl;
         return false;
     }
-    m_acc_imu_accd_z_mg = acc_get_mg(acc_accd_z_lsb,acc_accd_z_msb);
+    m_acc_imu_accd_mg.z() = acc_get_mg(acc_accd_z_lsb,acc_accd_z_msb);
     return true;
 }
 
@@ -538,9 +538,10 @@ bool BMI055::acc_get_accd_all_mg()
     }
 
     // Step 3: convert raw data to mg
-    m_acc_imu_accd_x_mg = acc_get_mg(acc_accd_x_lsb, acc_accd_x_msb);
-    m_acc_imu_accd_y_mg = acc_get_mg(acc_accd_y_lsb, acc_accd_y_msb);
-    m_acc_imu_accd_z_mg = acc_get_mg(acc_accd_z_lsb, acc_accd_z_msb);
+    m_acc_imu_accd_mg <<
+        acc_get_mg(acc_accd_x_lsb, acc_accd_x_msb),
+        acc_get_mg(acc_accd_y_lsb, acc_accd_y_msb),
+        acc_get_mg(acc_accd_z_lsb, acc_accd_z_msb);
 
     return true;
 }
@@ -633,9 +634,7 @@ bool BMI055::acc_self_test()
                           << axis_name[axis] << " " << sign_name[sign] << "!" << std::endl;
                 return false;
             }
-            val[axis][sign] = (axis == 0) ? m_acc_imu_accd_x_mg :
-                              (axis == 1) ? m_acc_imu_accd_y_mg :
-                                            m_acc_imu_accd_z_mg;
+            val[axis][sign] = m_acc_imu_accd_mg[axis];
 
             // disable self-test (write 0x00 to 0x32)
             if (!m_spi.spi_accel_start())
@@ -742,9 +741,7 @@ bool BMI055::gyr_measure_zero_bias()
     float min_y = 0.0f, max_y = 0.0f;
     float min_z = 0.0f, max_z = 0.0f;
 
-    m_gyr_bias_x_dps = 0.0f;
-    m_gyr_bias_y_dps = 0.0f;
-    m_gyr_bias_z_dps = 0.0f;
+    m_gyr_bias_dps.setZero();
 
     std::cerr << "[INFO] gyr_measure_zero_bias: collecting " << sample_count
               << " samples, please keep device stationary..." << std::endl;
@@ -766,9 +763,9 @@ bool BMI055::gyr_measure_zero_bias()
             return false;
         }
 
-        float rx = m_gyr_rate_x_dps;
-        float ry = m_gyr_rate_y_dps;
-        float rz = m_gyr_rate_z_dps;
+        const float rx = m_gyr_rate_dps.x();
+        const float ry = m_gyr_rate_dps.y();
+        const float rz = m_gyr_rate_dps.z();
 
         sum_x += rx;
         sum_y += ry;
@@ -791,18 +788,18 @@ bool BMI055::gyr_measure_zero_bias()
         }
     }
     buzzer.beep(30, 200);
-    m_gyr_bias_x_dps = sum_x / sample_count;
-    m_gyr_bias_y_dps = sum_y / sample_count;
-    m_gyr_bias_z_dps = sum_z / sample_count;
+    m_gyr_bias_dps << sum_x / sample_count,
+                      sum_y / sample_count,
+                      sum_z / sample_count;
 
-    float std_x = std::sqrt(sum_sq_x / sample_count - m_gyr_bias_x_dps * m_gyr_bias_x_dps);
-    float std_y = std::sqrt(sum_sq_y / sample_count - m_gyr_bias_y_dps * m_gyr_bias_y_dps);
-    float std_z = std::sqrt(sum_sq_z / sample_count - m_gyr_bias_z_dps * m_gyr_bias_z_dps);
+    float std_x = std::sqrt(sum_sq_x / sample_count - m_gyr_bias_dps.x() * m_gyr_bias_dps.x());
+    float std_y = std::sqrt(sum_sq_y / sample_count - m_gyr_bias_dps.y() * m_gyr_bias_dps.y());
+    float std_z = std::sqrt(sum_sq_z / sample_count - m_gyr_bias_dps.z() * m_gyr_bias_dps.z());
 
     std::cerr << "[INFO] gyr zero bias measured (dps):" << std::endl;
-    std::cerr << "      bias:    X=" << m_gyr_bias_x_dps
-              << "  Y=" << m_gyr_bias_y_dps
-              << "  Z=" << m_gyr_bias_z_dps << std::endl;
+    std::cerr << "      bias:    X=" << m_gyr_bias_dps.x()
+              << "  Y=" << m_gyr_bias_dps.y()
+              << "  Z=" << m_gyr_bias_dps.z() << std::endl;
     std::cerr << "      std:     X=" << std_x
               << "  Y=" << std_y
               << "  Z=" << std_z << std::endl;
@@ -816,9 +813,9 @@ bool BMI055::gyr_measure_zero_bias()
         if (bias_file.is_open())
         {
             bias_file << "gyr_zero_bias (dps):" << std::endl;
-            bias_file << "  bias:  X=" << m_gyr_bias_x_dps
-                      << "  Y=" << m_gyr_bias_y_dps
-                      << "  Z=" << m_gyr_bias_z_dps << std::endl;
+            bias_file << "  bias:  X=" << m_gyr_bias_dps.x()
+                      << "  Y=" << m_gyr_bias_dps.y()
+                      << "  Z=" << m_gyr_bias_dps.z() << std::endl;
             bias_file << "  std:   X=" << std_x
                       << "  Y=" << std_y
                       << "  Z=" << std_z << std::endl;
@@ -895,8 +892,8 @@ bool BMI055::gyr_get_rate_x_deg_per_s()
         return false;
     }
     float raw_x = gyr_get_deg_per_s(gyr_rate_x_lsb, gyr_rate_x_msb);
-    m_gyr_rate_x_raw_dps = raw_x;
-    m_gyr_rate_x_dps = raw_x - m_gyr_bias_x_dps;
+    m_gyr_rate_raw_dps.x() = raw_x;
+    m_gyr_rate_dps.x() = raw_x - m_gyr_bias_dps.x();
     return true;
 }
 
@@ -930,8 +927,8 @@ bool BMI055::gyr_get_rate_y_deg_per_s()
         return false;
     }
     float raw_y = gyr_get_deg_per_s(gyr_rate_y_lsb, gyr_rate_y_msb);
-    m_gyr_rate_y_raw_dps = raw_y;
-    m_gyr_rate_y_dps = raw_y - m_gyr_bias_y_dps;
+    m_gyr_rate_raw_dps.y() = raw_y;
+    m_gyr_rate_dps.y() = raw_y - m_gyr_bias_dps.y();
     return true;
 }
 
@@ -965,8 +962,8 @@ bool BMI055::gyr_get_rate_z_deg_per_s()
         return false;
     }
     float raw_z = gyr_get_deg_per_s(gyr_rate_z_lsb, gyr_rate_z_msb);
-    m_gyr_rate_z_raw_dps = raw_z;
-    m_gyr_rate_z_dps = raw_z - m_gyr_bias_z_dps;
+    m_gyr_rate_raw_dps.z() = raw_z;
+    m_gyr_rate_dps.z() = raw_z - m_gyr_bias_dps.z();
     return true;
 }
 
@@ -1030,12 +1027,8 @@ bool BMI055::gyr_get_rate_all_dps()
     float raw_x = gyr_get_deg_per_s(gyr_rate_x_lsb, gyr_rate_x_msb);
     float raw_y = gyr_get_deg_per_s(gyr_rate_y_lsb, gyr_rate_y_msb);
     float raw_z = gyr_get_deg_per_s(gyr_rate_z_lsb, gyr_rate_z_msb);
-    m_gyr_rate_x_raw_dps = raw_x;
-    m_gyr_rate_y_raw_dps = raw_y;
-    m_gyr_rate_z_raw_dps = raw_z;
-    m_gyr_rate_x_dps = raw_x - m_gyr_bias_x_dps;
-    m_gyr_rate_y_dps = raw_y - m_gyr_bias_y_dps;
-    m_gyr_rate_z_dps = raw_z - m_gyr_bias_z_dps;
+    m_gyr_rate_raw_dps << raw_x, raw_y, raw_z;
+    m_gyr_rate_dps = m_gyr_rate_raw_dps - m_gyr_bias_dps;
 
     return true;
 }
