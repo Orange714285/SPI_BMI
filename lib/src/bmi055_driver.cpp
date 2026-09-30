@@ -71,9 +71,14 @@ bool BMI055::BMI055_init()
         return false;
     }
 
+    m_acc_calibration_matrix <<
+     1.012620f, -0.002432f, -0.016471f,
+    -0.002432f,  1.024966f, -0.001388f,
+    -0.016471f, -0.001388f,  1.004192f;
+    m_acc_calibration_bias << 21.814f, 24.777f, 30.457f;
     return true;
 }
-
+    
 bool BMI055::acc_config_drdy()
 {
     if (!m_spi.spi_accel_start())
@@ -542,7 +547,7 @@ bool BMI055::acc_get_accd_all_mg()
         acc_get_mg(acc_accd_x_lsb, acc_accd_x_msb),
         acc_get_mg(acc_accd_y_lsb, acc_accd_y_msb),
         acc_get_mg(acc_accd_z_lsb, acc_accd_z_msb);
-
+    m_acc_imu_accd_mg = m_acc_calibration_matrix * (m_acc_imu_accd_mg + m_acc_calibration_bias);
     return true;
 }
 

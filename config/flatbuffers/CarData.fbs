@@ -42,6 +42,11 @@ table CarData
     servo_right_upper : float;
     servo_right_lower : float;
     servo_left_lower : float;
+
+    // 双环 PID 内环（角速度环）目标值，单位 deg/s。
+    // 追加在表末尾：保持既有字段 ID 不变，旧 bag 仍可用新解析器解码。
+    pid_inner_target_roll : float;
+    pid_inner_target_yaw : float;
 }
 
 root_type CarData;

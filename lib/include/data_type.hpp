@@ -77,6 +77,8 @@ public:
     float servo_right_upper = 0.0f;
     float servo_right_lower = 0.0f;
     float servo_left_lower = 0.0f;
+    float pid_inner_target_roll = 0.0f;
+    float pid_inner_target_yaw = 0.0f;
 
     void data_update(
         int flying_state, int current_imu_fps,
@@ -90,7 +92,8 @@ public:
         float outer_roll, float outer_yaw,
         float inner_roll, float inner_yaw,
         float left_upper, float right_upper,
-        float right_lower, float left_lower)
+        float right_lower, float left_lower,
+        float inner_target_roll, float inner_target_yaw)
     {
         state = flying_state;
         imu_fps = current_imu_fps;
@@ -123,6 +126,8 @@ public:
         servo_right_upper = right_upper;
         servo_right_lower = right_lower;
         servo_left_lower = left_lower;
+        pid_inner_target_roll = inner_target_roll;
+        pid_inner_target_yaw = inner_target_yaw;
     }
 
     /** @brief 输出当前姿态角 roll / yaw / pitch（单位：度） */

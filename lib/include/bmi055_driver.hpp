@@ -49,7 +49,8 @@ public:
     Eigen::Vector3f m_gyr_rate_raw_dps = Eigen::Vector3f::Zero();
     Eigen::Vector3f m_gyr_rate_dps = Eigen::Vector3f::Zero();
     Eigen::Vector3f m_gyr_bias_dps = Eigen::Vector3f::Zero();
-
+    Eigen::Matrix3f m_acc_calibration_matrix = Eigen::Matrix3f::Zero();
+    Eigen::Vector3f m_acc_calibration_bias = Eigen::Vector3f::Zero();
     // 运行状态与底层通信
     int index = 0;
     SPI_BMI055_Protocol m_spi;

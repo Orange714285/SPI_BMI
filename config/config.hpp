@@ -2,17 +2,29 @@
 namespace config {
 
 // 外环输出 deg/s，内环输出舵机脉宽增量 us。
-inline constexpr float ROLL_ANGLE_KP = 0.05f;
-inline constexpr float ROLL_ANGLE_KI = 0.0f;
+// inline constexpr float ROLL_ANGLE_KP = 1.0f;
+// inline constexpr float ROLL_ANGLE_KI = 0.0f;
+// inline constexpr float ROLL_ANGLE_KD = 0.0f;
+// inline constexpr float YAW_ANGLE_KP = 0.00f;
+// inline constexpr float YAW_ANGLE_KI = 0.0f;
+// inline constexpr float YAW_ANGLE_KD = 0.0f;
+// inline constexpr float X_RATE_KP = 2.0f;
+// inline constexpr float X_RATE_KI = 0.4f;
+// inline constexpr float X_RATE_KD = 0.0f;
+// inline constexpr float Z_RATE_KP = 0.0f;
+// inline constexpr float Z_RATE_KI = 0.0f;
+// inline constexpr float Z_RATE_KD = 0.0f;
+inline constexpr float ROLL_ANGLE_KP = 7.0f;
+inline constexpr float ROLL_ANGLE_KI = 0.3f;
 inline constexpr float ROLL_ANGLE_KD = 0.0f;
-inline constexpr float YAW_ANGLE_KP = 0.0f;
-inline constexpr float YAW_ANGLE_KI = 0.0f;
+inline constexpr float YAW_ANGLE_KP = 6.00f;
+inline constexpr float YAW_ANGLE_KI = 3.0f;
 inline constexpr float YAW_ANGLE_KD = 0.0f;
-inline constexpr float X_RATE_KP = 2.0f;
-inline constexpr float X_RATE_KI = 0.2f;
+inline constexpr float X_RATE_KP = 1.5f;
+inline constexpr float X_RATE_KI = 1.0f;
 inline constexpr float X_RATE_KD = 0.0f;
-inline constexpr float Z_RATE_KP = 0.0f;
-inline constexpr float Z_RATE_KI = 0.0f;
+inline constexpr float Z_RATE_KP = 3.0f;
+inline constexpr float Z_RATE_KI = 2.0f;
 inline constexpr float Z_RATE_KD = 0.0f;
 inline constexpr float SERVO_MAX_DELTA_US = 800.0f;
 inline constexpr int SERVO_PWM_FREQUENCY_HZ = 320;
@@ -21,16 +33,19 @@ inline constexpr int SERVO_MIN_PULSE_US = 700;
 inline constexpr int SERVO_MAX_PULSE_US = 2300;
 
 // 舵机中位（μs）：顺序与 initialize_servos 参数一致：左上、右上、右下、左下。
-inline constexpr int SERVO_CENTER_LEFT_UPPER_US = 1500;
-inline constexpr int SERVO_CENTER_RIGHT_UPPER_US = 1515;
-inline constexpr int SERVO_CENTER_RIGHT_LOWER_US = 1570;
-inline constexpr int SERVO_CENTER_LEFT_LOWER_US = 1430;
+inline constexpr int SERVO_CENTER_LEFT_UPPER_US = 1480;
+inline constexpr int SERVO_CENTER_RIGHT_UPPER_US = 1495;
+inline constexpr int SERVO_CENTER_RIGHT_LOWER_US = 1520;
+inline constexpr int SERVO_CENTER_LEFT_LOWER_US = 1495;
 
-// 发射检测与发射前姿态锁存周期。
+// 发射检测与发射瞬间姿态初始化。
 inline constexpr float LAUNCH_ACCEL_X_MG = 3800.0f;
 // 发射加速度阈值需持续的时间（毫秒），防瞬间噪声误触发。
 inline constexpr int LAUNCH_ACCEL_CONFIRM_MS = 20;
-inline constexpr int PREFLIGHT_ATTITUDE_LATCH_INTERVAL_MS = 500;
+// 发射瞬间用于初始化姿态积分的标称发射姿态（deg）。
+// 发射架几何固定，且发射前加速度计被推力/振动污染、锁存值不可靠，故直接给定。
+inline constexpr float LAUNCH_INITIAL_ROLL_DEG = 0.0f;
+inline constexpr float LAUNCH_INITIAL_PITCH_DEG = 30.0f;
 // 发射确认前保留在内存中的 CarData 时长，发射后写入 MCAP。
 inline constexpr int CAR_DATA_PRE_RECORD_MS = 500;
 

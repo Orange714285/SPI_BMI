@@ -55,7 +55,9 @@ struct CarData FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
     VT_SERVO_LEFT_UPPER = 58,
     VT_SERVO_RIGHT_UPPER = 60,
     VT_SERVO_RIGHT_LOWER = 62,
-    VT_SERVO_LEFT_LOWER = 64
+    VT_SERVO_LEFT_LOWER = 64,
+    VT_PID_INNER_TARGET_ROLL = 66,
+    VT_PID_INNER_TARGET_YAW = 68
   };
   int32_t state() const {
     return GetField<int32_t>(VT_STATE, 0);
@@ -150,6 +152,12 @@ struct CarData FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   float servo_left_lower() const {
     return GetField<float>(VT_SERVO_LEFT_LOWER, 0.0f);
   }
+  float pid_inner_target_roll() const {
+    return GetField<float>(VT_PID_INNER_TARGET_ROLL, 0.0f);
+  }
+  float pid_inner_target_yaw() const {
+    return GetField<float>(VT_PID_INNER_TARGET_YAW, 0.0f);
+  }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<int32_t>(verifier, VT_STATE, 4) &&
@@ -183,6 +191,8 @@ struct CarData FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
            VerifyField<float>(verifier, VT_SERVO_RIGHT_UPPER, 4) &&
            VerifyField<float>(verifier, VT_SERVO_RIGHT_LOWER, 4) &&
            VerifyField<float>(verifier, VT_SERVO_LEFT_LOWER, 4) &&
+           VerifyField<float>(verifier, VT_PID_INNER_TARGET_ROLL, 4) &&
+           VerifyField<float>(verifier, VT_PID_INNER_TARGET_YAW, 4) &&
            verifier.EndTable();
   }
 };
@@ -284,6 +294,12 @@ struct CarDataBuilder {
   void add_servo_left_lower(float servo_left_lower) {
     fbb_.AddElement<float>(CarData::VT_SERVO_LEFT_LOWER, servo_left_lower, 0.0f);
   }
+  void add_pid_inner_target_roll(float pid_inner_target_roll) {
+    fbb_.AddElement<float>(CarData::VT_PID_INNER_TARGET_ROLL, pid_inner_target_roll, 0.0f);
+  }
+  void add_pid_inner_target_yaw(float pid_inner_target_yaw) {
+    fbb_.AddElement<float>(CarData::VT_PID_INNER_TARGET_YAW, pid_inner_target_yaw, 0.0f);
+  }
   explicit CarDataBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
@@ -327,8 +343,12 @@ inline ::flatbuffers::Offset<CarData> CreateCarData(
     float servo_left_upper = 0.0f,
     float servo_right_upper = 0.0f,
     float servo_right_lower = 0.0f,
-    float servo_left_lower = 0.0f) {
+    float servo_left_lower = 0.0f,
+    float pid_inner_target_roll = 0.0f,
+    float pid_inner_target_yaw = 0.0f) {
   CarDataBuilder builder_(_fbb);
+  builder_.add_pid_inner_target_yaw(pid_inner_target_yaw);
+  builder_.add_pid_inner_target_roll(pid_inner_target_roll);
   builder_.add_servo_left_lower(servo_left_lower);
   builder_.add_servo_right_lower(servo_right_lower);
   builder_.add_servo_right_upper(servo_right_upper);
@@ -379,10 +399,6 @@ inline bool VerifyCarDataBuffer(
 inline bool VerifySizePrefixedCarDataBuffer(
     ::flatbuffers::Verifier &verifier) {
   return verifier.VerifySizePrefixedBuffer<foxglove::CarData>(nullptr);
-}
-
-inline const char *CarDataExtension() {
-  return "bfbs";
 }
 
 inline void FinishCarDataBuffer(

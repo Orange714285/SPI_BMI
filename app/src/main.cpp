@@ -43,11 +43,11 @@ int main()
         Capturer capturer;
 
         std::thread dart_control_thread(dart_control, std::ref(capturer));
-        std::thread dart_vision_thread(dart_vision, std::ref(capturer));
+        // std::thread dart_vision_thread(dart_vision, std::ref(capturer));
         dart_control_thread.join();
-        dart_vision_thread.join();
+        // dart_vision_thread.join();
         capturer.finish();
-        upload_mcap(capturer.mcap_path());
+        upload_mcap({capturer.mcap_path(), capturer.config_snapshot_path()});
     }
     catch (const std::exception& error)
     {
@@ -90,11 +90,6 @@ void dart_control(Capturer& capturer)
     CpuMonitor::sample();   // 建立基准
     auto flying_start_timer = std::chrono::steady_clock::now();
 
-    // 发射前姿态锁存：周期性保存最近一次稳定的 roll/pitch，供发射时初始化陀螺仪积分。
-    float launch_roll = 0.0f;
-    float launch_pitch = 0.0f;
-    auto last_attitude_latch_timer = std::chrono::steady_clock::now();
-
     // 发射加速度阈值持续时间确认：条件连续成立 LAUNCH_ACCEL_CONFIRM_MS 才触发。
     auto launch_cond_start = std::chrono::steady_clock::now();
     bool launch_cond_active = false;
@@ -106,8 +101,7 @@ void dart_control(Capturer& capturer)
     };
     std::deque<PreRecordedCarData> car_data_pre_record;
 
-    AccAttitudeAlgorithmer acc_attitude_algorithmer;
-    GyroAttitudeAlgorithmer gyro_attitude_algorithmer;
+    AttitudeAlgorithmer attitude_algorithmer;
     CarData dart_data;
     while (g_running)
     {
@@ -164,16 +158,15 @@ void dart_control(Capturer& capturer)
 		// ==================== imu -> frd 转系 ==================
         // ======================================================
 
-        acc_attitude_algorithmer.transform_coordinate(
+        attitude_algorithmer.kalman_filter(
                 bmi055.m_acc_imu_accd_mg.x(),
                 bmi055.m_acc_imu_accd_mg.y(),
-                bmi055.m_acc_imu_accd_mg.z());
-        gyro_attitude_algorithmer.transform_coordinate(
+                bmi055.m_acc_imu_accd_mg.z(),
                 bmi055.m_gyr_rate_dps.x(),
                 bmi055.m_gyr_rate_dps.y(),
                 bmi055.m_gyr_rate_dps.z());
         // 每帧同时计算滤波前、后的加速度计姿态用于记录对照。
-        acc_attitude_algorithmer.algorithmer();
+        attitude_algorithmer.algorithmer();
 
         // ========================================================
         // =========================== 状态切换 ====================
@@ -181,7 +174,7 @@ void dart_control(Capturer& capturer)
 
         if (g_flying_state.load() == 0)  // PRE_FLIGHT
         {
-            if (acc_attitude_algorithmer.m_frd_acc_x > config::LAUNCH_ACCEL_X_MG)
+            if (attitude_algorithmer.m_frd_acc.x() > config::LAUNCH_ACCEL_X_MG)
             {
                 // 加速度超阈值需连续持续 LAUNCH_ACCEL_CONFIRM_MS 才判定发射。
                 const auto now = std::chrono::steady_clock::now();
@@ -193,8 +186,10 @@ void dart_control(Capturer& capturer)
                 if (now - launch_cond_start
                     >= std::chrono::milliseconds(config::LAUNCH_ACCEL_CONFIRM_MS))
                 {
-                    // 发射帧使用最后保存的姿态初始化陀螺仪积分。
-                    gyro_attitude_algorithmer.initialize(launch_roll, launch_pitch);
+                    // 发射帧用固定的标称发射姿态初始化姿态积分（见 config）。
+                    attitude_algorithmer.initialize(
+                        config::LAUNCH_INITIAL_ROLL_DEG,
+                        config::LAUNCH_INITIAL_PITCH_DEG);
                     flying_start_timer = now;
                     g_flight_duration_ms.store(0);  // 发射瞬间归零计时
                     g_flying_state.store(1);
@@ -203,38 +198,27 @@ void dart_control(Capturer& capturer)
             else
             {
                 launch_cond_active = false;  // 条件中断，重新计时
-
-                // 发射前每隔 300 ms 保存一次加速度计姿态。
-                const auto now = std::chrono::steady_clock::now();
-                if (now - last_attitude_latch_timer
-                    >= std::chrono::milliseconds(
-                        config::PREFLIGHT_ATTITUDE_LATCH_INTERVAL_MS))
-                {
-                    launch_roll = acc_attitude_algorithmer.m_roll;
-                    launch_pitch = acc_attitude_algorithmer.m_pitch;
-                    last_attitude_latch_timer = now;
-                }
             }
         }
         else
         {
             // 每个陀螺仪周期更新飞行姿态。
-            gyro_attitude_algorithmer.update();
+            attitude_algorithmer.update();
         }
 
         // ==================== 统一姿态 ====================
         int flying_state = g_flying_state.load();
-        float roll  = (flying_state == 0) ? acc_attitude_algorithmer.m_roll  : gyro_attitude_algorithmer.m_roll;
-        float pitch = (flying_state == 0) ? acc_attitude_algorithmer.m_pitch : gyro_attitude_algorithmer.m_pitch;
-        float yaw   = (flying_state == 0) ? 0.0f : gyro_attitude_algorithmer.m_yaw;
+        float roll  = (flying_state == 0) ? attitude_algorithmer.m_acc_roll  : attitude_algorithmer.m_gyro_roll;
+        float pitch = (flying_state == 0) ? attitude_algorithmer.m_acc_pitch : attitude_algorithmer.m_gyro_pitch;
+        float yaw   = (flying_state == 0) ? 0.0f : attitude_algorithmer.m_gyro_yaw;
         float unfiltered_roll = (flying_state == 0)
-            ? acc_attitude_algorithmer.m_raw_roll
-            : gyro_attitude_algorithmer.m_unfiltered_roll;
+            ? attitude_algorithmer.m_acc_raw_roll
+            : attitude_algorithmer.m_gyro_unfiltered_roll;
         float unfiltered_pitch = (flying_state == 0)
-            ? acc_attitude_algorithmer.m_raw_pitch
-            : gyro_attitude_algorithmer.m_unfiltered_pitch;
+            ? attitude_algorithmer.m_acc_raw_pitch
+            : attitude_algorithmer.m_gyro_unfiltered_pitch;
         float unfiltered_yaw = (flying_state == 0)
-            ? 0.0f : gyro_attitude_algorithmer.m_unfiltered_yaw;
+            ? 0.0f : attitude_algorithmer.m_gyro_unfiltered_yaw;
         
 
         //==================================================
@@ -258,41 +242,41 @@ void dart_control(Capturer& capturer)
                 target_z_rate,
                 target_roll,
                 target_yaw,
-                gyro_attitude_algorithmer.m_frd_gyro_x,
-                gyro_attitude_algorithmer.m_frd_gyro_z,
+                attitude_algorithmer.m_frd_gyro.x(),
+                attitude_algorithmer.m_frd_gyro.z(),
                 roll,
                 yaw,
-                gyro_attitude_algorithmer.m_dt_s);
+                attitude_algorithmer.m_dt_s);
 
         }
 
         /// ==========================================================
-        /// =================== 数据记录 ==============================
+        /// =================== 控制数据记录 ==============================
         /// =========================================================
         CpuMonitor::sample();
         FrameCounter::tick();
         dart_data.data_update(
             flying_state,
             static_cast<int>(FrameCounter::fps()),
-            acc_attitude_algorithmer.raw_frd_acc_x(),
-            acc_attitude_algorithmer.raw_frd_acc_y(),
-            acc_attitude_algorithmer.raw_frd_acc_z(),
-            acc_attitude_algorithmer.m_frd_acc_x,
-            acc_attitude_algorithmer.m_frd_acc_y,
-            acc_attitude_algorithmer.m_frd_acc_z,
-            gyro_attitude_algorithmer.raw_frd_gyro_x(),
-            gyro_attitude_algorithmer.raw_frd_gyro_y(),
-            gyro_attitude_algorithmer.raw_frd_gyro_z(),
-            gyro_attitude_algorithmer.m_frd_gyro_x,
-            gyro_attitude_algorithmer.m_frd_gyro_y,
-            gyro_attitude_algorithmer.m_frd_gyro_z,
+            attitude_algorithmer.raw_frd_acc_x(),
+            attitude_algorithmer.raw_frd_acc_y(),
+            attitude_algorithmer.raw_frd_acc_z(),
+            attitude_algorithmer.m_frd_acc.x(),
+            attitude_algorithmer.m_frd_acc.y(),
+            attitude_algorithmer.m_frd_acc.z(),
+            attitude_algorithmer.raw_frd_gyro_x(),
+            attitude_algorithmer.raw_frd_gyro_y(),
+            attitude_algorithmer.raw_frd_gyro_z(),
+            attitude_algorithmer.m_frd_gyro.x(),
+            attitude_algorithmer.m_frd_gyro.y(),
+            attitude_algorithmer.m_frd_gyro.z(),
             roll, yaw, pitch,
             unfiltered_roll,
             unfiltered_yaw,
             unfiltered_pitch,
-            gyro_attitude_algorithmer.m_wrong_roll,
-            gyro_attitude_algorithmer.m_wrong_yaw,
-            gyro_attitude_algorithmer.m_wrong_pitch,
+            attitude_algorithmer.m_gyro_wrong_roll,
+            attitude_algorithmer.m_gyro_wrong_yaw,
+            attitude_algorithmer.m_gyro_wrong_pitch,
             attitude_controller.pid_outer_outputs()[0],
             attitude_controller.pid_outer_outputs()[1],
             attitude_controller.pid_inner_outputs()[0],
@@ -300,7 +284,9 @@ void dart_control(Capturer& capturer)
             attitude_controller.servo_deltas_us()[0],
             attitude_controller.servo_deltas_us()[1],
             attitude_controller.servo_deltas_us()[2],
-            attitude_controller.servo_deltas_us()[3]);
+            attitude_controller.servo_deltas_us()[3],
+            attitude_controller.pid_inner_targets()[0],
+            attitude_controller.pid_inner_targets()[1]);
         dart_data.print_attitude();
 
         const auto sample_steady_time = std::chrono::steady_clock::now();
@@ -330,7 +316,7 @@ void dart_control(Capturer& capturer)
 
         // 检测到撞击后切换为结束状态；
         if (flying_state == 1
-            && acc_attitude_algorithmer.m_frd_acc_x < -config::LAUNCH_ACCEL_X_MG
+            && attitude_algorithmer.m_frd_acc.x() < -config::LAUNCH_ACCEL_X_MG
             && g_flight_duration_ms.load()>1000)
         {
             std::array<int, 4> ending_pose{2200,2200,2200,2200};

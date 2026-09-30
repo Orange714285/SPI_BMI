@@ -78,14 +78,6 @@ bool CascadedPIDController::control(
     float roll, float yaw,
     float dt)
 {
-    // 检查控制周期。
-    if (dt <= 0.0f) {
-        pid_outer_outputs_.fill(0.0f);
-        pid_inner_outputs_.fill(0.0f);
-        servo_deltas_us_.fill(0.0f);
-        return false;
-    }
-
     // 读取姿态环和角速度环 PID 参数。
     const std::array<float, 2> angle_kp{{config::ROLL_ANGLE_KP, config::YAW_ANGLE_KP}};
     const std::array<float, 2> angle_ki{{config::ROLL_ANGLE_KI, config::YAW_ANGLE_KI}};
@@ -108,6 +100,7 @@ bool CascadedPIDController::control(
     pid_outer_outputs_ = {roll_outer_output, yaw_outer_output};
     const float x_rate_command = target_x_rate + roll_outer_output;
     const float z_rate_command = target_z_rate + yaw_outer_output;
+    pid_inner_targets_ = {x_rate_command, z_rate_command};
 
     // 角速度内环输出 roll 和 yaw 控制量。
     const float roll_output = calculate_pid(

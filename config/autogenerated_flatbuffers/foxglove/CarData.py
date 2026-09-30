@@ -241,8 +241,22 @@ class CarData(object):
             return self._tab.Get(flatbuffers.number_types.Float32Flags, o + self._tab.Pos)
         return 0.0
 
+    # CarData
+    def PidInnerTargetRoll(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(66))
+        if o != 0:
+            return self._tab.Get(flatbuffers.number_types.Float32Flags, o + self._tab.Pos)
+        return 0.0
+
+    # CarData
+    def PidInnerTargetYaw(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(68))
+        if o != 0:
+            return self._tab.Get(flatbuffers.number_types.Float32Flags, o + self._tab.Pos)
+        return 0.0
+
 def CarDataStart(builder):
-    builder.StartObject(31)
+    builder.StartObject(33)
 
 def Start(builder):
     CarDataStart(builder)
@@ -432,6 +446,18 @@ def CarDataAddServoLeftLower(builder, servoLeftLower):
 
 def AddServoLeftLower(builder, servoLeftLower):
     CarDataAddServoLeftLower(builder, servoLeftLower)
+
+def CarDataAddPidInnerTargetRoll(builder, pidInnerTargetRoll):
+    builder.PrependFloat32Slot(31, pidInnerTargetRoll, 0.0)
+
+def AddPidInnerTargetRoll(builder, pidInnerTargetRoll):
+    CarDataAddPidInnerTargetRoll(builder, pidInnerTargetRoll)
+
+def CarDataAddPidInnerTargetYaw(builder, pidInnerTargetYaw):
+    builder.PrependFloat32Slot(32, pidInnerTargetYaw, 0.0)
+
+def AddPidInnerTargetYaw(builder, pidInnerTargetYaw):
+    CarDataAddPidInnerTargetYaw(builder, pidInnerTargetYaw)
 
 def CarDataEnd(builder):
     return builder.EndObject()

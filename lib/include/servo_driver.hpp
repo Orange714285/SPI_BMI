@@ -7,8 +7,8 @@
 
 class PigpioServoDriver {
 public:
-    // 顺序固定为：左上、右上、右下、左下。
-    static constexpr std::array<unsigned, 4> GPIO_PINS{{12, 13, 18, 27}};
+    // 顺序固定为：左上(12)、右上(19)、右下(18)、左下(27)，BCM 编号。
+    static constexpr std::array<unsigned, 4> GPIO_PINS{{12, 19, 18, 27}};
 
     PigpioServoDriver();
     ~PigpioServoDriver();

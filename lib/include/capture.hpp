@@ -45,6 +45,8 @@ public:
 
     // 返回本次运行生成的 MCAP 文件路径。
     const std::string& mcap_path() const { return m_mcap_path; }
+    // 返回本次运行生成的配置快照文件路径。
+    const std::string& config_snapshot_path() const { return m_config_snapshot_path; }
 
 private:
     bool init();

@@ -44,11 +44,9 @@ bool Camera::start()
     m_camera->acquire();
 
     // Configure the camera
-    std::unique_ptr<libcamera::CameraConfiguration> camera_configuration =
-        m_camera->generateConfiguration({libcamera::StreamRole::Raw});
+    std::unique_ptr<libcamera::CameraConfiguration> camera_configuration = m_camera->generateConfiguration({libcamera::StreamRole::Raw});
     libcamera::StreamConfiguration &stream_configuration = camera_configuration->at(0);
-    std::cout << "Default viewfinder configuration is: "
-              << stream_configuration.toString() << std::endl;
+    std::cout << "Default viewfinder configuration is: "<< stream_configuration.toString() << std::endl;
 
     // Change and validate the configuration
     stream_configuration.size.width = m_width;
@@ -64,7 +62,7 @@ bool Camera::start()
     m_camera->configure(camera_configuration.get());
 
     // Allocate FrameBuffers
-    m_frame_buffer_allocator = std::make_unique<libcamera::FrameBufferAllocator>(m_camera);
+    m_frame_buffer_allocator = std::make_unique<libcamera::FrameBufferAllocator>(m_camera); 
 
     for (libcamera::StreamConfiguration &cfg : *camera_configuration)
     {
@@ -80,12 +78,11 @@ bool Camera::start()
 
     // Frame Capture
     m_stream = stream_configuration.stream();
-    const std::vector<std::unique_ptr<libcamera::FrameBuffer>> &buffers =
-        m_frame_buffer_allocator->buffers(m_stream);
+    const std::vector<std::unique_ptr<libcamera::FrameBuffer>> &buffers = m_frame_buffer_allocator->buffers(m_stream);
 
     for (unsigned int i = 0; i < buffers.size(); ++i) 
     {
-        std::unique_ptr<libcamera::Request> request = m_camera->createRequest();
+        std::unique_ptr<libcamera::Request> request = m_camera->createRequest();    
         if (!request)
         {
             std::cerr << "Can't create request" << std::endl;
@@ -100,7 +97,6 @@ bool Camera::start()
         int64_t fd_us = 1'000'000 / m_fps;
         request->controls().set(libcamera::controls::FrameDurationLimits,
             libcamera::Span<const int64_t, 2>({fd_us, fd_us}));
-
         // if (get_crop())
         // {
         //     request->controls().set(libcamera::controls::ScalerCrop, m_center_crop);
