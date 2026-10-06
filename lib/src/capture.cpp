@@ -143,7 +143,6 @@ bool Capturer::update_car_data(const CarData& car_data, uint64_t timestamp_ns)
     auto foxglove_car_data = foxglove::CreateCarData(
         this -> m_builder,
         car_data.state,
-        car_data.imu_fps,
         car_data.acc_raw_frd_x_mg,
         car_data.acc_raw_frd_y_mg,
         car_data.acc_raw_frd_z_mg,
@@ -159,12 +158,6 @@ bool Capturer::update_car_data(const CarData& car_data, uint64_t timestamp_ns)
         car_data.attitude_roll_deg,
         car_data.attitude_yaw_deg,
         car_data.attitude_pitch_deg,
-        car_data.attitude_unfiltered_roll_deg,
-        car_data.attitude_unfiltered_yaw_deg,
-        car_data.attitude_unfiltered_pitch_deg,
-        car_data.attitude_direct_integral_roll_deg,
-        car_data.attitude_direct_integral_yaw_deg,
-        car_data.attitude_direct_integral_pitch_deg,
         car_data.pid_outer_roll,
         car_data.pid_outer_yaw,
         car_data.pid_inner_roll,
@@ -172,9 +165,7 @@ bool Capturer::update_car_data(const CarData& car_data, uint64_t timestamp_ns)
         car_data.servo_left_upper,
         car_data.servo_right_upper,
         car_data.servo_right_lower,
-        car_data.servo_left_lower,
-        car_data.pid_inner_target_roll,
-        car_data.pid_inner_target_yaw
+        car_data.servo_left_lower
     );
     m_builder.Finish(foxglove_car_data);
 

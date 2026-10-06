@@ -100,7 +100,6 @@ bool CascadedPIDController::control(
     pid_outer_outputs_ = {roll_outer_output, yaw_outer_output};
     const float x_rate_command = target_x_rate + roll_outer_output;
     const float z_rate_command = target_z_rate + yaw_outer_output;
-    pid_inner_targets_ = {x_rate_command, z_rate_command};
 
     // 角速度内环输出 roll 和 yaw 控制量。
     const float roll_output = calculate_pid(

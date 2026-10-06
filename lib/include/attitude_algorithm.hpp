@@ -36,20 +36,12 @@ public:
     Eigen::Vector3f m_frd_acc = Eigen::Vector3f::Zero();   // FRD, mg（KF 后）
     float m_acc_roll = 0.0f;
     float m_acc_pitch = 0.0f;
-    float m_acc_raw_roll = 0.0f;
-    float m_acc_raw_pitch = 0.0f;
 
     // 陀螺仪通道（飞行姿态）。
     Eigen::Vector3f m_frd_gyro = Eigen::Vector3f::Zero();  // FRD, deg/s（KF 后）
     float m_gyro_roll = 0.0f;
     float m_gyro_pitch = 0.0f;
     float m_gyro_yaw = 0.0f;
-    float m_gyro_unfiltered_roll = 0.0f;   // KF 前角速度四元数积分
-    float m_gyro_unfiltered_pitch = 0.0f;
-    float m_gyro_unfiltered_yaw = 0.0f;
-    float m_gyro_wrong_roll = 0.0f;        // 角速度直接当欧拉角速度积分的错误对照
-    float m_gyro_wrong_pitch = 0.0f;
-    float m_gyro_wrong_yaw = 0.0f;
     float m_dt_s = 0.0f;
 
 private:
@@ -77,10 +69,8 @@ private:
     std::chrono::steady_clock::time_point m_gyro_data_time{};
     std::chrono::steady_clock::time_point m_last_time{};
     Eigen::Quaternionf m_filtered_attitude;
-    Eigen::Quaternionf m_raw_attitude;
     Eigen::Vector3f m_rate_estimate;
     Eigen::Vector3f m_previous_rate_estimate;
-    Eigen::Vector3f m_previous_raw_rate;
     Eigen::Matrix3f m_rate_covariance;
     Eigen::Matrix3f m_rate_process_noise;
     Eigen::Matrix3f m_rate_measurement_noise;

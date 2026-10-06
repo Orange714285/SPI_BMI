@@ -211,14 +211,6 @@ void dart_control(Capturer& capturer)
         float roll  = (flying_state == 0) ? attitude_algorithmer.m_acc_roll  : attitude_algorithmer.m_gyro_roll;
         float pitch = (flying_state == 0) ? attitude_algorithmer.m_acc_pitch : attitude_algorithmer.m_gyro_pitch;
         float yaw   = (flying_state == 0) ? 0.0f : attitude_algorithmer.m_gyro_yaw;
-        float unfiltered_roll = (flying_state == 0)
-            ? attitude_algorithmer.m_acc_raw_roll
-            : attitude_algorithmer.m_gyro_unfiltered_roll;
-        float unfiltered_pitch = (flying_state == 0)
-            ? attitude_algorithmer.m_acc_raw_pitch
-            : attitude_algorithmer.m_gyro_unfiltered_pitch;
-        float unfiltered_yaw = (flying_state == 0)
-            ? 0.0f : attitude_algorithmer.m_gyro_unfiltered_yaw;
         
 
         //==================================================
@@ -257,7 +249,6 @@ void dart_control(Capturer& capturer)
         FrameCounter::tick();
         dart_data.data_update(
             flying_state,
-            static_cast<int>(FrameCounter::fps()),
             attitude_algorithmer.raw_frd_acc_x(),
             attitude_algorithmer.raw_frd_acc_y(),
             attitude_algorithmer.raw_frd_acc_z(),
@@ -271,12 +262,6 @@ void dart_control(Capturer& capturer)
             attitude_algorithmer.m_frd_gyro.y(),
             attitude_algorithmer.m_frd_gyro.z(),
             roll, yaw, pitch,
-            unfiltered_roll,
-            unfiltered_yaw,
-            unfiltered_pitch,
-            attitude_algorithmer.m_gyro_wrong_roll,
-            attitude_algorithmer.m_gyro_wrong_yaw,
-            attitude_algorithmer.m_gyro_wrong_pitch,
             attitude_controller.pid_outer_outputs()[0],
             attitude_controller.pid_outer_outputs()[1],
             attitude_controller.pid_inner_outputs()[0],
@@ -284,9 +269,7 @@ void dart_control(Capturer& capturer)
             attitude_controller.servo_deltas_us()[0],
             attitude_controller.servo_deltas_us()[1],
             attitude_controller.servo_deltas_us()[2],
-            attitude_controller.servo_deltas_us()[3],
-            attitude_controller.pid_inner_targets()[0],
-            attitude_controller.pid_inner_targets()[1]);
+            attitude_controller.servo_deltas_us()[3]);
         dart_data.print_attitude();
 
         const auto sample_steady_time = std::chrono::steady_clock::now();

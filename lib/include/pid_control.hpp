@@ -26,10 +26,6 @@ public:
     const std::array<float, 2>& pid_inner_outputs() const {
         return pid_inner_outputs_;
     }
-    // 内环（角速度环）目标值，顺序 roll/yaw，单位 deg/s。
-    const std::array<float, 2>& pid_inner_targets() const {
-        return pid_inner_targets_;
-    }
     // 四舵实际采用的脉宽增量（经过限幅），顺序与舵机驱动一致，单位 us。
     const std::array<float, 4>& servo_deltas_us() const {
         return servo_deltas_us_;
@@ -50,6 +46,5 @@ private:
     std::array<float, 2> rate_last_error_{};
     std::array<float, 2> pid_outer_outputs_{};
     std::array<float, 2> pid_inner_outputs_{};
-    std::array<float, 2> pid_inner_targets_{};
     std::array<float, 4> servo_deltas_us_{};
 };

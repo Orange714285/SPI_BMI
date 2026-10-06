@@ -9,11 +9,6 @@ constexpr float kRad2Deg = static_cast<float>(180.0 / M_PI);
 constexpr float kNominalDt = 0.005f;
 constexpr float kMaxDt = 0.020f;
 
-float wrap_degrees(float angle)
-{
-    return std::remainder(angle, 360.0f);
-}
-
 Eigen::Matrix3f frd_from_imu_matrix()
 {
     Eigen::Matrix3f matrix;
@@ -31,10 +26,8 @@ AttitudeAlgorithmer::AttitudeAlgorithmer()
       m_acc_process_noise(Eigen::Matrix3f::Zero()),
       m_acc_measurement_noise(Eigen::Matrix3f::Zero()),
       m_filtered_attitude(Eigen::Quaternionf::Identity()),
-      m_raw_attitude(Eigen::Quaternionf::Identity()),
       m_rate_estimate(Eigen::Vector3f::Zero()),
       m_previous_rate_estimate(Eigen::Vector3f::Zero()),
-      m_previous_raw_rate(Eigen::Vector3f::Zero()),
       m_rate_covariance(Eigen::Matrix3f::Zero()),
       m_rate_process_noise(Eigen::Matrix3f::Zero()),
       m_rate_measurement_noise(Eigen::Matrix3f::Zero())
@@ -114,7 +107,6 @@ void AttitudeAlgorithmer::kalman_filter(
         // 第一帧直接建立 Kalman 初始状态。
         m_rate_estimate = measurement;
         m_previous_rate_estimate = measurement;
-        m_previous_raw_rate = measurement;
         m_last_time = m_gyro_data_time;
         m_frd_gyro = gyro_frd;
         m_rate_initialized = true;
@@ -164,14 +156,7 @@ void AttitudeAlgorithmer::kalman_filter(
 
 void AttitudeAlgorithmer::algorithmer()
 {
-    // 分别用滤波前和滤波后的加速度解算姿态，供 MCAP 对照。
-    m_acc_raw_pitch = std::atan2(
-                          m_measure_acc_vec.x(),
-                          std::hypot(m_measure_acc_vec.y(), m_measure_acc_vec.z()))
-                      * kRad2Deg;
-    m_acc_raw_roll = std::atan2(
-                         -m_measure_acc_vec.y(), -m_measure_acc_vec.z())
-                     * kRad2Deg;
+    // 用 Kalman 滤波后的加速度解算发射前姿态。
     m_acc_pitch = std::atan2(
                       m_acc_estimate.x(),
                       std::hypot(m_acc_estimate.y(), m_acc_estimate.z()))
@@ -189,29 +174,17 @@ void AttitudeAlgorithmer::initialize(
       * Eigen::AngleAxisf(roll_deg * kDeg2Rad,
                           Eigen::Vector3f::UnitX());
     m_filtered_attitude.normalize();
-    m_raw_attitude = m_filtered_attitude;
 
-    const Eigen::Vector3f initial_measurement = m_measure_angular_rate_vec * kDeg2Rad;
     m_previous_rate_estimate = m_rate_estimate;
-    m_previous_raw_rate = initial_measurement;
     m_gyro_roll = roll_deg;
     m_gyro_pitch = pitch_deg;
     m_gyro_yaw = 0.0f;
-    m_gyro_unfiltered_roll = roll_deg;
-    m_gyro_unfiltered_pitch = pitch_deg;
-    m_gyro_unfiltered_yaw = 0.0f;
-    m_gyro_wrong_roll = roll_deg;
-    m_gyro_wrong_pitch = pitch_deg;
-    m_gyro_wrong_yaw = 0.0f;
     m_initialized = true;
 }
 
 void AttitudeAlgorithmer::update()
 {
     if (!m_initialized) return;
-
-    const Eigen::Vector3f measurement =
-        m_measure_angular_rate_vec * kDeg2Rad;
 
     const Eigen::Vector3f average_rate =
         0.5f * (m_previous_rate_estimate + m_rate_estimate);
@@ -221,27 +194,8 @@ void AttitudeAlgorithmer::update()
     m_filtered_attitude.normalize();
     m_previous_rate_estimate = m_rate_estimate;
 
-    // 对照通道：使用 KF 前原始角速度做同样的梯形四元数积分。
-    const Eigen::Vector3f raw_average_rate =
-        0.5f * (m_previous_raw_rate + measurement);
-    const Eigen::Quaternionf raw_dq =
-        quaternion_from_rotation_vector(raw_average_rate * m_dt_s);
-    m_raw_attitude = m_raw_attitude * raw_dq;
-    m_raw_attitude.normalize();
-    m_previous_raw_rate = measurement;
-
-    // 错误对照：把机体系角速度直接当作欧拉角速度分别积分。
-    m_gyro_wrong_roll = wrap_degrees(m_gyro_wrong_roll + m_frd_gyro.x() * m_dt_s);
-    m_gyro_wrong_pitch = wrap_degrees(m_gyro_wrong_pitch + m_frd_gyro.y() * m_dt_s);
-    m_gyro_wrong_yaw = wrap_degrees(m_gyro_wrong_yaw + m_frd_gyro.z() * m_dt_s);
-
     quaternion_to_euler(
         m_filtered_attitude, m_gyro_roll, m_gyro_pitch, m_gyro_yaw);
-    quaternion_to_euler(
-        m_raw_attitude,
-        m_gyro_unfiltered_roll,
-        m_gyro_unfiltered_pitch,
-        m_gyro_unfiltered_yaw);
 }
 
 Eigen::Quaternionf AttitudeAlgorithmer::quaternion_from_rotation_vector(

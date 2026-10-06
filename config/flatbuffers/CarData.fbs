@@ -3,7 +3,6 @@ namespace foxglove;
 table CarData
 {
     state : int;
-    imu_fps : int;
 
     acc_raw_frd_x_mg : float;
     acc_raw_frd_y_mg : float;
@@ -25,14 +24,6 @@ table CarData
     attitude_yaw_deg : float;
     attitude_pitch_deg : float;
 
-    attitude_unfiltered_roll_deg : float;
-    attitude_unfiltered_yaw_deg : float;
-    attitude_unfiltered_pitch_deg : float;
-
-    attitude_direct_integral_roll_deg : float;
-    attitude_direct_integral_yaw_deg : float;
-    attitude_direct_integral_pitch_deg : float;
-
     pid_outer_roll : float;
     pid_outer_yaw : float;
     pid_inner_roll : float;
@@ -43,10 +34,7 @@ table CarData
     servo_right_lower : float;
     servo_left_lower : float;
 
-    // 双环 PID 内环（角速度环）目标值，单位 deg/s。
     // 追加在表末尾：保持既有字段 ID 不变，旧 bag 仍可用新解析器解码。
-    pid_inner_target_roll : float;
-    pid_inner_target_yaw : float;
 }
 
 root_type CarData;

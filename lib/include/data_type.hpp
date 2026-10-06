@@ -47,7 +47,6 @@ class CarData
 {
 public:
     int state = 0;
-    int imu_fps = 0;
     float acc_raw_frd_x_mg = 0.0f;
     float acc_raw_frd_y_mg = 0.0f;
     float acc_raw_frd_z_mg = 0.0f;
@@ -63,12 +62,6 @@ public:
     float attitude_roll_deg = 0.0f;
     float attitude_yaw_deg = 0.0f;
     float attitude_pitch_deg = 0.0f;
-    float attitude_unfiltered_roll_deg = 0.0f;
-    float attitude_unfiltered_yaw_deg = 0.0f;
-    float attitude_unfiltered_pitch_deg = 0.0f;
-    float attitude_direct_integral_roll_deg = 0.0f;
-    float attitude_direct_integral_yaw_deg = 0.0f;
-    float attitude_direct_integral_pitch_deg = 0.0f;
     float pid_outer_roll = 0.0f;
     float pid_outer_yaw = 0.0f;
     float pid_inner_roll = 0.0f;
@@ -77,26 +70,20 @@ public:
     float servo_right_upper = 0.0f;
     float servo_right_lower = 0.0f;
     float servo_left_lower = 0.0f;
-    float pid_inner_target_roll = 0.0f;
-    float pid_inner_target_yaw = 0.0f;
 
     void data_update(
-        int flying_state, int current_imu_fps,
+        int flying_state,
         float acc_raw_x, float acc_raw_y, float acc_raw_z,
         float acc_filtered_x, float acc_filtered_y, float acc_filtered_z,
         float gyro_raw_x, float gyro_raw_y, float gyro_raw_z,
         float gyro_filtered_x, float gyro_filtered_y, float gyro_filtered_z,
         float roll, float yaw, float pitch,
-        float unfiltered_roll, float unfiltered_yaw, float unfiltered_pitch,
-        float direct_roll, float direct_yaw, float direct_pitch,
         float outer_roll, float outer_yaw,
         float inner_roll, float inner_yaw,
         float left_upper, float right_upper,
-        float right_lower, float left_lower,
-        float inner_target_roll, float inner_target_yaw)
+        float right_lower, float left_lower)
     {
         state = flying_state;
-        imu_fps = current_imu_fps;
         acc_raw_frd_x_mg = acc_raw_x;
         acc_raw_frd_y_mg = acc_raw_y;
         acc_raw_frd_z_mg = acc_raw_z;
@@ -112,12 +99,6 @@ public:
         attitude_roll_deg = roll;
         attitude_yaw_deg = yaw;
         attitude_pitch_deg = pitch;
-        attitude_unfiltered_roll_deg = unfiltered_roll;
-        attitude_unfiltered_yaw_deg = unfiltered_yaw;
-        attitude_unfiltered_pitch_deg = unfiltered_pitch;
-        attitude_direct_integral_roll_deg = direct_roll;
-        attitude_direct_integral_yaw_deg = direct_yaw;
-        attitude_direct_integral_pitch_deg = direct_pitch;
         pid_outer_roll = outer_roll;
         pid_outer_yaw = outer_yaw;
         pid_inner_roll = inner_roll;
@@ -126,14 +107,17 @@ public:
         servo_right_upper = right_upper;
         servo_right_lower = right_lower;
         servo_left_lower = left_lower;
-        pid_inner_target_roll = inner_target_roll;
-        pid_inner_target_yaw = inner_target_yaw;
     }
 
-    /** @brief 输出当前姿态角 roll / yaw / pitch（单位：度） */
+    /** @brief 输出姿态角 roll / yaw / pitch（度），以及三轴原始角速度（dps）与三轴原始加速度（mg） */
     void print_attitude() const
     {
-        std::printf("roll: %+7.2f deg | yaw: %+7.2f deg | pitch: %+7.2f deg\n",
-                    attitude_roll_deg, attitude_yaw_deg, attitude_pitch_deg);
+        // 三轴原始量跟随姿态同周期打印：每周期只做一次 printf（一次 write），保持一行一周期。
+        std::printf("roll: %+7.2f deg | yaw: %+7.2f deg | pitch: %+7.2f deg | "
+                    "gyro_raw: %+8.2f %+8.2f %+8.2f dps | "
+                    "acc_raw: %+8.1f %+8.1f %+8.1f mg\n",
+                    attitude_roll_deg, attitude_yaw_deg, attitude_pitch_deg,
+                    gyro_raw_frd_x_dps, gyro_raw_frd_y_dps, gyro_raw_frd_z_dps,
+                    acc_raw_frd_x_mg, acc_raw_frd_y_mg, acc_raw_frd_z_mg);
     }
 };

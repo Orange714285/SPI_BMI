@@ -2,18 +2,6 @@
 namespace config {
 
 // 外环输出 deg/s，内环输出舵机脉宽增量 us。
-// inline constexpr float ROLL_ANGLE_KP = 1.0f;
-// inline constexpr float ROLL_ANGLE_KI = 0.0f;
-// inline constexpr float ROLL_ANGLE_KD = 0.0f;
-// inline constexpr float YAW_ANGLE_KP = 0.00f;
-// inline constexpr float YAW_ANGLE_KI = 0.0f;
-// inline constexpr float YAW_ANGLE_KD = 0.0f;
-// inline constexpr float X_RATE_KP = 2.0f;
-// inline constexpr float X_RATE_KI = 0.4f;
-// inline constexpr float X_RATE_KD = 0.0f;
-// inline constexpr float Z_RATE_KP = 0.0f;
-// inline constexpr float Z_RATE_KI = 0.0f;
-// inline constexpr float Z_RATE_KD = 0.0f;
 inline constexpr float ROLL_ANGLE_KP = 7.0f;
 inline constexpr float ROLL_ANGLE_KI = 0.3f;
 inline constexpr float ROLL_ANGLE_KD = 0.0f;
@@ -26,6 +14,7 @@ inline constexpr float X_RATE_KD = 0.0f;
 inline constexpr float Z_RATE_KP = 3.0f;
 inline constexpr float Z_RATE_KI = 2.0f;
 inline constexpr float Z_RATE_KD = 0.0f;
+
 inline constexpr float SERVO_MAX_DELTA_US = 800.0f;
 inline constexpr int SERVO_PWM_FREQUENCY_HZ = 320;
 inline constexpr int SERVO_PWM_PERIOD_US = 3125;
@@ -33,10 +22,10 @@ inline constexpr int SERVO_MIN_PULSE_US = 700;
 inline constexpr int SERVO_MAX_PULSE_US = 2300;
 
 // 舵机中位（μs）：顺序与 initialize_servos 参数一致：左上、右上、右下、左下。
-inline constexpr int SERVO_CENTER_LEFT_UPPER_US = 1480;
-inline constexpr int SERVO_CENTER_RIGHT_UPPER_US = 1495;
-inline constexpr int SERVO_CENTER_RIGHT_LOWER_US = 1520;
-inline constexpr int SERVO_CENTER_LEFT_LOWER_US = 1495;
+inline constexpr int SERVO_CENTER_LEFT_UPPER_US = 1415;
+inline constexpr int SERVO_CENTER_RIGHT_UPPER_US = 1480;
+inline constexpr int SERVO_CENTER_RIGHT_LOWER_US = 1535;
+inline constexpr int SERVO_CENTER_LEFT_LOWER_US = 1505;
 
 // 发射检测与发射瞬间姿态初始化。
 inline constexpr float LAUNCH_ACCEL_X_MG = 3800.0f;
@@ -126,7 +115,6 @@ inline constexpr int         JPEG_QUALITY       = 70;
 // MCAP 自动上传目标。
 inline constexpr const char* MCAP_UPLOAD_USER = "orange";
 inline constexpr const char* MCAP_UPLOAD_HOST = "10.42.0.1";
-inline constexpr const char* MCAP_UPLOAD_DIRECTORY =
-    "/home/orange/pi-workspace/DartControl/bag";
+inline constexpr const char* MCAP_UPLOAD_DIRECTORY = "/home/orange/pi-workspace/DartControl/bag";
 
 }  
