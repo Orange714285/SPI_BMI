@@ -25,6 +25,9 @@ std::atomic<bool> g_running{true};
 std::atomic<VisionData> g_vision_data;
 std::atomic<int> g_flying_state{0};// 飞行状态：0=PRE_FLIGHT，1=FLIGHT，2=FLIGHT_END。
 std::atomic<long long> g_flight_duration_ms{0};// 当前飞行时长（毫秒），由 dart_control 每循环更新，全程序可读；未飞行时为 0。
+// 进程启动时刻（静态初始化，早于 main）：终端周期打印窗口的计时起点。
+const std::chrono::steady_clock::time_point g_process_start_time =
+    std::chrono::steady_clock::now();
 
 void signal_handler(int)
 {
@@ -270,7 +273,12 @@ void dart_control(Capturer& capturer)
             attitude_controller.servo_deltas_us()[1],
             attitude_controller.servo_deltas_us()[2],
             attitude_controller.servo_deltas_us()[3]);
-        dart_data.print_attitude();
+        // 终端周期打印：只在进程启动后的前 TERMINAL_PRINT_WINDOW_MS 内输出，之后自动静默。
+        if (std::chrono::steady_clock::now() - g_process_start_time
+            < std::chrono::milliseconds(config::TERMINAL_PRINT_WINDOW_MS))
+        {
+            dart_data.print_attitude();
+        }
 
         const auto sample_steady_time = std::chrono::steady_clock::now();
         const auto sample_system_time = std::chrono::system_clock::now();

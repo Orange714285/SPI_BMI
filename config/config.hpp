@@ -22,10 +22,10 @@ inline constexpr int SERVO_MIN_PULSE_US = 700;
 inline constexpr int SERVO_MAX_PULSE_US = 2300;
 
 // 舵机中位（μs）：顺序与 initialize_servos 参数一致：左上、右上、右下、左下。
-inline constexpr int SERVO_CENTER_LEFT_UPPER_US = 1415;
-inline constexpr int SERVO_CENTER_RIGHT_UPPER_US = 1480;
-inline constexpr int SERVO_CENTER_RIGHT_LOWER_US = 1535;
-inline constexpr int SERVO_CENTER_LEFT_LOWER_US = 1505;
+inline constexpr int SERVO_CENTER_LEFT_UPPER_US = 1405;
+inline constexpr int SERVO_CENTER_RIGHT_UPPER_US = 1440;
+inline constexpr int SERVO_CENTER_RIGHT_LOWER_US = 1540;
+inline constexpr int SERVO_CENTER_LEFT_LOWER_US = 1510;
 
 // 发射检测与发射瞬间姿态初始化。
 inline constexpr float LAUNCH_ACCEL_X_MG = 3800.0f;
@@ -37,6 +37,8 @@ inline constexpr float LAUNCH_INITIAL_ROLL_DEG = 0.0f;
 inline constexpr float LAUNCH_INITIAL_PITCH_DEG = 30.0f;
 // 发射确认前保留在内存中的 CarData 时长，发射后写入 MCAP。
 inline constexpr int CAR_DATA_PRE_RECORD_MS = 500;
+// 终端周期打印窗口：从进程启动起算的毫秒数，超过后自动停止打印。
+inline constexpr int TERMINAL_PRINT_WINDOW_MS = 20000;
 
 // 第一控制阶段：发射后 0~1200 ms。
 inline constexpr int STAGE_ONE_END_MS = 1200;
