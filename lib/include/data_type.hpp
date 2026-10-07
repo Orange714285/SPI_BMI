@@ -73,6 +73,8 @@ public:
     float pid_inner_pitch = 0.0f;
     float pitch_target_deg = 0.0f;
     float pid_outer_pitch = 0.0f;
+    float cpu_clock_mhz = 0.0f;
+    float cpu_temp_c = 0.0f;
 
     void data_update(
         int flying_state,
@@ -87,7 +89,9 @@ public:
         float right_lower, float left_lower,
         float inner_pitch,
         float pitch_target,
-        float outer_pitch)
+        float outer_pitch,
+        float clock_mhz,
+        float temp_c)
     {
         state = flying_state;
         acc_raw_frd_x_mg = acc_raw_x;
@@ -116,17 +120,7 @@ public:
         pid_inner_pitch = inner_pitch;
         pitch_target_deg = pitch_target;
         pid_outer_pitch = outer_pitch;
-    }
-
-    /** @brief 输出姿态角 roll / yaw / pitch（度），以及三轴原始角速度（dps）与三轴原始加速度（mg） */
-    void print_attitude() const
-    {
-        // 三轴原始量跟随姿态同周期打印：每周期只做一次 printf（一次 write），保持一行一周期。
-        std::printf("roll: %+7.2f deg | yaw: %+7.2f deg | pitch: %+7.2f deg | "
-                    "gyro_raw: %+8.2f %+8.2f %+8.2f dps | "
-                    "acc_raw: %+8.1f %+8.1f %+8.1f mg\n",
-                    attitude_roll_deg, attitude_yaw_deg, attitude_pitch_deg,
-                    gyro_raw_frd_x_dps, gyro_raw_frd_y_dps, gyro_raw_frd_z_dps,
-                    acc_raw_frd_x_mg, acc_raw_frd_y_mg, acc_raw_frd_z_mg);
+        cpu_clock_mhz = clock_mhz;
+        cpu_temp_c = temp_c;
     }
 };

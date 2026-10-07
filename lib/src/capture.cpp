@@ -168,7 +168,9 @@ bool Capturer::update_car_data(const CarData& car_data, uint64_t timestamp_ns)
         car_data.servo_left_lower,
         car_data.pid_inner_pitch,
         car_data.pitch_target_deg,
-        car_data.pid_outer_pitch
+        car_data.pid_outer_pitch,
+        car_data.cpu_clock_mhz,
+        car_data.cpu_temp_c
     );
     m_builder.Finish(foxglove_car_data);
 

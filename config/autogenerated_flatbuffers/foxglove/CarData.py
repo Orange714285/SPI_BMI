@@ -213,8 +213,22 @@ class CarData(object):
             return self._tab.Get(flatbuffers.number_types.Float32Flags, o + self._tab.Pos)
         return 0.0
 
+    # CarData
+    def CpuClockMhz(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(58))
+        if o != 0:
+            return self._tab.Get(flatbuffers.number_types.Float32Flags, o + self._tab.Pos)
+        return 0.0
+
+    # CarData
+    def CpuTempC(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(60))
+        if o != 0:
+            return self._tab.Get(flatbuffers.number_types.Float32Flags, o + self._tab.Pos)
+        return 0.0
+
 def CarDataStart(builder):
-    builder.StartObject(27)
+    builder.StartObject(29)
 
 def Start(builder):
     CarDataStart(builder)
@@ -380,6 +394,18 @@ def CarDataAddPidOuterPitch(builder, pidOuterPitch):
 
 def AddPidOuterPitch(builder, pidOuterPitch):
     CarDataAddPidOuterPitch(builder, pidOuterPitch)
+
+def CarDataAddCpuClockMhz(builder, cpuClockMhz):
+    builder.PrependFloat32Slot(27, cpuClockMhz, 0.0)
+
+def AddCpuClockMhz(builder, cpuClockMhz):
+    CarDataAddCpuClockMhz(builder, cpuClockMhz)
+
+def CarDataAddCpuTempC(builder, cpuTempC):
+    builder.PrependFloat32Slot(28, cpuTempC, 0.0)
+
+def AddCpuTempC(builder, cpuTempC):
+    CarDataAddCpuTempC(builder, cpuTempC)
 
 def CarDataEnd(builder):
     return builder.EndObject()

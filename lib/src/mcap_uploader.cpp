@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <string>
+#include <cstdio>      // std::remove
 #include <sys/wait.h>
 #include <unistd.h>
 
@@ -70,6 +71,28 @@ bool upload_mcap(const std::vector<std::string>& local_paths)
     if (WIFEXITED(status) && WEXITSTATUS(status) == 0)
     {
         std::cout << "[INFO] Upload succeeded." << std::endl;
+
+        // 回传成功后删除本地副本，避免树莓派 bag/ 被逐发数据撑满。
+        // ① 只有 scp 正常退出（exit 0）才删；② 路径必须位于 bag/ 下，防止误删。
+        if (config::MCAP_DELETE_LOCAL_AFTER_UPLOAD)
+        {
+            for (const auto& path : local_paths)
+            {
+                if (path.find("/bag/") == std::string::npos)
+                {
+                    std::cerr << "[WARN] Refuse to delete (not under bag/): " << path << std::endl;
+                    continue;
+                }
+                if (std::remove(path.c_str()) == 0)
+                {
+                    std::cout << "[INFO] Removed local file: " << path << std::endl;
+                }
+                else
+                {
+                    std::cerr << "[WARN] Failed to remove local file: " << path << std::endl;
+                }
+            }
+        }
         return true;
     }
 

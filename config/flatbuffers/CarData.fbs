@@ -41,6 +41,11 @@ table CarData
     pitch_target_deg : float;
     // 俯仰外环（姿态环）输出，单位 deg/s。内环跟踪目标 = 剖面斜率前馈 + 本值。
     pid_outer_pitch : float;
+    // 本帧时刻树莓派的运行状态，用于判定该发数据是否可信（控制循环节拍由 CPU 吞吐决定）。
+    // ARM 主频，单位 MHz。
+    cpu_clock_mhz : float;
+    // SoC 温度，单位 摄氏度。
+    cpu_temp_c : float;
 }
 
 root_type CarData;

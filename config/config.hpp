@@ -15,12 +15,13 @@ inline constexpr float Z_RATE_KP = 3.0f;
 inline constexpr float Z_RATE_KI = 2.0f;
 inline constexpr float Z_RATE_KD = 0.0f;
 // Pitch 双环（外环输入 pitch 角误差 deg，输出 deg/s；内环输入 y 轴角速度误差，输出 us）。
-// 暂时全部置零 = 关闭 pitch 通道（混控中 pitch 项恒为 0，四舵行为与只控 roll/yaw 完全一致），
-// 先打几发基线。剖面参考与 target 记录不受影响。
-inline constexpr float PITCH_ANGLE_KP = 0.0f;
+// Pitch 通道已启用。外环角度 P、内环角速度 P；KI/KD 保持 0。
+// 增益沿用 2026/10/7 19:53~19:58 那 4 发已验证的取值（跟踪旧剖面 errRMS 0.53~0.75°），
+// 尚未针对新剖面重新调参。首飞重点看 pid_inner_pitch 峰值是否逼近 SERVO_MAX_DELTA_US（800us）。
+inline constexpr float PITCH_ANGLE_KP = 5.0f;
 inline constexpr float PITCH_ANGLE_KI = 0.0f;
 inline constexpr float PITCH_ANGLE_KD = 0.0f;
-inline constexpr float Y_RATE_KP = 0.0f;
+inline constexpr float Y_RATE_KP = 6.0f;
 inline constexpr float Y_RATE_KI = 0.0f;
 inline constexpr float Y_RATE_KD = 0.0f;
 // pitch 通道极性：台架验证若发现方向相反，置为 -1.0f 即可，无需改代码。
@@ -34,7 +35,7 @@ inline constexpr int SERVO_MAX_PULSE_US = 2300;
 
 // 舵机中位（μs）：顺序与 initialize_servos 参数一致：左上、右上、右下、左下。
 inline constexpr int SERVO_CENTER_LEFT_UPPER_US = 1405;
-inline constexpr int SERVO_CENTER_RIGHT_UPPER_US = 1440;
+inline constexpr int SERVO_CENTER_RIGHT_UPPER_US = 1430;
 inline constexpr int SERVO_CENTER_RIGHT_LOWER_US = 1540;
 inline constexpr int SERVO_CENTER_LEFT_LOWER_US = 1510;
 
@@ -47,19 +48,32 @@ inline constexpr int LAUNCH_ACCEL_CONFIRM_MS = 20;
 inline constexpr float LAUNCH_INITIAL_ROLL_DEG = 0.0f;
 inline constexpr float LAUNCH_INITIAL_PITCH_DEG = 30.0f;
 // Pitch 剖面：从发射后 0 ms 到 PITCH_PROFILE_DURATION_MS，目标俯仰角由 START 线性变化到 END。
-// 取值以「acc_filtered_frd_z_mg 趋于 0」（= 零攻角，加速度计测比力即气动力，重力不出现）为准。
-// 两个独立方法互验：acc_z 过零点法得截距 +32.5 度 / 斜率 -42.7 dps；
-// 轨迹「趋势+振荡」拟合法（34 发，截距自由）得截距 +34.2 度 / 斜率 -42.8 dps。
-// 实测有控制时平均攻角 -1.14±0.53 度（偏低头），故整体上移 1.5 度，斜率取两法一致的 -42.5 dps：
-//   (31.5 - (-38.0)) / 1.635 = -42.5 dps
-inline constexpr float PITCH_PROFILE_START_DEG = 31.5f;
-inline constexpr float PITCH_PROFILE_END_DEG = -38.0f;
+// 取自 2026/10/7 的 13 发「pitch 增益为 0」自由弹道（16:50 + 20:06~20:43）最小二乘拟合。
+// 轨迹是 S 形：出膛头 ~0.2 s 角速度由 -11 dps 升到 -41 dps（陀螺原始数据证实），
+// 故过发射点 (0,30) 的最优直线斜率(-38.2)比平均角速率(-40)略缓：
+//   pitch = 30.00 - 38.16 * t        （RMS 1.50 度）
+// （若允许 t=0 有 +2.7 度阶跃，无约束最优线为 32.73 - 40.67 t，RMS 0.62 度。）
+// START 锚定在 LAUNCH_INITIAL_PITCH_DEG —— 姿态积分正是从该值起步的，
+// 这样 t=0 时目标误差为 0，不会在发射瞬间凭空产生抬头/低头指令。
+// 固定 DURATION = 1635 ms，则 END = 30.00 - 38.16 * 1.635 = -32.4 度。
+inline constexpr float PITCH_PROFILE_START_DEG = 30.0f;
+inline constexpr float PITCH_PROFILE_END_DEG = -32.4f;
 inline constexpr int PITCH_PROFILE_DURATION_MS = 1635;
 // 发射确认前保留在内存中的 CarData 时长，撞击判定后回写进 MCAP。
 // 只用于保留发射瞬间的前因，200 ms 已足够覆盖发射检测（确认 20 ms）与释放瞬态。
 inline constexpr int CAR_DATA_PRE_RECORD_MS = 200;
-// 终端周期打印窗口：从进程启动起算的毫秒数，超过后自动停止打印。
-inline constexpr int TERMINAL_PRINT_WINDOW_MS = 20000;
+
+// ===== 数据健康判定 =====
+// 控制循环的节拍由 CPU 吞吐决定（DRDY 积压会被排空丢弃），所以该发的数据是否可用，
+// 取决于运行期间 CPU 主频与帧率是否稳定。以下三个参数用于自动判定，结论写在 config 快照的
+// [PI_HEALTH] 行里。
+// 启动暖机期：这之前的样本不参与统计。程序启动阶段要做设备初始化、CPU 策略要从省电档爬坡、
+// FrameCounter 首个统计窗口也不完整——这几秒的数字会伪装成「降频/掉帧」（已实测踩过）。
+inline constexpr int HEALTH_WARMUP_MS = 5000;
+// SoC 温度超过该值即判为可疑（摄氏度）。
+inline constexpr double HEALTH_TEMP_WARN_C = 75.0;
+// 帧率离散度 (max-min)/max 超过该百分比即判为可疑。
+inline constexpr double HEALTH_FPS_SPREAD_WARN_PCT = 10.0;
 
 // 第一控制阶段：发射后 0~1200 ms。
 inline constexpr int STAGE_ONE_END_MS = 1200;
@@ -139,5 +153,8 @@ inline constexpr int         JPEG_QUALITY       = 70;
 inline constexpr const char* MCAP_UPLOAD_USER = "orange";
 inline constexpr const char* MCAP_UPLOAD_HOST = "10.42.0.1";
 inline constexpr const char* MCAP_UPLOAD_DIRECTORY = "/home/orange/pi-workspace/DartControl/bag";
+// 回传成功后是否删除树莓派本地文件（防止 bag/ 逐发累积撑爆存储）。
+// 只有 scp 返回 0（传输成功）才删；失败保留原文件以便重传。
+inline constexpr bool MCAP_DELETE_LOCAL_AFTER_UPLOAD = true;
 
 }  
