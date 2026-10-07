@@ -2,8 +2,8 @@
 namespace config {
 
 // 外环输出 deg/s，内环输出舵机脉宽增量 us。
-inline constexpr float ROLL_ANGLE_KP = 7.0f;
-inline constexpr float ROLL_ANGLE_KI = 0.3f;
+inline constexpr float ROLL_ANGLE_KP = 10.0f;
+inline constexpr float ROLL_ANGLE_KI = 1.0f;
 inline constexpr float ROLL_ANGLE_KD = 0.0f;
 inline constexpr float YAW_ANGLE_KP = 10.0f;
 inline constexpr float YAW_ANGLE_KI = 6.0f;
@@ -93,6 +93,10 @@ inline constexpr float STAGE_TWO_TARGET_Z_RATE = 0.0f;
 inline constexpr float STAGE_TWO_TARGET_ROLL = 0.0f;
 // 发射 1200 ms 后把偏航目标设为 15 度，用于转向测试。
 inline constexpr float STAGE_TWO_TARGET_YAW = 15.0f;
+// 第二阶段偏航转向的斜坡速率（dps）：目标角以该速率从 STAGE_ONE_TARGET_YAW 爬到
+// STAGE_TWO_TARGET_YAW，爬升期间该速率同时作为偏航角速度前馈。15°/150dps = 0.1s 转到位。
+// （用斜坡而非阶跃：阶跃会激励 roll 交叉耦合，phi_dot 里含 r*tan(theta) 项。）
+inline constexpr float STAGE_TWO_YAW_RATE_DPS = 150.0f;
 
 
 // 相机参数 (OV5647)
