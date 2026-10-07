@@ -5,8 +5,8 @@ namespace config {
 inline constexpr float ROLL_ANGLE_KP = 7.0f;
 inline constexpr float ROLL_ANGLE_KI = 0.3f;
 inline constexpr float ROLL_ANGLE_KD = 0.0f;
-inline constexpr float YAW_ANGLE_KP = 6.00f;
-inline constexpr float YAW_ANGLE_KI = 3.0f;
+inline constexpr float YAW_ANGLE_KP = 10.0f;
+inline constexpr float YAW_ANGLE_KI = 6.0f;
 inline constexpr float YAW_ANGLE_KD = 0.0f;
 inline constexpr float X_RATE_KP = 1.5f;
 inline constexpr float X_RATE_KI = 1.0f;
@@ -59,6 +59,11 @@ inline constexpr float LAUNCH_INITIAL_PITCH_DEG = 30.0f;
 inline constexpr float PITCH_PROFILE_START_DEG = 30.0f;
 inline constexpr float PITCH_PROFILE_END_DEG = -32.4f;
 inline constexpr int PITCH_PROFILE_DURATION_MS = 1635;
+// 发射后延迟开控时间（毫秒）。发射检测后弹体还需 ~50ms 才完全离开镖架，
+// 这段时间陀螺被推力/导轨振动污染（实测滤波角速度出现 ±300dps 的非物理尖峰），
+// 此时闭环只会打出错误且饱和的舵面指令。故延迟到离架后再开控。
+// 延迟期间 pitch_target_deg 仍照常计算并记录，四舵保持中位不动。
+inline constexpr int CONTROL_START_DELAY_MS = 50;
 // 发射确认前保留在内存中的 CarData 时长，撞击判定后回写进 MCAP。
 // 只用于保留发射瞬间的前因，200 ms 已足够覆盖发射检测（确认 20 ms）与释放瞬态。
 inline constexpr int CAR_DATA_PRE_RECORD_MS = 200;
@@ -86,7 +91,8 @@ inline constexpr float STAGE_ONE_TARGET_YAW = 0.0f;
 inline constexpr float STAGE_TWO_TARGET_X_RATE = 0.0f;
 inline constexpr float STAGE_TWO_TARGET_Z_RATE = 0.0f;
 inline constexpr float STAGE_TWO_TARGET_ROLL = 0.0f;
-inline constexpr float STAGE_TWO_TARGET_YAW = 0.0f;
+// 发射 1200 ms 后把偏航目标设为 15 度，用于转向测试。
+inline constexpr float STAGE_TWO_TARGET_YAW = 15.0f;
 
 
 // 相机参数 (OV5647)

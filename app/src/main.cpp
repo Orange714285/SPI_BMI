@@ -509,20 +509,26 @@ void dart_control(Capturer& capturer)
                 + (config::PITCH_PROFILE_END_DEG - config::PITCH_PROFILE_START_DEG)
                   * pitch_profile_t;
 
-            attitude_controller.control(
-                target_x_rate,
-                kPitchProfileSlopeDps,
-                target_z_rate,
-                target_roll,
-                pitch_target_deg,
-                target_yaw,
-                attitude_algorithmer.m_frd_gyro.x(),
-                attitude_algorithmer.m_frd_gyro.y(),
-                attitude_algorithmer.m_frd_gyro.z(),
-                roll,
-                pitch,
-                yaw,
-                attitude_algorithmer.m_dt_s);
+            // 发射后前 CONTROL_START_DELAY_MS 内不开控：弹体还在镖架上/刚出膛，
+            // 陀螺被推力与振动污染（滤波角速度会出现 ±300dps 非物理尖峰），
+            // 闭环只会打出错误且饱和的舵面指令。延迟到离架后再开控。
+            if (g_flight_duration_ms.load() >= config::CONTROL_START_DELAY_MS)
+            {
+                attitude_controller.control(
+                    target_x_rate,
+                    kPitchProfileSlopeDps,
+                    target_z_rate,
+                    target_roll,
+                    pitch_target_deg,
+                    target_yaw,
+                    attitude_algorithmer.m_frd_gyro.x(),
+                    attitude_algorithmer.m_frd_gyro.y(),
+                    attitude_algorithmer.m_frd_gyro.z(),
+                    roll,
+                    pitch,
+                    yaw,
+                    attitude_algorithmer.m_dt_s);
+            }
 
         }
 
