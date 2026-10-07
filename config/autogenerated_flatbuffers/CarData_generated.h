@@ -48,7 +48,10 @@ struct CarData FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
     VT_SERVO_LEFT_UPPER = 44,
     VT_SERVO_RIGHT_UPPER = 46,
     VT_SERVO_RIGHT_LOWER = 48,
-    VT_SERVO_LEFT_LOWER = 50
+    VT_SERVO_LEFT_LOWER = 50,
+    VT_PID_INNER_PITCH = 52,
+    VT_PITCH_TARGET_DEG = 54,
+    VT_PID_OUTER_PITCH = 56
   };
   int32_t state() const {
     return GetField<int32_t>(VT_STATE, 0);
@@ -122,6 +125,15 @@ struct CarData FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   float servo_left_lower() const {
     return GetField<float>(VT_SERVO_LEFT_LOWER, 0.0f);
   }
+  float pid_inner_pitch() const {
+    return GetField<float>(VT_PID_INNER_PITCH, 0.0f);
+  }
+  float pitch_target_deg() const {
+    return GetField<float>(VT_PITCH_TARGET_DEG, 0.0f);
+  }
+  float pid_outer_pitch() const {
+    return GetField<float>(VT_PID_OUTER_PITCH, 0.0f);
+  }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<int32_t>(verifier, VT_STATE, 4) &&
@@ -148,6 +160,9 @@ struct CarData FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
            VerifyField<float>(verifier, VT_SERVO_RIGHT_UPPER, 4) &&
            VerifyField<float>(verifier, VT_SERVO_RIGHT_LOWER, 4) &&
            VerifyField<float>(verifier, VT_SERVO_LEFT_LOWER, 4) &&
+           VerifyField<float>(verifier, VT_PID_INNER_PITCH, 4) &&
+           VerifyField<float>(verifier, VT_PITCH_TARGET_DEG, 4) &&
+           VerifyField<float>(verifier, VT_PID_OUTER_PITCH, 4) &&
            verifier.EndTable();
   }
 };
@@ -228,6 +243,15 @@ struct CarDataBuilder {
   void add_servo_left_lower(float servo_left_lower) {
     fbb_.AddElement<float>(CarData::VT_SERVO_LEFT_LOWER, servo_left_lower, 0.0f);
   }
+  void add_pid_inner_pitch(float pid_inner_pitch) {
+    fbb_.AddElement<float>(CarData::VT_PID_INNER_PITCH, pid_inner_pitch, 0.0f);
+  }
+  void add_pitch_target_deg(float pitch_target_deg) {
+    fbb_.AddElement<float>(CarData::VT_PITCH_TARGET_DEG, pitch_target_deg, 0.0f);
+  }
+  void add_pid_outer_pitch(float pid_outer_pitch) {
+    fbb_.AddElement<float>(CarData::VT_PID_OUTER_PITCH, pid_outer_pitch, 0.0f);
+  }
   explicit CarDataBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
@@ -264,8 +288,14 @@ inline ::flatbuffers::Offset<CarData> CreateCarData(
     float servo_left_upper = 0.0f,
     float servo_right_upper = 0.0f,
     float servo_right_lower = 0.0f,
-    float servo_left_lower = 0.0f) {
+    float servo_left_lower = 0.0f,
+    float pid_inner_pitch = 0.0f,
+    float pitch_target_deg = 0.0f,
+    float pid_outer_pitch = 0.0f) {
   CarDataBuilder builder_(_fbb);
+  builder_.add_pid_outer_pitch(pid_outer_pitch);
+  builder_.add_pitch_target_deg(pitch_target_deg);
+  builder_.add_pid_inner_pitch(pid_inner_pitch);
   builder_.add_servo_left_lower(servo_left_lower);
   builder_.add_servo_right_lower(servo_right_lower);
   builder_.add_servo_right_upper(servo_right_upper);

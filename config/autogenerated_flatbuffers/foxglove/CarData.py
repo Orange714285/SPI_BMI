@@ -192,8 +192,29 @@ class CarData(object):
             return self._tab.Get(flatbuffers.number_types.Float32Flags, o + self._tab.Pos)
         return 0.0
 
+    # CarData
+    def PidInnerPitch(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(52))
+        if o != 0:
+            return self._tab.Get(flatbuffers.number_types.Float32Flags, o + self._tab.Pos)
+        return 0.0
+
+    # CarData
+    def PitchTargetDeg(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(54))
+        if o != 0:
+            return self._tab.Get(flatbuffers.number_types.Float32Flags, o + self._tab.Pos)
+        return 0.0
+
+    # CarData
+    def PidOuterPitch(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(56))
+        if o != 0:
+            return self._tab.Get(flatbuffers.number_types.Float32Flags, o + self._tab.Pos)
+        return 0.0
+
 def CarDataStart(builder):
-    builder.StartObject(24)
+    builder.StartObject(27)
 
 def Start(builder):
     CarDataStart(builder)
@@ -341,6 +362,24 @@ def CarDataAddServoLeftLower(builder, servoLeftLower):
 
 def AddServoLeftLower(builder, servoLeftLower):
     CarDataAddServoLeftLower(builder, servoLeftLower)
+
+def CarDataAddPidInnerPitch(builder, pidInnerPitch):
+    builder.PrependFloat32Slot(24, pidInnerPitch, 0.0)
+
+def AddPidInnerPitch(builder, pidInnerPitch):
+    CarDataAddPidInnerPitch(builder, pidInnerPitch)
+
+def CarDataAddPitchTargetDeg(builder, pitchTargetDeg):
+    builder.PrependFloat32Slot(25, pitchTargetDeg, 0.0)
+
+def AddPitchTargetDeg(builder, pitchTargetDeg):
+    CarDataAddPitchTargetDeg(builder, pitchTargetDeg)
+
+def CarDataAddPidOuterPitch(builder, pidOuterPitch):
+    builder.PrependFloat32Slot(26, pidOuterPitch, 0.0)
+
+def AddPidOuterPitch(builder, pidOuterPitch):
+    CarDataAddPidOuterPitch(builder, pidOuterPitch)
 
 def CarDataEnd(builder):
     return builder.EndObject()

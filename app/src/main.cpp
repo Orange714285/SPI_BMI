@@ -14,12 +14,137 @@
 
 #include <chrono>
 #include <cstdint>
+#include <cstdio>
 #include <deque>
+#include <fstream>
 #include <thread>
 #include <csignal>
 #include <atomic>
 #include <tools/cpu_monitor.hpp>
 #include <tools/frame_counter.hpp>
+
+namespace {
+
+// 执行一条 shell 命令并返回其首行输出；失败返回空串。
+// 注意：内部用 popen（fork+exec），只允许在没有其他线程运行时调用
+// （本程序里仅在控制线程启动前、以及 join 之后调用），避免多线程 fork 死锁。
+std::string run_shell_command(const std::string& command)
+{
+    std::string result;
+    FILE* pipe = popen(command.c_str(), "r");
+    if (pipe == nullptr)
+    {
+        return result;
+    }
+    char buffer[256] = {};
+    if (std::fgets(buffer, sizeof(buffer), pipe) != nullptr)
+    {
+        result = buffer;
+        while (!result.empty()
+               && (result.back() == '\n' || result.back() == '\r'))
+        {
+            result.pop_back();
+        }
+    }
+    pclose(pipe);
+    return result;
+}
+
+std::string run_vcgencmd(const char* args)
+{
+    return run_shell_command(std::string("vcgencmd ") + args + " 2>/dev/null");
+}
+
+// 5V 输入轨电压：Pi 4B / Pi 5 的 PMIC 自带 ADC，可直接读出 EXT5V_V，
+// 无需任何外部硬件。不支持该命令的型号会返回空串，不影响其余字段。
+std::string read_5v_rail()
+{
+    const std::string line = run_shell_command(
+        "vcgencmd pmic_read_adc 2>/dev/null | grep -m1 EXT5V_V");
+    const std::size_t pos = line.find('=');
+    return pos == std::string::npos ? std::string() : line.substr(pos + 1);
+}
+
+// 运行中的 ARM 主频与循环帧率监测。
+// 为什么必须在循环内采样：进程启动时（循环未跑）与线程 join 后（循环已停）CPU 都是空闲的，
+// 那时读到的是空闲值，不代表工作点——所以由 sample_runtime_state_periodically() 在循环里按 1 Hz 采。
+// 用 sysfs 文件读而不是 vcgencmd：后者要 fork/exec，不能在实时循环里用。
+// 记「最低~最高」而不是末值：整场运行的跨度才能反映工作点是否变化过。
+int g_arm_freq_min_khz = 0;
+int g_arm_freq_max_khz = 0;
+double g_loop_fps_min = 0.0;
+double g_loop_fps_max = 0.0;
+
+int read_arm_freq_khz()
+{
+    std::ifstream in("/sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq");
+    int khz = 0;
+    if (in)
+    {
+        in >> khz;
+    }
+    return khz;
+}
+
+void sample_runtime_state_periodically()
+{
+    static auto last_sample = std::chrono::steady_clock::now();
+    const auto now = std::chrono::steady_clock::now();
+    if (now - last_sample < std::chrono::seconds(1))
+    {
+        return;
+    }
+    last_sample = now;
+
+    const double fps = FrameCounter::fps();
+    if (fps > 0.0)
+    {
+        if (g_loop_fps_min == 0.0 || fps < g_loop_fps_min)
+        {
+            g_loop_fps_min = fps;
+        }
+        if (fps > g_loop_fps_max)
+        {
+            g_loop_fps_max = fps;
+        }
+    }
+
+    const int khz = read_arm_freq_khz();
+    if (khz <= 0)
+    {
+        return;
+    }
+    if (g_arm_freq_min_khz == 0 || khz < g_arm_freq_min_khz)
+    {
+        g_arm_freq_min_khz = khz;
+    }
+    if (khz > g_arm_freq_max_khz)
+    {
+        g_arm_freq_max_khz = khz;
+    }
+}
+
+// 把树莓派运行状态追加到 config 快照末尾。
+// 本程序的控制循环节拍由 CPU 吞吐决定（DRDY 积压会被排空丢弃），
+// 因此 5V 轨电压 / 节流标志 / ARM 主频 / SoC 温度 / 循环帧率是「帧率为何变慢」的直接证据。
+// 循环帧率取自 FrameCounter 最近 1 s 窗口，即使不发射也能读到（发射前同样在跑循环）。
+void append_pi_state(const std::string& snapshot_path, const char* tag)
+{
+    std::ofstream out(snapshot_path, std::ios::app);
+    if (!out)
+    {
+        return;
+    }
+    out << "[PI_STATE " << tag << "] 5V=" << read_5v_rail()
+        << " | " << run_vcgencmd("get_throttled")
+        << " | " << run_vcgencmd("measure_clock arm")
+        << " | " << run_vcgencmd("measure_temp")
+        << " | loop_fps=" << static_cast<long long>(g_loop_fps_min)
+        << "~" << static_cast<long long>(g_loop_fps_max)
+        << " | loop_arm_freq_khz=" << g_arm_freq_min_khz << "~" << g_arm_freq_max_khz << "\n";
+}
+
+}   // namespace
 
 std::atomic<bool> g_running{true};
 std::atomic<VisionData> g_vision_data;
@@ -44,12 +169,16 @@ int main()
     {
         // Capturer 在构造函数中完成初始化。
         Capturer capturer;
+        // 进程启动时的树莓派运行状态（此刻尚无其他线程，popen 安全）。
+        append_pi_state(capturer.config_snapshot_path(), "start");
 
         std::thread dart_control_thread(dart_control, std::ref(capturer));
         // std::thread dart_vision_thread(dart_vision, std::ref(capturer));
         dart_control_thread.join();
         // dart_vision_thread.join();
         capturer.finish();
+        // 飞行结束后的运行状态（线程已 join），先落盘再上传。
+        append_pi_state(capturer.config_snapshot_path(), "end");
         upload_mcap({capturer.mcap_path(), capturer.config_snapshot_path()});
     }
     catch (const std::exception& error)
@@ -216,6 +345,9 @@ void dart_control(Capturer& capturer)
         float yaw   = (flying_state == 0) ? 0.0f : attitude_algorithmer.m_gyro_yaw;
         
 
+        // 本帧的 pitch 目标（发射前无目标，保持 0），供控制与记录共用。
+        float pitch_target_deg = 0.0f;
+
         //==================================================
         //====================== 控制 =======================
         //==================================================
@@ -232,14 +364,30 @@ void dart_control(Capturer& capturer)
             const float target_roll = stage_one ? config::STAGE_ONE_TARGET_ROLL : config::STAGE_TWO_TARGET_ROLL;
             const float target_yaw = stage_one ? config::STAGE_ONE_TARGET_YAW : config::STAGE_TWO_TARGET_YAW;
 
+            // Pitch 剖面：发射后 PITCH_PROFILE_DURATION_MS 内，目标俯仰由 START 线性变到 END。
+            // 剖面斜率直接作为 y 轴角速度前馈，外环只需修正偏差。
+            constexpr float kPitchProfileSlopeDps =
+                (config::PITCH_PROFILE_END_DEG - config::PITCH_PROFILE_START_DEG)
+                * 1000.0f / static_cast<float>(config::PITCH_PROFILE_DURATION_MS);
+            const float pitch_profile_t =
+                static_cast<float>(g_flight_duration_ms.load())
+                / static_cast<float>(config::PITCH_PROFILE_DURATION_MS);
+            pitch_target_deg = config::PITCH_PROFILE_START_DEG
+                + (config::PITCH_PROFILE_END_DEG - config::PITCH_PROFILE_START_DEG)
+                  * pitch_profile_t;
+
             attitude_controller.control(
                 target_x_rate,
+                kPitchProfileSlopeDps,
                 target_z_rate,
                 target_roll,
+                pitch_target_deg,
                 target_yaw,
                 attitude_algorithmer.m_frd_gyro.x(),
+                attitude_algorithmer.m_frd_gyro.y(),
                 attitude_algorithmer.m_frd_gyro.z(),
                 roll,
+                pitch,
                 yaw,
                 attitude_algorithmer.m_dt_s);
 
@@ -250,6 +398,7 @@ void dart_control(Capturer& capturer)
         /// =========================================================
         CpuMonitor::sample();
         FrameCounter::tick();
+        sample_runtime_state_periodically();   // 运行中的主频/帧率（1 Hz，sysfs 文件读）
         dart_data.data_update(
             flying_state,
             attitude_algorithmer.raw_frd_acc_x(),
@@ -272,7 +421,10 @@ void dart_control(Capturer& capturer)
             attitude_controller.servo_deltas_us()[0],
             attitude_controller.servo_deltas_us()[1],
             attitude_controller.servo_deltas_us()[2],
-            attitude_controller.servo_deltas_us()[3]);
+            attitude_controller.servo_deltas_us()[3],
+            attitude_controller.pid_inner_outputs()[2],
+            pitch_target_deg,
+            attitude_controller.pid_outer_outputs()[2]);
         // 终端周期打印：只在进程启动后的前 TERMINAL_PRINT_WINDOW_MS 内输出，之后自动静默。
         if (std::chrono::steady_clock::now() - g_process_start_time
             < std::chrono::milliseconds(config::TERMINAL_PRINT_WINDOW_MS))

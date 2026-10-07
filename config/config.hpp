@@ -14,6 +14,17 @@ inline constexpr float X_RATE_KD = 0.0f;
 inline constexpr float Z_RATE_KP = 3.0f;
 inline constexpr float Z_RATE_KI = 2.0f;
 inline constexpr float Z_RATE_KD = 0.0f;
+// Pitch 双环（外环输入 pitch 角误差 deg，输出 deg/s；内环输入 y 轴角速度误差，输出 us）。
+// 暂时全部置零 = 关闭 pitch 通道（混控中 pitch 项恒为 0，四舵行为与只控 roll/yaw 完全一致），
+// 先打几发基线。剖面参考与 target 记录不受影响。
+inline constexpr float PITCH_ANGLE_KP = 0.0f;
+inline constexpr float PITCH_ANGLE_KI = 0.0f;
+inline constexpr float PITCH_ANGLE_KD = 0.0f;
+inline constexpr float Y_RATE_KP = 0.0f;
+inline constexpr float Y_RATE_KI = 0.0f;
+inline constexpr float Y_RATE_KD = 0.0f;
+// pitch 通道极性：台架验证若发现方向相反，置为 -1.0f 即可，无需改代码。
+inline constexpr float PITCH_CHANNEL_SIGN = 1.0f;
 
 inline constexpr float SERVO_MAX_DELTA_US = 800.0f;
 inline constexpr int SERVO_PWM_FREQUENCY_HZ = 320;
@@ -35,8 +46,18 @@ inline constexpr int LAUNCH_ACCEL_CONFIRM_MS = 20;
 // 发射架几何固定，且发射前加速度计被推力/振动污染、锁存值不可靠，故直接给定。
 inline constexpr float LAUNCH_INITIAL_ROLL_DEG = 0.0f;
 inline constexpr float LAUNCH_INITIAL_PITCH_DEG = 30.0f;
-// 发射确认前保留在内存中的 CarData 时长，发射后写入 MCAP。
-inline constexpr int CAR_DATA_PRE_RECORD_MS = 500;
+// Pitch 剖面：从发射后 0 ms 到 PITCH_PROFILE_DURATION_MS，目标俯仰角由 START 线性变化到 END。
+// 取值以「acc_filtered_frd_z_mg 趋于 0」（= 零攻角，加速度计测比力即气动力，重力不出现）为准。
+// 两个独立方法互验：acc_z 过零点法得截距 +32.5 度 / 斜率 -42.7 dps；
+// 轨迹「趋势+振荡」拟合法（34 发，截距自由）得截距 +34.2 度 / 斜率 -42.8 dps。
+// 实测有控制时平均攻角 -1.14±0.53 度（偏低头），故整体上移 1.5 度，斜率取两法一致的 -42.5 dps：
+//   (31.5 - (-38.0)) / 1.635 = -42.5 dps
+inline constexpr float PITCH_PROFILE_START_DEG = 31.5f;
+inline constexpr float PITCH_PROFILE_END_DEG = -38.0f;
+inline constexpr int PITCH_PROFILE_DURATION_MS = 1635;
+// 发射确认前保留在内存中的 CarData 时长，撞击判定后回写进 MCAP。
+// 只用于保留发射瞬间的前因，200 ms 已足够覆盖发射检测（确认 20 ms）与释放瞬态。
+inline constexpr int CAR_DATA_PRE_RECORD_MS = 200;
 // 终端周期打印窗口：从进程启动起算的毫秒数，超过后自动停止打印。
 inline constexpr int TERMINAL_PRINT_WINDOW_MS = 20000;
 

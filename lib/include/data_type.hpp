@@ -70,6 +70,9 @@ public:
     float servo_right_upper = 0.0f;
     float servo_right_lower = 0.0f;
     float servo_left_lower = 0.0f;
+    float pid_inner_pitch = 0.0f;
+    float pitch_target_deg = 0.0f;
+    float pid_outer_pitch = 0.0f;
 
     void data_update(
         int flying_state,
@@ -81,7 +84,10 @@ public:
         float outer_roll, float outer_yaw,
         float inner_roll, float inner_yaw,
         float left_upper, float right_upper,
-        float right_lower, float left_lower)
+        float right_lower, float left_lower,
+        float inner_pitch,
+        float pitch_target,
+        float outer_pitch)
     {
         state = flying_state;
         acc_raw_frd_x_mg = acc_raw_x;
@@ -107,6 +113,9 @@ public:
         servo_right_upper = right_upper;
         servo_right_lower = right_lower;
         servo_left_lower = left_lower;
+        pid_inner_pitch = inner_pitch;
+        pitch_target_deg = pitch_target;
+        pid_outer_pitch = outer_pitch;
     }
 
     /** @brief 输出姿态角 roll / yaw / pitch（度），以及三轴原始角速度（dps）与三轴原始加速度（mg） */

@@ -35,6 +35,12 @@ table CarData
     servo_left_lower : float;
 
     // 追加在表末尾：保持既有字段 ID 不变，旧 bag 仍可用新解析器解码。
+    // 俯仰内环（角速度环）输出，单位 us。
+    pid_inner_pitch : float;
+    // 本帧的俯仰目标值（剖面参考），单位 deg。
+    pitch_target_deg : float;
+    // 俯仰外环（姿态环）输出，单位 deg/s。内环跟踪目标 = 剖面斜率前馈 + 本值。
+    pid_outer_pitch : float;
 }
 
 root_type CarData;
