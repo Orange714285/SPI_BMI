@@ -5,8 +5,8 @@ namespace config {
 
 
 // --- Roll 双环 ---
-inline constexpr float ROLL_ANGLE_KP = 10.0f;
-inline constexpr float ROLL_ANGLE_KI = 1.0f;
+inline constexpr float ROLL_ANGLE_KP = 7.0f;
+inline constexpr float ROLL_ANGLE_KI = 0.3f;
 inline constexpr float ROLL_ANGLE_KD = 0.0f;
 inline constexpr float X_RATE_KP = 1.5f;
 inline constexpr float X_RATE_KI = 1.0f;
@@ -72,9 +72,6 @@ inline constexpr float STAGE_TWO_TARGET_X_RATE = 0.0f;
 inline constexpr float STAGE_TWO_TARGET_Z_RATE = 0.0f;
 inline constexpr float STAGE_TWO_TARGET_ROLL = 0.0f;
 inline constexpr float STAGE_TWO_TARGET_YAW = 15.0f;
-// 转向斜坡速率（dps）：目标角以该速率从 STAGE_ONE 爬到 STAGE_TWO，爬升期间兼作角速度前馈。
-// 用斜坡而非阶跃：阶跃会激励 roll 交叉耦合（phi_dot 里含 r*tan(theta) 项）。
-inline constexpr float STAGE_TWO_YAW_RATE_DPS = 150.0f;
 
 // --- 延迟开控 ---
 // 出膛后约 50ms 内陀螺被推力/导轨振动污染（实测滤波角速度出现 ±300dps 非物理尖峰），

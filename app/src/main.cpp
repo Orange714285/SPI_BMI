@@ -231,30 +231,9 @@ void dart_control(Capturer& capturer)
             const bool stage_one =
                 g_flight_duration_ms.load() < config::STAGE_ONE_END_MS;
             const float target_x_rate = stage_one ? config::STAGE_ONE_TARGET_X_RATE : config::STAGE_TWO_TARGET_X_RATE;
+            const float target_z_rate = stage_one ? config::STAGE_ONE_TARGET_Z_RATE : config::STAGE_TWO_TARGET_Z_RATE;
             const float target_roll = stage_one ? config::STAGE_ONE_TARGET_ROLL : config::STAGE_TWO_TARGET_ROLL;
-
-            // 第二阶段偏航转向：从 STAGE_ONE_TARGET_YAW 以 STAGE_TWO_YAW_RATE_DPS 限速斜坡爬到
-            // STAGE_TWO_TARGET_YAW（阶跃会激励 roll 交叉耦合）。爬升期间把该速率作为前馈直接
-            // 喂给偏航角速度内环，弹体主动以该速率转，外环只修偏差。
-            float target_yaw = config::STAGE_ONE_TARGET_YAW;
-            float target_z_rate = stage_one ? config::STAGE_ONE_TARGET_Z_RATE : config::STAGE_TWO_TARGET_Z_RATE;
-            if (!stage_one)
-            {
-                const float yaw_delta = config::STAGE_TWO_TARGET_YAW - config::STAGE_ONE_TARGET_YAW;
-                const float dir = (yaw_delta >= 0.0f) ? 1.0f : -1.0f;
-                const float ramp_s = dir * yaw_delta / config::STAGE_TWO_YAW_RATE_DPS;
-                const float t_s = static_cast<float>(
-                    g_flight_duration_ms.load() - config::STAGE_ONE_END_MS) / 1000.0f;
-                if (ramp_s > 0.0f && t_s < ramp_s)
-                {
-                    target_yaw = config::STAGE_ONE_TARGET_YAW + yaw_delta * (t_s / ramp_s);
-                    target_z_rate += dir * config::STAGE_TWO_YAW_RATE_DPS;
-                }
-                else
-                {
-                    target_yaw = config::STAGE_TWO_TARGET_YAW;
-                }
-            }
+            const float target_yaw = stage_one ? config::STAGE_ONE_TARGET_YAW : config::STAGE_TWO_TARGET_YAW;
 
             // Pitch 剖面：发射后 PITCH_PROFILE_DURATION_MS 内，目标俯仰由 START 线性变到 END。
             // 剖面斜率直接作为 y 轴角速度前馈，外环只需修正偏差。
